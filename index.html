@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Shop acc liqi - Duyệt và xem tài khoản game.">
+    <title>Shop Acc Liqi</title>
+
+    <link rel="icon" type="image/png" href="https://res.cloudinary.com/zv0jlmxj/image/upload/v1787241826/96477251-8c82-4f3f-a032-8719e420fb94.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Spectral:ital,wght@0,600;0,700;1,600;1,700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="frontend/style.css">
+</head>
+
+<body>
+
+    <!-- Khung hiển thị thông báo (toast) -->
+    <div id="toast-container" aria-live="polite"></div>
+
+    <header class="site-header">
+        <!-- Tầng 1: Navigation Top Bar -->
+        <div class="top-bar">
+            <button type="button" id="mobile-menu-btn" class="mobile-menu-btn" aria-label="Mở menu điều hướng" aria-expanded="false" aria-controls="main-nav">
+                <span></span><span></span><span></span>
+            </button>
+            <nav id="main-nav" class="nav-links">
+                <a href="index.html" class="nav-item active">Trang chủ</a>
+                <a href="frontend/lichsumuanick.html" class="nav-item">Lịch sử mua nick</a>
+                <a href="frontend/naptien.html" class="nav-item">Nạp tiền</a>
+                <a href="frontend/baiviet.html" class="nav-item">Bài viết hướng dẫn</a>
+                <a href="frontend/lienhe.html" class="nav-item">Liên hệ</a>
+            </nav>
+
+            <!-- Profile hiển thị thông tin user / admin góc phải tầng 1 -->
+            <div id="user-profile-top" class="user-profile-top hidden">
+                <img class="user-avatar" src="https://res.cloudinary.com/zv0jlmxj/image/upload/v1787241826/96477251-8c82-4f3f-a032-8719e420fb94.png" alt="Avatar">
+                <div class="user-details">
+                    <span id="user-display" class="user-name"></span>
+                    <span class="user-balance">Số dư: <strong id="wallet-balance-display">0 đ</strong></span>
+                </div>
+
+                <!-- Menu tính năng Admin thả xuống khi bấm vào Profile -->
+                <div id="admin-menu-dropdown" class="admin-menu-dropdown hidden">
+                    <button type="button" id="add-acc-btn" class="admin-menu-item">➕ Thêm acc mới</button>
+                    <button type="button" id="import-acc-btn" class="admin-menu-item">📄 Nhập acc từ CSV</button>
+                    <button type="button" id="manage-users-btn" class="admin-menu-item">👤 Quản lý người dùng</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tầng 2: Search Bar & Action -->
+        <div class="main-bar">
+            <div class="brand-logo">
+                <img class="logo" src="https://res.cloudinary.com/zv0jlmxj/image/upload/v1787241826/96477251-8c82-4f3f-a032-8719e420fb94.png" alt="Logo">
+            </div>
+
+            <div class="search-box">
+                <span class="search-icon">🔍</span>
+                <input id="search" type="text" placeholder="Nhập tên tướng hoặc skin, vật phẩm hoặc giá tiền..." autocomplete="off">
+
+                <!-- Gợi ý cách tìm kiếm -->
+                <div id="search-hints" class="search-hints hidden">
+                    <div class="search-hint-group">
+                        <span class="search-hint-label">🎮 Tìm theo skin</span>
+                        <p class="search-hint-desc">Nhập tên skin, ví dụ: <em>Murad siêu việt</em></p>
+                    </div>
+                    <div class="search-hint-group">
+                        <span class="search-hint-label">💰 Tìm theo giá tiền</span>
+                        <p class="search-hint-desc">Nhập giá tiền, ví dụ: <em>1x(10k-19k) 1xx(100-199k)</em></p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="auth-actions">
+                <button id="login-btn" class="btn btn-secondary">Đăng Nhập</button>
+                <button id="logout-btn" class="btn-logout hidden">
+                    <span class="logout-icon">↪</span> Đăng xuất
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Danh sách acc -->
+        <div id="grid" class="grid"></div>
+
+        <!-- Phân trang -->
+        <div id="pagination"></div>
+    </main>
+
+    <!-- Modal Xem Ảnh + Thông tin Acc -->
+    <div id="image-modal" class="modal" role="dialog" aria-hidden="true">
+        <div class="image-modal-inner">
+            <span id="modal-close" class="modal-close">&times;</span>
+            <div class="modal-image-wrap">
+                <img id="modal-img" class="modal-content" src="" alt="Ảnh phóng to">
+                <div id="modal-info-note" class="modal-note-tag hidden"></div>
+            </div>
+            <div id="modal-info-panel" class="modal-info-panel">
+                <div id="modal-info-title" class="modal-info-title"></div>
+                <div id="modal-info-text" class="modal-info-text"></div>
+                <div id="modal-info-skins" class="skin-list"></div>
+                <div id="modal-buy-area" class="modal-buy-area">
+                    <button type="button" id="modal-buy-btn" class="btn btn-primary modal-buy-btn">🛒 Mua tài khoản này</button>
+                    <div id="modal-sold-label" class="sold-label hidden">✅ Tài khoản này đã được bán</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Đăng Nhập / Đăng Ký -->
+    <div id="login-modal" class="modal" role="dialog" aria-hidden="true">
+        <div class="modal-card">
+            <span id="login-modal-close" class="modal-close">&times;</span>
+
+            <div class="auth-tabs">
+                <button type="button" id="tab-login" class="auth-tab active">Đăng nhập</button>
+                <button type="button" id="tab-register" class="auth-tab">Đăng ký</button>
+            </div>
+
+            <!-- Form đăng nhập -->
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="username">Tên đăng nhập *</label>
+                    <input type="text" id="username" required placeholder="Nhập tên tài khoản">
+                </div>
+                <div class="form-group">
+                    <label for="password">Mật khẩu *</label>
+                    <input type="password" id="password" required placeholder="Nhập mật khẩu">
+                </div>
+                <div id="login-error" class="form-error"></div>
+                <div class="form-actions">
+                    <button type="submit" id="login-submit-btn" class="btn btn-primary" style="width: 100%;">Đăng nhập</button>
+                </div>
+            </form>
+
+            <!-- Form đăng ký -->
+            <form id="register-form" class="hidden">
+                <div class="form-group">
+                    <label for="reg-username">Tên đăng nhập *</label>
+                    <input type="text" id="reg-username" required placeholder="Chọn tên đăng nhập">
+                </div>
+                <div class="form-group">
+                    <label for="reg-password">Mật khẩu *</label>
+                    <input type="password" id="reg-password" required placeholder="Tối thiểu 6 ký tự" minlength="6">
+                </div>
+                <div class="form-group">
+                    <label for="reg-password-confirm">Nhập lại mật khẩu *</label>
+                    <input type="password" id="reg-password-confirm" required placeholder="Nhập lại mật khẩu" minlength="6">
+                </div>
+                <div id="register-error" class="form-error"></div>
+                <div class="form-actions">
+                    <button type="submit" id="register-submit-btn" class="btn btn-primary" style="width: 100%;">Tạo tài khoản</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal CRUD (Thêm/Sửa Acc) -->
+    <div id="crud-modal" class="modal" role="dialog" aria-hidden="true">
+        <div class="modal-card">
+            <span id="crud-modal-close" class="modal-close">&times;</span>
+            <h2 id="modal-form-title">Thêm Tài Khoản Mới</h2>
+            <form id="acc-form">
+                <div class="form-group">
+                    <label for="acc-admin-note">Tag lưu ý hiển thị trên thẻ acc</label>
+                    <input type="text" id="acc-admin-note" maxlength="160" placeholder="Ví dụ: Hỗ trợ đổi mật khẩu sau mua">
+                </div>
+                <div class="form-group">
+                    <label for="acc-price">Giá (VNĐ) *</label>
+                    <input type="number" id="acc-price" required min="0" step="1000" placeholder="Ví dụ: 350000">
+                </div>
+                <div class="form-group">
+                    <label for="acc-image">URL Hình Ảnh *</label>
+                    <input type="url" id="acc-image" required placeholder="https://res.cloudinary.com/...">
+                </div>
+                <div class="form-group">
+                    <label for="acc-info">Thông tin Acc (rank, số tướng...)</label>
+                    <textarea id="acc-info" rows="3" placeholder="Ví dụ: Rank Cao Thủ, 45 tướng, 60 skin"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="acc-skins">Danh sách Skins (mỗi skin một dòng)</label>
+                    <textarea id="acc-skins" rows="4" placeholder="Ryoma samurai huyền thoại&#10;Zephyr kỷ nguyên hổ phách"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="acc-game-username">Tài khoản game *</label>
+                    <input type="text" id="acc-game-username" required autocomplete="off" placeholder="Tài khoản đăng nhập game">
+                </div>
+                <div class="form-group">
+                    <label for="acc-game-password">Mật khẩu game *</label>
+                    <input type="text" id="acc-game-password" required autocomplete="off" placeholder="Mật khẩu đăng nhập game">
+                </div>
+                <div id="crud-error" class="form-error"></div>
+                <div class="form-actions">
+                    <button type="button" id="cancel-form-btn" class="btn btn-secondary">Hủy</button>
+                    <button type="submit" id="crud-submit-btn" class="btn btn-primary">Lưu lại</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Quản lý người dùng (Admin) -->
+    <div id="users-modal" class="modal" role="dialog" aria-hidden="true">
+        <div class="modal-card wide">
+            <span id="users-modal-close" class="modal-close">&times;</span>
+            <h2>Quản Lý Người Dùng</h2>
+
+            <div class="user-table-wrap">
+                <table class="user-table">
+                    <thead>
+                        <tr>
+                            <th>Tên đăng nhập</th>
+                            <th>Số dư (đ)</th>
+                            <th>Vai trò</th>
+                            <th>Ngày tạo</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="users-table-body"></tbody>
+                </table>
+            </div>
+
+            <div id="users-error" class="form-error"></div>
+
+            <h2 style="font-size: 1rem; margin-top: 24px;">Thêm người dùng mới</h2>
+            <form id="add-user-form" class="add-user-row">
+                <input type="text" id="new-user-username" placeholder="Tên đăng nhập" required>
+                <input type="password" id="new-user-password" placeholder="Mật khẩu (tối thiểu 6 ký tự)" required minlength="6">
+                <select id="new-user-role">
+                    <option value="user">User</option>
+                    <option value="admin">Admin</option>
+                </select>
+                <button type="submit" class="btn btn-primary btn-small">+ Thêm</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Nhập Acc Từ CSV -->
+    <div id="csv-import-modal" class="modal" role="dialog" aria-hidden="true">
+        <div class="modal-card wide csv-import-card">
+            <span id="csv-import-modal-close" class="modal-close">&times;</span>
+            <h2>📄 Nhập Nhiều Acc Từ CSV</h2>
+            <p class="csv-import-help">Chọn file CSV có các cột theo thứ tự: <code>tag lưu ý, giá, URL ảnh, thông tin, skins, tài khoản game, mật khẩu game</code>. Các skin cách nhau bằng dấu <code>|</code>.</p>
+            <div class="form-group">
+                <label for="csv-import-file">File CSV</label>
+                <input type="file" id="csv-import-file" accept=".csv,text/csv">
+            </div>
+            <div id="csv-import-error" class="form-error"></div>
+            <div id="csv-import-preview" class="csv-import-preview hidden"></div>
+            <div class="form-actions">
+                <button type="button" id="csv-import-cancel-btn" class="btn btn-secondary">Hủy</button>
+                <button type="button" id="csv-import-submit-btn" class="btn btn-primary" disabled>Nhập acc</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Ví Của Tôi (Nạp tiền) -->
+    <div id="wallet-modal" class="modal" role="dialog" aria-hidden="true">
+        <div class="modal-card">
+            <span id="wallet-modal-close" class="modal-close">&times;</span>
+            <h2>💰 Ví Của Tôi</h2>
+
+            <div class="wallet-balance-box">
+                <span class="wallet-balance-label">Số dư hiện tại</span>
+                <span id="wallet-balance-amount" class="wallet-balance-amount">0 đ</span>
+            </div>
+
+            <p class="wallet-note">Nạp tiền bằng chuyển khoản ngân hàng tại trang <a href="naptien.html">Nạp tiền</a>. Số dư sẽ được cập nhật tự động sau khi giao dịch được xác nhận.</p>
+
+            <button type="button" id="open-history-btn" class="btn btn-secondary" style="width: 100%; margin-top: 14px;">📜 Xem lịch sử mua acc</button>
+        </div>
+    </div>
+
+    <!-- Modal Lịch Sử Mua Acc -->
+    <div id="history-modal" class="modal" role="dialog" aria-hidden="true">
+        <div class="modal-card wide">
+            <span id="history-modal-close" class="modal-close">&times;</span>
+            <h2>📜 Lịch Sử Mua Acc</h2>
+            <div id="history-list" class="history-list"></div>
+        </div>
+    </div>
+
+    <!-- Badge hiển thị tổng số tài khoản ở góc trái dưới -->
+    <div id="total-accounts-badge" class="total-accounts-badge">Tổng số acc: <span id="total-accounts-count">0</span>
+    </div>
+
+    <script src="frontend/config.js"></script>
+    <script src="frontend/scripts.js"></script>
+</body>
+
+</html>
