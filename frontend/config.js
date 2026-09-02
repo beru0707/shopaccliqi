@@ -1,1 +1,1 @@
-const API_BASE_URL = "https://shopaccliqi-backend.onrender.comapi";
+const API_BASE_URL = "https://shopaccliqi-backend.onrender.com/api";
