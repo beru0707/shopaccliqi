@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Lịch sử mua nick - Shop Acc Liqi">
+    <title>Lịch Sử Mua Nick - Shop Acc Liqi</title>
+
+    <link rel="icon" type="image/png" href="https://res.cloudinary.com/zv0jlmxj/image/upload/v1787241826/96477251-8c82-4f3f-a032-8719e420fb94.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Spectral:ital,wght@0,600;0,700;1,600;1,700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .page-title {
+            font-family: var(--font-display);
+            color: var(--gold);
+            font-size: 1.8rem;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .history-page-card {
+            background: var(--bg-elevated);
+            border: 1px solid rgba(216, 181, 104, 0.25);
+            border-radius: var(--radius);
+            padding: 28px;
+            box-shadow: var(--shadow);
+        }
+        .login-notice {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--ink-muted);
+        }
+        .login-notice button {
+            margin-top: 16px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="toast-container" aria-live="polite"></div>
+
+    <header class="site-header">
+        <!-- Tầng 1: Navigation Top Bar -->
+        <div class="top-bar">
+            <button type="button" id="mobile-menu-btn" class="mobile-menu-btn" aria-label="Mở menu điều hướng" aria-expanded="false" aria-controls="main-nav">
+                <span></span><span></span><span></span>
+            </button>
+            <nav id="main-nav" class="nav-links">
+                <a href="../index.html" class="nav-item">Trang chủ</a>
+                <a href="lichsumuanick.html" class="nav-item active">Lịch sử mua nick</a>
+                <a href="naptien.html" class="nav-item">Nạp tiền</a>
+                <a href="baiviet.html" class="nav-item">Bài viết hướng dẫn</a>
+                <a href="lienhe.html" class="nav-item">Liên hệ</a>
+            </nav>
+
+            <div id="user-profile-top" class="user-profile-top hidden">
+                <img class="user-avatar" src="https://res.cloudinary.com/zv0jlmxj/image/upload/v1787241826/96477251-8c82-4f3f-a032-8719e420fb94.png" alt="Avatar">
+                <div class="user-details">
+                    <span id="user-display" class="user-name"></span>
+                    <span class="user-balance">Số dư: <strong id="wallet-balance-display">0 đ</strong></span>
+                </div>
+
+                <div id="admin-menu-dropdown" class="admin-menu-dropdown hidden">
+                    <button type="button" id="add-acc-btn" class="admin-menu-item">➕ Thêm acc mới</button>
+                    <button type="button" id="manage-users-btn" class="admin-menu-item">👤 Quản lý người dùng</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tầng 2: Main Header / Search & Auth -->
+        <div class="main-bar">
+            <div class="brand-logo">
+                <a href="index.html">
+                    <img class="logo" src="https://res.cloudinary.com/zv0jlmxj/image/upload/v1787241826/96477251-8c82-4f3f-a032-8719e420fb94.png" alt="Logo">
+                </a>
+            </div>
+
+            <div id="auth-actions">
+                <button id="login-btn" class="btn btn-secondary">Đăng Nhập</button>
+                <button id="logout-btn" class="btn-logout hidden">
+                    <span class="logout-icon">↪</span> Đăng xuất
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <h1 class="page-title">📜 Lịch Sử Mua Nick</h1>
+
+        <div class="history-page-card">
+            <div id="page-history-content">
+                <div id="history-list" class="history-list"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal Đăng Nhập / Đăng Ký -->
+    <div id="login-modal" class="modal" role="dialog" aria-hidden="true">
+        <div class="modal-card">
+            <span id="login-modal-close" class="modal-close">&times;</span>
+
+            <div class="auth-tabs">
+                <button type="button" id="tab-login" class="auth-tab active">Đăng nhập</button>
+                <button type="button" id="tab-register" class="auth-tab">Đăng ký</button>
+            </div>
+
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="username">Tên đăng nhập *</label>
+                    <input type="text" id="username" required placeholder="Nhập tên tài khoản">
+                </div>
+                <div class="form-group">
+                    <label for="password">Mật khẩu *</label>
+                    <input type="password" id="password" required placeholder="Nhập mật khẩu">
+                </div>
+                <div id="login-error" class="form-error"></div>
+                <div class="form-actions">
+                    <button type="submit" id="login-submit-btn" class="btn btn-primary" style="width: 100%;">Đăng nhập</button>
+                </div>
+            </form>
+
+            <form id="register-form" class="hidden">
+                <div class="form-group">
+                    <label for="reg-username">Tên đăng nhập *</label>
+                    <input type="text" id="reg-username" required placeholder="Chọn tên đăng nhập">
+                </div>
+                <div class="form-group">
+                    <label for="reg-password">Mật khẩu *</label>
+                    <input type="password" id="reg-password" required placeholder="Tối thiểu 6 ký tự" minlength="6">
+                </div>
+                <div class="form-group">
+                    <label for="reg-password-confirm">Nhập lại mật khẩu *</label>
+                    <input type="password" id="reg-password-confirm" required placeholder="Nhập lại mật khẩu" minlength="6">
+                </div>
+                <div id="register-error" class="form-error"></div>
+                <div class="form-actions">
+                    <button type="submit" id="register-submit-btn" class="btn btn-primary" style="width: 100%;">Tạo tài khoản</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="scripts.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const historyListEl = document.getElementById("history-list");
+            
+            async function loadPageHistory() {
+                if (!currentUser) {
+                    historyListEl.innerHTML = `
+                        <div class="login-notice">
+                            <span style="font-size: 2.5rem; display: block; margin-bottom: 12px;">🔒</span>
+                            <p>Vui lòng đăng nhập để xem lịch sử mua nick của bạn.</p>
+                            <button class="btn btn-primary" onclick="document.getElementById('login-btn').click()">Đăng Nhập Ngay</button>
+                        </div>
+                    `;
+                    return;
+                }
+
+                historyListEl.innerHTML = `<div class="empty-state"><span class="spinner"></span>Đang tải lịch sử mua...</div>`;
+
+                try {
+                    const data = await apiFetch("/purchases/me");
+                    renderHistoryList(data.items || []);
+                } catch (err) {
+                    historyListEl.innerHTML = `<div class="empty-state">⚠️ ${err.message}</div>`;
+                }
+            }
+
+            loadPageHistory();
+
+            // Override logout handler to refresh history view
+            const originalLogout = logoutBtn.onclick;
+            logoutBtn.addEventListener("click", () => {
+                setTimeout(loadPageHistory, 100);
+            });
+        });
+    </script>
+</body>
+
+</html>
