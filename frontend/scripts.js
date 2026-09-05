@@ -402,6 +402,7 @@ function renderGrid(items, total) {
     items.forEach((item) => {
         const card = document.createElement("div");
         card.className = item.sold ? "card sold" : "card";
+        card.onclick = () => openImageModal(item.id);
 
         let skinTagsHTML = "";
         const skinCount = item.skins ? item.skins.length : 0;
@@ -420,25 +421,27 @@ function renderGrid(items, total) {
         const infoTextHTML = item.info ? `<p class="card-info-text">${escapeHTML(item.info)}</p>` : "";
         const adminNoteHTML = item.adminNote ? `<span class="admin-note-tag"> ${escapeHTML(item.adminNote)}</span>` : "";
         const soldBadgeHTML = item.sold ? `<span class="sold-card-badge">Đã bán</span>` : "";
-        const viewBtnHTML = `<button class="btn-card view-btn" onclick="openImageModal('${item.id}')">👁️ Xem</button>`;
+        const buyBtnHTML = `<button class="btn-card buy-btn" onclick="event.stopPropagation(); buyAccountById('${item.id}')">🛒 Mua</button>`;
+        const auctionBtnHTML = `<button class="btn-card auction-btn" onclick="event.stopPropagation(); openAuction('${item.id}')">🔨 Đấu giá</button>`;
         const adminActionsHTML = isAdmin
             ? `<button class="btn-card edit-btn" onclick="openEditModal('${item.id}')">Sửa</button>
                <button class="btn-card delete-btn" onclick="deleteStory('${item.id}')">Xóa</button>`
             : "";
 
         card.innerHTML = `
-            <div class="card-image-wrap" onclick="openImageModal('${item.id}')">
+            <div class="card-image-wrap">
                 ${soldBadgeHTML}
-                <img loading="lazy" src="${escapeAttr(item.image)}" alt="${escapeAttr(formatPrice(item.price))}">
+                <img loading="lazy" decoding="async" src="${escapeAttr(cloudinaryThumbnailUrl(item.image))}" alt="${escapeAttr(formatPrice(item.price))}">
                 ${adminNoteHTML}
                 <div class="page-edge"></div>
             </div>
-            <div class="info">
+            <div class="info" onclick="openImageModal('${item.id}')">
                 <div class="price">${formatPrice(item.price)}</div>
                 ${infoTextHTML}
                 ${skinTagsHTML}
-                <div class="card-actions">
-                    ${viewBtnHTML}
+                <div class="card-actions" onclick="event.stopPropagation()">
+                    ${buyBtnHTML}
+                    ${auctionBtnHTML}
                     ${adminActionsHTML}
                 </div>
             </div>
@@ -455,6 +458,14 @@ function escapeHTML(str) {
 }
 function escapeAttr(str) {
     return (str ?? "").replace(/'/g, "&#39;").replace(/"/g, "&quot;");
+}
+
+// Database giữ URL gốc; chỉ card lấy phiên bản nhẹ do Cloudinary tạo động.
+function cloudinaryThumbnailUrl(imageUrl, width = 640) {
+    if (typeof imageUrl !== "string") return "";
+    const marker = "/image/upload/";
+    if (!imageUrl.includes("res.cloudinary.com") || !imageUrl.includes(marker)) return imageUrl;
+    return imageUrl.replace(marker, `${marker}f_auto,q_auto,w_${width},c_limit,dpr_auto/`);
 }
 
 function formatPrice(price) {
@@ -790,6 +801,11 @@ window.deleteStory = async function (id) {
 
 if (modalBuyBtn) {
     modalBuyBtn.addEventListener("click", async () => {
+        await window.buyAccountById(currentModalItemId);
+    });
+}
+
+window.buyAccountById = async function (id) {
         // Chưa đăng nhập -> mở form đăng nhập trước
         if (!currentUser) {
             closeModal();
@@ -799,14 +815,13 @@ if (modalBuyBtn) {
             return;
         }
 
-        const item = currentItems.find((i) => i.id === currentModalItemId);
+        const item = currentItems.find((i) => i.id === id);
         if (!item) return;
 
         if (!confirm(`Xác nhận mua acc với giá ${formatPrice(item.price)}?\nSố tiền sẽ được trừ ngay vào ví của bạn.`)) {
             return;
         }
 
-        setButtonLoading(modalBuyBtn, true);
         try {
             const data = await apiFetch(`/accounts/${item.id}/purchase`, { method: "POST" });
 
@@ -824,11 +839,22 @@ if (modalBuyBtn) {
                 closeModal();
                 openWalletModal();
             }
-        } finally {
-            setButtonLoading(modalBuyBtn, false, "🛒 Mua tài khoản này");
         }
-    });
-}
+};
+
+window.openAuction = async function (id) {
+    if (!currentUser) { switchAuthTab("login"); openLoginModal(); return; }
+    try {
+        const { auction } = await apiFetch(`/auctions/${id}`);
+        if (!auction.active) return showToast("Đấu giá chưa bắt đầu hoặc đã kết thúc.", "error");
+        const minimum = (auction.highestBid || auction.startPrice) + (auction.highestBid ? 100 : 0);
+        const amount = Number(prompt(`Giá hiện tại: ${formatPrice(auction.highestBid || auction.startPrice)}\nNhập giá đấu (bội số 100đ, tối thiểu ${formatPrice(minimum)}):`, minimum));
+        if (!Number.isSafeInteger(amount)) return;
+        await apiFetch(`/auctions/${id}/bids`, { method: "POST", body: JSON.stringify({ amount }) });
+        showToast("Đã đặt giá đấu thành công.", "success");
+        fetchAndRenderAccounts();
+    } catch (err) { showToast(err.message, "error"); }
+};
 
 // ================= VÍ TIỀN (Wallet) =================
 
@@ -1097,8 +1123,22 @@ window.openImageModal = function (id) {
 
     currentModalItemId = id;
 
-    modalImg.src = item.image;
+    // Hiện ngay ảnh nhẹ (thường đã có trong cache từ card), sau đó tải ảnh gốc
+    // ở nền để người dùng không phải nhìn modal trống khi ảnh lớn đang tải.
+    const thumbnailUrl = cloudinaryThumbnailUrl(item.image);
+    modalImg.src = thumbnailUrl;
     modalImg.alt = formatPrice(item.price);
+
+    if (thumbnailUrl !== item.image) {
+        const originalImage = new Image();
+        originalImage.onload = () => {
+            // Không ghi đè ảnh nếu người dùng đã mở một acc khác trong lúc chờ.
+            if (currentModalItemId === id) {
+                modalImg.src = item.image;
+            }
+        };
+        originalImage.src = item.image;
+    }
 
     if (modalInfoTitle) modalInfoTitle.textContent = formatPrice(item.price);
     if (modalInfoText) modalInfoText.textContent = item.info || "";

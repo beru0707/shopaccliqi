@@ -735,12 +735,14 @@ body {
 }
 .btn-card:hover { opacity: 0.85; }
 
-.view-btn {
+.buy-btn {
     background: #f97316;
     color: #ffffff;
     border: none;
 }
-.view-btn:hover { background: #ea580c; }
+.buy-btn:hover { background: #ea580c; }
+.auction-btn { background: #6d28d9; color: #fff; }
+.auction-btn:hover { background: #5b21b6; }
 
 .edit-btn { background: #2a4365; color: #90cdf4; }
 .delete-btn { background: #63171b; color: #feb2b2; }
