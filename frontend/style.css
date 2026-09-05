@@ -710,6 +710,20 @@ body {
     line-height: 1.35;
     text-align: right;
 }
+.auction-card-badge {
+    position: absolute;
+    z-index: 3;
+    top: 10px;
+    left: 10px;
+    background: #6d28d9;
+    color: #fff;
+    border: 1px solid rgba(255,255,255,.45);
+    border-radius: 999px;
+    padding: 5px 10px;
+    font-size: .72rem;
+    font-weight: 700;
+    box-shadow: 0 4px 10px rgba(0,0,0,.3);
+}
 
 /* ===== Skin Tags ===== */
 .skin-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
@@ -834,8 +848,16 @@ body {
     gap: 0;
     max-width: 90vw;
     max-height: 92vh;
+    overflow-y: auto;
     position: relative;
+    /* Firefox */
+    scrollbar-width: thin;
+    scrollbar-color: rgba(216, 181, 104, .8) rgba(18, 21, 29, .7);
 }
+.image-modal-inner::-webkit-scrollbar { width: 9px; }
+.image-modal-inner::-webkit-scrollbar-track { background: rgba(18, 21, 29, .7); border-radius: 999px; }
+.image-modal-inner::-webkit-scrollbar-thumb { background: linear-gradient(#e5c378, #a67d30); border: 2px solid rgba(18, 21, 29, .7); border-radius: 999px; }
+.image-modal-inner::-webkit-scrollbar-thumb:hover { background: var(--gold); }
 
 .modal-image-wrap {
     position: relative;
@@ -863,6 +885,24 @@ body {
     flex-direction: column;
     gap: 10px;
 }
+.modal-scroll-hint {
+    margin: 0 0 4px;
+    border: 0;
+    padding: 10px 12px;
+    color: #2b2417;
+    background: var(--gold);
+    border-radius: 8px;
+    text-align: center;
+    font-weight: 700;
+    font-size: .9rem;
+    animation: scroll-hint-pulse 1.8s ease-in-out infinite;
+    cursor: pointer;
+    font-family: inherit;
+}
+.modal-scroll-hint:hover { filter: brightness(1.06); }
+.modal-scroll-hint:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+}
+@keyframes scroll-hint-pulse { 50% { transform: translateY(2px); box-shadow: 0 3px 14px rgba(216,181,104,.35); } }
 
 .modal-info-title {
     font-family: var(--font-display);
@@ -907,6 +947,11 @@ body {
 .auction-meta { color: var(--ink-muted); margin: 5px 0 8px; }
 .auction-bid { display: grid; grid-template-columns: 1fr auto auto; gap: 10px; padding: 6px 0; border-top: 1px solid rgba(255,255,255,.07); }
 .auction-bid time { color: var(--ink-muted); font-size: .75rem; }
+.modal-bid-area { display: flex; flex-direction: column; gap: 7px; margin-top: 4px; }
+.modal-bid-area label { font-size: .82rem; color: var(--ink-muted); }
+.modal-bid-form { display: flex; gap: 8px; }
+.modal-bid-form input { flex: 1; min-width: 0; background: var(--surface); color: var(--ink); border: 1px solid rgba(216,181,104,.4); border-radius: 7px; padding: 9px 10px; font: inherit; }
+.modal-bid-form button { white-space: nowrap; }
 .sold-label {
     text-align: center;
     background: var(--success-soft);

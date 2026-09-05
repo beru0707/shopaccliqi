@@ -93,17 +93,19 @@
 
     <!-- Modal Xem Ảnh + Thông tin Acc -->
     <div id="image-modal" class="modal" role="dialog" aria-hidden="true">
-        <div class="image-modal-inner">
+        <div id="image-modal-inner" class="image-modal-inner">
             <span id="modal-close" class="modal-close">&times;</span>
             <div class="modal-image-wrap">
                 <img id="modal-img" class="modal-content" src="" alt="Ảnh phóng to">
                 <div id="modal-info-note" class="modal-note-tag hidden"></div>
             </div>
             <div id="modal-info-panel" class="modal-info-panel">
+                <button type="button" id="modal-scroll-hint" class="modal-scroll-hint" aria-controls="modal-auction-history">↓ Kéo xuống để đấu giá và xem danh sách</button>
                 <div id="modal-info-title" class="modal-info-title"></div>
                 <div id="modal-info-text" class="modal-info-text"></div>
                 <div id="modal-info-skins" class="skin-list"></div>
                 <div id="modal-auction-history" class="auction-history hidden"></div>
+                <div id="modal-bid-area" class="modal-bid-area hidden"></div>
                 <div id="modal-buy-area" class="modal-buy-area">
                     <button type="button" id="modal-buy-btn" class="btn btn-primary modal-buy-btn">🛒 Mua tài khoản này</button>
                     <div id="modal-sold-label" class="sold-label hidden">✅ Tài khoản này đã được bán</div>

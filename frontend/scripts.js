@@ -50,6 +50,9 @@ const modalInfoSkins = document.getElementById("modal-info-skins");
 const modalBuyBtn = document.getElementById("modal-buy-btn");
 const modalSoldLabel = document.getElementById("modal-sold-label");
 const modalAuctionHistory = document.getElementById("modal-auction-history");
+const modalBidArea = document.getElementById("modal-bid-area");
+const modalScrollHint = document.getElementById("modal-scroll-hint");
+const imageModalInner = document.getElementById("image-modal-inner");
 let currentModalItemId = null; // acc đang được xem trong modal, dùng khi bấm "Mua"
 
 // Ví tiền (Wallet)
@@ -426,7 +429,10 @@ function renderGrid(items, total) {
         const infoTextHTML = item.info ? `<p class="card-info-text">${escapeHTML(item.info)}</p>` : "";
         const adminNoteHTML = item.adminNote ? `<span class="admin-note-tag"> ${escapeHTML(item.adminNote)}</span>` : "";
         const soldBadgeHTML = item.sold ? `<span class="sold-card-badge">Đã bán</span>` : "";
-        const buyBtnHTML = `<button class="btn-card buy-btn" onclick="event.stopPropagation(); buyAccountById('${item.id}')">🛒 Mua</button>`;
+        const auctionActive = !item.sold && item.auctionStartsAt && item.auctionEndsAt
+            && new Date(item.auctionStartsAt) <= new Date() && new Date(item.auctionEndsAt) > new Date();
+        const auctionBadgeHTML = auctionActive ? `<span class="auction-card-badge">🔨 Đang đấu giá</span>` : "";
+        const buyBtnHTML = `<button class="btn-card buy-btn" onclick="event.stopPropagation(); openImageModal('${item.id}')">🛒 Mua</button>`;
         const auctionBtnHTML = `<button class="btn-card auction-btn" onclick="event.stopPropagation(); openAuction('${item.id}')">🔨 Đấu giá</button>`;
         const adminActionsHTML = isAdmin
             ? `<button class="btn-card edit-btn" onclick="openEditModal('${item.id}')">Sửa</button>
@@ -436,6 +442,7 @@ function renderGrid(items, total) {
         card.innerHTML = `
             <div class="card-image-wrap">
                 ${soldBadgeHTML}
+                ${auctionBadgeHTML}
                 <img loading="lazy" decoding="async" src="${escapeAttr(cloudinaryThumbnailUrl(item.image))}" alt="${escapeAttr(formatPrice(item.price))}">
                 ${adminNoteHTML}
                 <div class="page-edge"></div>
@@ -856,16 +863,24 @@ window.buyAccountById = async function (id) {
 };
 
 window.openAuction = async function (id) {
+    // Nút đấu giá luôn mở phần xem chi tiết trước để người dùng xem ảnh lớn,
+    // giá hiện tại và lịch sử đấu giá trong cùng một luồng.
+    window.openImageModal(id, { focusAuction: true });
+};
+
+window.placeBidFromModal = async function (id) {
     if (!currentUser) { switchAuthTab("login"); openLoginModal(); return; }
     try {
         const { auction } = await apiFetch(`/auctions/${id}`);
         if (!auction.active) return showToast("Đấu giá chưa bắt đầu hoặc đã kết thúc.", "error");
         const minimum = (auction.highestBid || auction.startPrice) + (auction.highestBid ? 100 : 0);
-        const amount = Number(prompt(`Giá hiện tại: ${formatPrice(auction.highestBid || auction.startPrice)}\nNhập giá đấu (bội số 100đ, tối thiểu ${formatPrice(minimum)}):`, minimum));
+        const bidInput = document.getElementById("modal-bid-input");
+        const amount = Number(bidInput?.value);
         if (!Number.isSafeInteger(amount)) return;
         await apiFetch(`/auctions/${id}/bids`, { method: "POST", body: JSON.stringify({ amount }) });
         showToast("Đã đặt giá đấu thành công.", "success");
         fetchAndRenderAccounts();
+        window.openImageModal(id, { focusAuction: true });
     } catch (err) { showToast(err.message, "error"); }
 };
 
@@ -1130,7 +1145,25 @@ function closeCrudModal() { crudModal.classList.remove("active"); }
 if (crudModalClose) crudModalClose.addEventListener("click", closeCrudModal);
 if (cancelFormBtn) cancelFormBtn.addEventListener("click", closeCrudModal);
 
-window.openImageModal = function (id) {
+if (modalScrollHint) {
+    modalScrollHint.addEventListener("click", () => {
+        if (!modalAuctionHistory || modalAuctionHistory.classList.contains("hidden")) {
+            showToast("Tài khoản này chưa có lịch sử đấu giá.", "info");
+            return;
+        }
+        // Cuộn đúng khung modal, không làm trang phía sau bị nhảy.
+        if (imageModalInner) {
+            const targetTop = imageModalInner.scrollTop
+                + modalAuctionHistory.getBoundingClientRect().top
+                - imageModalInner.getBoundingClientRect().top - 12;
+            imageModalInner.scrollTo({ top: Math.max(0, targetTop), behavior: "smooth" });
+        } else {
+            modalAuctionHistory.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+    });
+}
+
+window.openImageModal = function (id, options = {}) {
     const item = currentItems.find((i) => i.id === id);
     if (!item || !modalImg || !modal) return;
 
@@ -1180,11 +1213,24 @@ window.openImageModal = function (id) {
     if (modalAuctionHistory) {
         modalAuctionHistory.classList.add("hidden");
         modalAuctionHistory.innerHTML = "";
+        if (modalBidArea) {
+            modalBidArea.classList.add("hidden");
+            modalBidArea.innerHTML = "";
+        }
         apiFetch(`/auctions/${id}`).then(({ auction }) => {
             if (currentModalItemId !== id) return;
             const maskName = (name) => `${String(name || "").slice(0, 3)}${"*".repeat(Math.max(3, String(name || "").length - 3))}`;
-            modalAuctionHistory.innerHTML = `<strong>🔨 Lịch sử đấu giá</strong><div class="auction-meta">Khởi điểm: ${formatPrice(auction.startPrice)} · Kết thúc: ${new Date(auction.endsAt).toLocaleString("vi-VN")}</div>${auction.bids.length ? auction.bids.map((bid) => `<div class="auction-bid"><span>${escapeHTML(maskName(bid.username))}</span><b>${formatPrice(bid.amount)}</b><time>${new Date(bid.createdAt).toLocaleString("vi-VN")}</time></div>`).join("") : "<p>Chưa có lượt đấu giá.</p>"}`;
+            const currentPrice = auction.highestBid || auction.startPrice;
+            const minimum = currentPrice + (auction.highestBid ? 100 : 0);
+            modalAuctionHistory.innerHTML = `<strong>🔨 Lịch sử đấu giá</strong><div class="auction-meta">Giá hiện tại: <b>${formatPrice(currentPrice)}</b> · Kết thúc: ${new Date(auction.endsAt).toLocaleString("vi-VN")}</div>${auction.bids.length ? auction.bids.map((bid) => `<div class="auction-bid"><span>${escapeHTML(maskName(bid.username))}</span><b>${formatPrice(bid.amount)}</b><time>${new Date(bid.createdAt).toLocaleString("vi-VN")}</time></div>`).join("") : "<p>Chưa có lượt đấu giá.</p>"}`;
             modalAuctionHistory.classList.remove("hidden");
+            if (modalBidArea && auction.active) {
+                modalBidArea.innerHTML = `<label for="modal-bid-input">Đặt giá của bạn (tối thiểu ${formatPrice(minimum)})</label><div class="modal-bid-form"><input id="modal-bid-input" type="number" min="${minimum}" step="100" value="${minimum}"><button type="button" class="btn btn-primary" onclick="placeBidFromModal('${id}')">Đặt giá</button></div>`;
+                modalBidArea.classList.remove("hidden");
+            }
+            if (options.focusAuction) {
+                requestAnimationFrame(() => modalAuctionHistory.scrollIntoView({ behavior: "smooth", block: "start" }));
+            }
         }).catch(() => {});
     }
 };
