@@ -1003,6 +1003,24 @@ body {
     cursor: pointer;
     line-height: 1;
 }
+.modal-image-close {
+    position: fixed;
+    z-index: 1010;
+    top: 16px;
+    right: 18px;
+    width: 42px;
+    height: 42px;
+    padding: 0 0 4px;
+    border: 1px solid rgba(255,255,255,.45);
+    border-radius: 50%;
+    background: #ef4444;
+    color: #fff;
+    font-size: 32px;
+    box-shadow: 0 4px 16px rgba(0,0,0,.45);
+    transition: background .18s ease, transform .18s ease;
+}
+.modal-image-close:hover { background: #991b1b; color: #fff; transform: scale(1.06); }
+.modal-image-close:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
 
 .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
 .form-group label { font-size: 0.85rem; color: var(--ink-muted); }

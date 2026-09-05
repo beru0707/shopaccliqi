@@ -54,6 +54,7 @@ const modalBidArea = document.getElementById("modal-bid-area");
 const modalScrollHint = document.getElementById("modal-scroll-hint");
 const imageModalInner = document.getElementById("image-modal-inner");
 let currentModalItemId = null; // acc đang được xem trong modal, dùng khi bấm "Mua"
+let modalAuctionLoadPromise = null;
 
 // Ví tiền (Wallet)
 const walletBtn = document.getElementById("wallet-btn");
@@ -1145,21 +1146,30 @@ function closeCrudModal() { crudModal.classList.remove("active"); }
 if (crudModalClose) crudModalClose.addEventListener("click", closeCrudModal);
 if (cancelFormBtn) cancelFormBtn.addEventListener("click", closeCrudModal);
 
+function scrollToAuctionHistory() {
+    if (!modalAuctionHistory || modalAuctionHistory.classList.contains("hidden")) return false;
+    // Cuộn đúng khung modal, không làm trang phía sau bị nhảy.
+    if (imageModalInner) {
+        const targetTop = imageModalInner.scrollTop
+            + modalAuctionHistory.getBoundingClientRect().top
+            - imageModalInner.getBoundingClientRect().top - 12;
+        imageModalInner.scrollTo({ top: Math.max(0, targetTop), behavior: "smooth" });
+    } else {
+        modalAuctionHistory.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+    return true;
+}
+
 if (modalScrollHint) {
-    modalScrollHint.addEventListener("click", () => {
+    modalScrollHint.addEventListener("click", async () => {
+        // Khi người dùng bấm ngay sau khi mở modal, chờ API lịch sử trả về
+        // thay vì nhầm trạng thái "đang tải" với "không có đấu giá".
+        if (modalAuctionLoadPromise) await modalAuctionLoadPromise;
         if (!modalAuctionHistory || modalAuctionHistory.classList.contains("hidden")) {
             showToast("Tài khoản này chưa có lịch sử đấu giá.", "info");
             return;
         }
-        // Cuộn đúng khung modal, không làm trang phía sau bị nhảy.
-        if (imageModalInner) {
-            const targetTop = imageModalInner.scrollTop
-                + modalAuctionHistory.getBoundingClientRect().top
-                - imageModalInner.getBoundingClientRect().top - 12;
-            imageModalInner.scrollTo({ top: Math.max(0, targetTop), behavior: "smooth" });
-        } else {
-            modalAuctionHistory.scrollIntoView({ behavior: "smooth", block: "start" });
-        }
+        scrollToAuctionHistory();
     });
 }
 
@@ -1217,7 +1227,7 @@ window.openImageModal = function (id, options = {}) {
             modalBidArea.classList.add("hidden");
             modalBidArea.innerHTML = "";
         }
-        apiFetch(`/auctions/${id}`).then(({ auction }) => {
+        modalAuctionLoadPromise = apiFetch(`/auctions/${id}`).then(({ auction }) => {
             if (currentModalItemId !== id) return;
             const maskName = (name) => `${String(name || "").slice(0, 3)}${"*".repeat(Math.max(3, String(name || "").length - 3))}`;
             const currentPrice = auction.highestBid || auction.startPrice;
@@ -1229,9 +1239,10 @@ window.openImageModal = function (id, options = {}) {
                 modalBidArea.classList.remove("hidden");
             }
             if (options.focusAuction) {
-                requestAnimationFrame(() => modalAuctionHistory.scrollIntoView({ behavior: "smooth", block: "start" }));
+                requestAnimationFrame(scrollToAuctionHistory);
             }
-        }).catch(() => {});
+            return true;
+        }).catch(() => false);
     }
 };
 
