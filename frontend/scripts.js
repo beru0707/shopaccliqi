@@ -90,7 +90,6 @@ const inputAdminNote = document.getElementById("acc-admin-note");
 const inputGameUsername = document.getElementById("acc-game-username");
 const inputGamePassword = document.getElementById("acc-game-password");
 const inputAuctionStartPrice = document.getElementById("auction-start-price");
-const inputAuctionBuyNowPrice = document.getElementById("auction-buy-now-price");
 const inputAuctionStartsAt = document.getElementById("auction-starts-at");
 const inputAuctionEndsAt = document.getElementById("auction-ends-at");
 
@@ -755,7 +754,6 @@ window.openEditModal = async function (id) {
         inputGameUsername.value = data.item.gameUsername || "";
         inputGamePassword.value = data.item.gamePassword || "";
         inputAuctionStartPrice.value = data.item.auctionStartPrice || "";
-        inputAuctionBuyNowPrice.value = data.item.auctionBuyNowPrice || "";
         inputAuctionStartsAt.value = data.item.auctionStartsAt ? new Date(data.item.auctionStartsAt).toISOString().slice(0, 16) : "";
         inputAuctionEndsAt.value = data.item.auctionEndsAt ? new Date(data.item.auctionEndsAt).toISOString().slice(0, 16) : "";
         crudError.textContent = "";
@@ -778,7 +776,8 @@ if (accForm) {
         const gameUsername = inputGameUsername.value.trim();
         const gamePassword = inputGamePassword.value.trim();
         const auctionStartPrice = inputAuctionStartPrice.value || null;
-        const auctionBuyNowPrice = inputAuctionBuyNowPrice.value || null;
+        // Giá account cũng là giá mua chốt, không cần nhập một lần nữa.
+        const auctionBuyNowPrice = price || null;
         const auctionStartsAt = inputAuctionStartsAt.value ? new Date(inputAuctionStartsAt.value).toISOString() : null;
         const auctionEndsAt = inputAuctionEndsAt.value ? new Date(inputAuctionEndsAt.value).toISOString() : null;
 
