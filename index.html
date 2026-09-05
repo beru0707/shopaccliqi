@@ -103,6 +103,7 @@
                 <div id="modal-info-title" class="modal-info-title"></div>
                 <div id="modal-info-text" class="modal-info-text"></div>
                 <div id="modal-info-skins" class="skin-list"></div>
+                <div id="modal-auction-history" class="auction-history hidden"></div>
                 <div id="modal-buy-area" class="modal-buy-area">
                     <button type="button" id="modal-buy-btn" class="btn btn-primary modal-buy-btn">🛒 Mua tài khoản này</button>
                     <div id="modal-sold-label" class="sold-label hidden">✅ Tài khoản này đã được bán</div>
@@ -173,6 +174,13 @@
                     <label for="acc-price">Giá (VNĐ) *</label>
                     <input type="number" id="acc-price" required min="0" step="1000" placeholder="Ví dụ: 350000">
                 </div>
+                <fieldset class="auction-settings">
+                    <legend>Thiết lập đấu giá (để trống nếu không đấu giá)</legend>
+                    <div class="form-group"><label for="auction-start-price">Giá khởi điểm (bội số 100đ)</label><input type="number" id="auction-start-price" min="0" step="100"></div>
+                    <div class="form-group"><label for="auction-buy-now-price">Giá mua chốt</label><input type="number" id="auction-buy-now-price" min="0" step="100"></div>
+                    <div class="form-group"><label for="auction-starts-at">Bắt đầu</label><input type="datetime-local" id="auction-starts-at"></div>
+                    <div class="form-group"><label for="auction-ends-at">Kết thúc</label><input type="datetime-local" id="auction-ends-at"></div>
+                </fieldset>
                 <div class="form-group">
                     <label for="acc-image">URL Hình Ảnh *</label>
                     <input type="url" id="acc-image" required placeholder="https://res.cloudinary.com/...">

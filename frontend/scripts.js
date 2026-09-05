@@ -49,6 +49,7 @@ const modalInfoNote = document.getElementById("modal-info-note");
 const modalInfoSkins = document.getElementById("modal-info-skins");
 const modalBuyBtn = document.getElementById("modal-buy-btn");
 const modalSoldLabel = document.getElementById("modal-sold-label");
+const modalAuctionHistory = document.getElementById("modal-auction-history");
 let currentModalItemId = null; // acc đang được xem trong modal, dùng khi bấm "Mua"
 
 // Ví tiền (Wallet)
@@ -84,6 +85,10 @@ const inputSkins = document.getElementById("acc-skins");
 const inputAdminNote = document.getElementById("acc-admin-note");
 const inputGameUsername = document.getElementById("acc-game-username");
 const inputGamePassword = document.getElementById("acc-game-password");
+const inputAuctionStartPrice = document.getElementById("auction-start-price");
+const inputAuctionBuyNowPrice = document.getElementById("auction-buy-now-price");
+const inputAuctionStartsAt = document.getElementById("auction-starts-at");
+const inputAuctionEndsAt = document.getElementById("auction-ends-at");
 
 // Nhập acc từ CSV
 const csvImportModal = document.getElementById("csv-import-modal");
@@ -741,6 +746,10 @@ window.openEditModal = async function (id) {
         inputAdminNote.value = data.item.adminNote || "";
         inputGameUsername.value = data.item.gameUsername || "";
         inputGamePassword.value = data.item.gamePassword || "";
+        inputAuctionStartPrice.value = data.item.auctionStartPrice || "";
+        inputAuctionBuyNowPrice.value = data.item.auctionBuyNowPrice || "";
+        inputAuctionStartsAt.value = data.item.auctionStartsAt ? new Date(data.item.auctionStartsAt).toISOString().slice(0, 16) : "";
+        inputAuctionEndsAt.value = data.item.auctionEndsAt ? new Date(data.item.auctionEndsAt).toISOString().slice(0, 16) : "";
         crudError.textContent = "";
         openCrudModal();
     } catch (err) {
@@ -760,19 +769,23 @@ if (accForm) {
         const adminNote = inputAdminNote.value.trim();
         const gameUsername = inputGameUsername.value.trim();
         const gamePassword = inputGamePassword.value.trim();
+        const auctionStartPrice = inputAuctionStartPrice.value || null;
+        const auctionBuyNowPrice = inputAuctionBuyNowPrice.value || null;
+        const auctionStartsAt = inputAuctionStartsAt.value ? new Date(inputAuctionStartsAt.value).toISOString() : null;
+        const auctionEndsAt = inputAuctionEndsAt.value ? new Date(inputAuctionEndsAt.value).toISOString() : null;
 
         setButtonLoading(crudSubmitBtn, true);
         try {
             if (editingId !== null) {
                 await apiFetch(`/accounts/${editingId}`, {
                     method: "PUT",
-                    body: JSON.stringify({ price, image, info, skins, adminNote, gameUsername, gamePassword }),
+                    body: JSON.stringify({ price, image, info, skins, adminNote, gameUsername, gamePassword, auctionStartPrice, auctionBuyNowPrice, auctionStartsAt, auctionEndsAt }),
                 });
                 showToast("Đã cập nhật acc.", "success");
             } else {
                 await apiFetch("/accounts", {
                     method: "POST",
-                    body: JSON.stringify({ price, image, info, skins, adminNote, gameUsername, gamePassword }),
+                    body: JSON.stringify({ price, image, info, skins, adminNote, gameUsername, gamePassword, auctionStartPrice, auctionBuyNowPrice, auctionStartsAt, auctionEndsAt }),
                 });
                 showToast("Đã thêm acc mới.", "success");
             }
@@ -1164,6 +1177,16 @@ window.openImageModal = function (id) {
     }
 
     modal.classList.add("active");
+    if (modalAuctionHistory) {
+        modalAuctionHistory.classList.add("hidden");
+        modalAuctionHistory.innerHTML = "";
+        apiFetch(`/auctions/${id}`).then(({ auction }) => {
+            if (currentModalItemId !== id) return;
+            const maskName = (name) => `${String(name || "").slice(0, 3)}${"*".repeat(Math.max(3, String(name || "").length - 3))}`;
+            modalAuctionHistory.innerHTML = `<strong>🔨 Lịch sử đấu giá</strong><div class="auction-meta">Khởi điểm: ${formatPrice(auction.startPrice)} · Kết thúc: ${new Date(auction.endsAt).toLocaleString("vi-VN")}</div>${auction.bids.length ? auction.bids.map((bid) => `<div class="auction-bid"><span>${escapeHTML(maskName(bid.username))}</span><b>${formatPrice(bid.amount)}</b><time>${new Date(bid.createdAt).toLocaleString("vi-VN")}</time></div>`).join("") : "<p>Chưa có lượt đấu giá.</p>"}`;
+            modalAuctionHistory.classList.remove("hidden");
+        }).catch(() => {});
+    }
 };
 
 if (modalClose) modalClose.addEventListener("click", closeModal);

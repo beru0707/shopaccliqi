@@ -901,6 +901,12 @@ body {
 .modal-buy-btn {
     width: 100%;
 }
+.auction-settings { border: 1px solid rgba(216,181,104,.3); border-radius: 8px; margin: 16px 0; padding: 12px; }
+.auction-settings legend { color: var(--gold); padding: 0 6px; }
+.auction-history { margin-top: 12px; border-top: 1px solid rgba(216,181,104,.25); padding-top: 10px; font-size: .85rem; }
+.auction-meta { color: var(--ink-muted); margin: 5px 0 8px; }
+.auction-bid { display: grid; grid-template-columns: 1fr auto auto; gap: 10px; padding: 6px 0; border-top: 1px solid rgba(255,255,255,.07); }
+.auction-bid time { color: var(--ink-muted); font-size: .75rem; }
 .sold-label {
     text-align: center;
     background: var(--success-soft);
