@@ -502,8 +502,8 @@ function renderGrid(items, total) {
         const auctionActive = !item.sold && item.auctionStartsAt && item.auctionEndsAt
             && new Date(item.auctionStartsAt) <= new Date() && new Date(item.auctionEndsAt) > new Date();
         const auctionBadgeHTML = auctionActive ? `<span class="auction-card-badge">🔨 Đang đấu giá</span>` : "";
-        const buyBtnHTML = `<button class="btn-card buy-btn" onclick="event.stopPropagation(); openImageModal('${item.id}')">🛒 Mua</button>`;
-        const auctionBtnHTML = `<button class="btn-card auction-btn" onclick="event.stopPropagation(); openAuction('${item.id}')">🔨 Đấu giá</button>`;
+        const buyBtnHTML = item.sold ? "" : `<button class="btn-card buy-btn" onclick="event.stopPropagation(); openImageModal('${item.id}')">🛒 Mua</button>`;
+        const auctionBtnHTML = item.sold ? "" : `<button class="btn-card auction-btn" onclick="event.stopPropagation(); openAuction('${item.id}')">🔨 Đấu giá</button>`;
         const adminActionsHTML = isAdmin
             ? `<button class="btn-card edit-btn" onclick="openEditModal('${item.id}')">Sửa</button>
                <button class="btn-card delete-btn" onclick="deleteStory('${item.id}')">Xóa</button>`
@@ -1327,3 +1327,11 @@ function closeModal() {
 
 updateAuthUI();
 if (grid && pagination) fetchAndRenderAccounts();
+
+// Cập nhật thẻ acc khi một phiên đấu giá trên trang hiện tại vừa hết hạn.
+setInterval(() => {
+    const hasVisibleAuction = currentItems.some((item) => item.auctionStartsAt && item.auctionEndsAt && !item.sold);
+    if (grid && document.visibilityState === "visible" && hasVisibleAuction) {
+        fetchAndRenderAccounts();
+    }
+}, 15_000);
