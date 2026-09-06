@@ -220,8 +220,8 @@ body {
 }
 
 .search-box {
-    flex: 1;
-    max-width: 1200px;
+    flex: 1 1 900px;
+    max-width: none;
     position: relative;
     display: flex;
     align-items: center;
@@ -330,6 +330,8 @@ body {
     transition: background 0.15s ease;
 }
 .admin-menu-item:hover { background: rgba(216, 181, 104, 0.12); }
+.profile-logout-item { color: #ff746d; border-top: 1px solid rgba(255,255,255,.12); margin-top: 2px; }
+.change-password-card { max-width: 430px; }
 
 /* Dropdown sắp xếp theo giá */
 .sort-box select {

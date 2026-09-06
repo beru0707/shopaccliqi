@@ -67,8 +67,10 @@
                 </div>
 
                 <div id="admin-menu-dropdown" class="admin-menu-dropdown hidden">
-                    <button type="button" id="add-acc-btn" class="admin-menu-item">➕ Thêm acc mới</button>
-                    <button type="button" id="manage-users-btn" class="admin-menu-item">👤 Quản lý người dùng</button>
+                    <button type="button" id="add-acc-btn" class="admin-menu-item admin-only-menu-item">➕ Thêm acc mới</button>
+                    <button type="button" id="manage-users-btn" class="admin-menu-item admin-only-menu-item">👤 Quản lý người dùng</button>
+                    <button type="button" id="change-password-btn" class="admin-menu-item profile-menu-item">🔐 Đổi mật khẩu</button>
+                    <button type="button" id="profile-logout-btn" class="admin-menu-item profile-menu-item profile-logout-item">↪ Đăng xuất</button>
                 </div>
             </div>
         </div>
@@ -83,9 +85,6 @@
 
             <div id="auth-actions">
                 <button id="login-btn" class="btn btn-secondary">Đăng Nhập</button>
-                <button id="logout-btn" class="btn-logout hidden">
-                    <span class="logout-icon">↪</span> Đăng xuất
-                </button>
             </div>
         </div>
     </header>
@@ -177,8 +176,7 @@
             loadPageHistory();
 
             // Override logout handler to refresh history view
-            const originalLogout = logoutBtn.onclick;
-            logoutBtn.addEventListener("click", () => {
+            document.getElementById("profile-logout-btn").addEventListener("click", () => {
                 setTimeout(loadPageHistory, 100);
             });
         });

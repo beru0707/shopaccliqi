@@ -38,6 +38,31 @@ const registerError = document.getElementById("register-error");
 const registerSubmitBtn = document.getElementById("register-submit-btn");
 const tabLogin = document.getElementById("tab-login");
 const tabRegister = document.getElementById("tab-register");
+const changePasswordBtn = document.getElementById("change-password-btn");
+const profileLogoutBtn = document.getElementById("profile-logout-btn");
+
+// Dùng chung cho mọi trang có header tài khoản.
+const changePasswordModal = document.createElement("div");
+changePasswordModal.id = "change-password-modal";
+changePasswordModal.className = "modal";
+changePasswordModal.setAttribute("role", "dialog");
+changePasswordModal.setAttribute("aria-hidden", "true");
+changePasswordModal.innerHTML = `
+    <div class="modal-card change-password-card">
+        <button type="button" id="change-password-close" class="modal-close" aria-label="Đóng">&times;</button>
+        <h2>Đổi mật khẩu</h2>
+        <form id="change-password-form">
+            <div class="form-group"><label for="current-password">Mật khẩu hiện tại *</label><input id="current-password" type="password" required autocomplete="current-password"></div>
+            <div class="form-group"><label for="new-password">Mật khẩu mới *</label><input id="new-password" type="password" required minlength="6" autocomplete="new-password" placeholder="Tối thiểu 6 ký tự"></div>
+            <div class="form-group"><label for="new-password-confirm">Nhập lại mật khẩu mới *</label><input id="new-password-confirm" type="password" required minlength="6" autocomplete="new-password"></div>
+            <div id="change-password-error" class="form-error"></div>
+            <div class="form-actions"><button type="submit" id="change-password-submit" class="btn btn-primary" style="width: 100%;">Cập nhật mật khẩu</button></div>
+        </form>
+    </div>`;
+document.body.appendChild(changePasswordModal);
+const changePasswordForm = document.getElementById("change-password-form");
+const changePasswordError = document.getElementById("change-password-error");
+const changePasswordSubmit = document.getElementById("change-password-submit");
 
 // Lightbox (xem ảnh to + thông tin acc)
 const modal = document.getElementById("image-modal");
@@ -192,7 +217,6 @@ function updateAuthUI() {
     
     if (currentUser) {
         loginBtn.classList.add("hidden");
-        logoutBtn.classList.remove("hidden");
         if (userProfileTop) userProfileTop.classList.remove("hidden");
 
         const isAdmin = currentUser.role === "admin";
@@ -201,19 +225,23 @@ function updateAuthUI() {
         if (walletBalanceDisplay) {
             walletBalanceDisplay.textContent = formatPrice(currentUser.balance || 0);
         }
+        if (adminMenuDropdown) {
+            adminMenuDropdown.querySelectorAll(".admin-only-menu-item").forEach((item) => {
+                item.classList.toggle("hidden", !isAdmin);
+            });
+        }
     } else {
         loginBtn.classList.remove("hidden");
-        logoutBtn.classList.add("hidden");
         if (userProfileTop) userProfileTop.classList.add("hidden");
         if (adminMenuDropdown) adminMenuDropdown.classList.add("hidden");
     }
 }
 
-// Bắt sự kiện bấm vào Profile để ẩn/hiện Menu Admin
+// Bấm vào ô tên - số dư để mở menu tài khoản; admin có thêm chức năng quản trị.
 const userProfileTop = document.getElementById("user-profile-top");
 if (userProfileTop && adminMenuDropdown) {
     userProfileTop.addEventListener("click", (e) => {
-        if (currentUser && currentUser.role === "admin") {
+        if (currentUser && !e.target.closest(".profile-menu-item")) {
             e.stopPropagation();
             adminMenuDropdown.classList.toggle("hidden");
         }
@@ -279,7 +307,7 @@ loginForm.addEventListener("submit", async (e) => {
         applySession(data.token, data.user);
         closeLoginModal();
         showToast(`Xin chào, ${data.user.username}!`, "success");
-        fetchAndRenderAccounts();
+        if (grid && pagination) fetchAndRenderAccounts();
     } catch (err) {
         loginError.textContent = err.message;
     } finally {
@@ -308,7 +336,7 @@ registerForm.addEventListener("submit", async (e) => {
         applySession(data.token, data.user);
         closeLoginModal();
         showToast(`Tạo tài khoản thành công! Chào mừng ${data.user.username}.`, "success");
-        fetchAndRenderAccounts();
+        if (grid && pagination) fetchAndRenderAccounts();
     } catch (err) {
         registerError.textContent = err.message;
     } finally {
@@ -324,14 +352,56 @@ function applySession(token, user) {
     updateAuthUI();
 }
 
-logoutBtn.addEventListener("click", () => {
+function logout() {
     authToken = null;
     currentUser = null;
     localStorage.removeItem("authToken");
     localStorage.removeItem("currentUser");
     updateAuthUI();
     showToast("Đã đăng xuất.", "info");
-    fetchAndRenderAccounts();
+    if (grid && pagination) fetchAndRenderAccounts();
+}
+
+if (logoutBtn) logoutBtn.addEventListener("click", logout);
+if (profileLogoutBtn) profileLogoutBtn.addEventListener("click", logout);
+
+function closeChangePasswordModal() {
+    changePasswordModal.classList.remove("active");
+    changePasswordForm.reset();
+    changePasswordError.textContent = "";
+}
+
+if (changePasswordBtn) changePasswordBtn.addEventListener("click", () => {
+    if (!currentUser) return;
+    if (adminMenuDropdown) adminMenuDropdown.classList.add("hidden");
+    changePasswordModal.classList.add("active");
+    document.getElementById("current-password").focus();
+});
+
+document.getElementById("change-password-close").addEventListener("click", closeChangePasswordModal);
+changePasswordForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    changePasswordError.textContent = "";
+    const currentPassword = document.getElementById("current-password").value;
+    const newPassword = document.getElementById("new-password").value;
+    const confirmPassword = document.getElementById("new-password-confirm").value;
+    if (newPassword !== confirmPassword) {
+        changePasswordError.textContent = "Mật khẩu mới nhập lại không khớp.";
+        return;
+    }
+    setButtonLoading(changePasswordSubmit, true);
+    try {
+        const data = await apiFetch("/auth/change-password", {
+            method: "POST",
+            body: JSON.stringify({ currentPassword, newPassword }),
+        });
+        closeChangePasswordModal();
+        showToast(data.message || "Đổi mật khẩu thành công.", "success");
+    } catch (err) {
+        changePasswordError.textContent = err.message;
+    } finally {
+        setButtonLoading(changePasswordSubmit, false, "Cập nhật mật khẩu");
+    }
 });
 
 // ================= SKELETON LOADING =================
@@ -542,30 +612,6 @@ if (search && searchHints) {
         if (!e.target.closest('.search-box')) {
             searchHints.classList.add('hidden');
         }
-    });
-}
-
-// ================= MENU TÍNH NĂNG ADMIN (gộp 1 nút) =================
-
-if (userDisplay && adminMenuDropdown) {
-    userDisplay.addEventListener("click", (e) => {
-        if (currentUser && currentUser.role === "admin") {
-            e.stopPropagation();
-            adminMenuDropdown.classList.toggle("hidden");
-        }
-    });
-
-    document.addEventListener("click", (e) => {
-        if (userInfo && !userInfo.contains(e.target)) {
-            adminMenuDropdown.classList.add("hidden");
-        }
-    });
-
-    // Đóng menu sau khi chọn 1 mục bất kỳ
-    adminMenuDropdown.querySelectorAll(".admin-menu-item").forEach((item) => {
-        item.addEventListener("click", () => {
-            adminMenuDropdown.classList.add("hidden");
-        });
     });
 }
 
@@ -1255,6 +1301,7 @@ window.addEventListener("click", (e) => {
     if (e.target === csvImportModal) closeCsvImportModal();
     if (e.target === walletModal) closeWalletModal();
     if (e.target === historyModal) historyModal.classList.remove("active");
+    if (e.target === changePasswordModal) closeChangePasswordModal();
 });
 
 document.addEventListener("keydown", (e) => {
@@ -1268,6 +1315,7 @@ document.addEventListener("keydown", (e) => {
         historyModal.classList.remove("active");
         if (searchHints) searchHints.classList.add("hidden");
         if (adminMenuDropdown) adminMenuDropdown.classList.add("hidden");
+        closeChangePasswordModal();
     }
 });
 
@@ -1278,4 +1326,4 @@ function closeModal() {
 // ================= KHỞI TẠO =================
 
 updateAuthUI();
-fetchAndRenderAccounts();
+if (grid && pagination) fetchAndRenderAccounts();
