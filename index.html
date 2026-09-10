@@ -7,10 +7,10 @@
     <meta name="description" content="Shop acc liqi - Duyệt và xem tài khoản game.">
     <title>Shop Acc Liqi</title>
 
-    <link rel="icon" type="image/png" href="https://res.cloudinary.com/zv0jlmxj/image/upload/v1787241826/96477251-8c82-4f3f-a032-8719e420fb94.png">
+    <link rel="icon" type="image/png" href="https://res.cloudinary.com/zv0jlmxj/image/upload/r_max/v1787241826/96477251-8c82-4f3f-a032-8719e420fb94.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Spectral:ital,wght@0,600;0,700;1,600;1,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Spectral:ital,wght@0,600;0,700;1,600;1,700&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="frontend/style.css">
 </head>
@@ -26,12 +26,15 @@
             <button type="button" id="mobile-menu-btn" class="mobile-menu-btn" aria-label="Mở menu điều hướng" aria-expanded="false" aria-controls="main-nav">
                 <span></span><span></span><span></span>
             </button>
+            <a href="index.html" class="top-bar-logo" aria-label="Trang chủ">
+                <img class="logo" src="https://res.cloudinary.com/zv0jlmxj/image/upload/v1788875838/ChatGPT_Image_20_55_41_8_thg_9_2026.png" alt="Logo">
+            </a>
             <nav id="main-nav" class="nav-links">
                 <a href="index.html" class="nav-item active">Trang chủ</a>
                 <a href="frontend/lichsumuanick.html" class="nav-item">Lịch sử mua nick</a>
                 <a href="frontend/naptien.html" class="nav-item">Nạp tiền</a>
                 <a href="frontend/baiviet.html" class="nav-item">Bài viết hướng dẫn</a>
-                <a href="frontend/lienhe.html" class="nav-item">Liên hệ</a>
+                <a href="frontend/lienhe.html" class="nav-item">Thông tin liên hệ</a>
             </nav>
 
             <!-- Profile hiển thị thông tin user / admin góc phải tầng 1 -->
@@ -56,7 +59,7 @@
         <!-- Tầng 2: Search Bar & Action -->
         <div class="main-bar">
             <div class="brand-logo">
-                <img class="logo" src="https://res.cloudinary.com/zv0jlmxj/image/upload/v1787241826/96477251-8c82-4f3f-a032-8719e420fb94.png" alt="Logo">
+                <img class="logo" src="https://res.cloudinary.com/zv0jlmxj/image/upload/v1788875838/ChatGPT_Image_20_55_41_8_thg_9_2026.png" alt="Logo">
             </div>
 
             <div class="search-box">
@@ -74,6 +77,14 @@
                         <p class="search-hint-desc">Nhập giá tiền, ví dụ: <em>1x(10k-19k) 1xx(100-199k)</em></p>
                     </div>
                 </div>
+            </div>
+
+            <div class="sort-box">
+                <select id="sort-select">
+                    <option value="">Mới nhất</option>
+                    <option value="price_asc">Giá tăng dần</option>
+                    <option value="price_desc">Giá giảm dần</option>
+                </select>
             </div>
 
             <div id="auth-actions">
@@ -99,7 +110,7 @@
                 <div id="modal-info-note" class="modal-note-tag hidden"></div>
             </div>
             <div id="modal-info-panel" class="modal-info-panel">
-                <button type="button" id="modal-scroll-hint" class="modal-scroll-hint" aria-controls="modal-auction-history">↓ Kéo xuống để đấu giá và xem danh sách</button>
+                <button type="button" id="modal-scroll-hint" class="modal-scroll-hint" aria-controls="modal-auction-history">↓ Kéo xuống để mua hoặc đấu giá</button>
                 <div id="modal-info-title" class="modal-info-title"></div>
                 <div id="modal-info-text" class="modal-info-text"></div>
                 <div id="modal-info-skins" class="skin-list"></div>

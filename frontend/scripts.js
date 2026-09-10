@@ -1,4 +1,4 @@
-const ITEMS_PER_PAGE = 16;
+const ITEMS_PER_PAGE = 8;
 const SEARCH_DEBOUNCE_MS = 350;
 
 let currentPage = 1;
@@ -612,6 +612,15 @@ if (search && searchHints) {
         if (!e.target.closest('.search-box')) {
             searchHints.classList.add('hidden');
         }
+    });
+}
+
+//sort acc price
+if (sortSelect) {
+    sortSelect.addEventListener("change", () => {
+        currentSort = sortSelect.value;
+        currentPage = 1;
+        fetchAndRenderAccounts();
     });
 }
 
