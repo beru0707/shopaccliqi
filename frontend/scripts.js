@@ -19,6 +19,7 @@ const pagination = document.getElementById("pagination");
 const search = document.getElementById("search");
 const searchHints = document.getElementById("search-hints");
 const sortSelect = document.getElementById("sort-select");
+const sortSelectMobile = document.getElementById("sort-select-mobile");
 const toastContainer = document.getElementById("toast-container");
 const mobileMenuBtn = document.getElementById("mobile-menu-btn");
 const mainNav = document.getElementById("main-nav");
@@ -616,12 +617,23 @@ if (search && searchHints) {
 }
 
 //sort acc price
+function handleSortChange(e) {
+    const selectedValue = e.target.value;
+    
+    // Đồng bộ giá trị giữa 2 thẻ select PC & Mobile
+    if (sortSelect) sortSelect.value = selectedValue;
+    if (sortSelectMobile) sortSelectMobile.value = selectedValue;
+
+    currentSort = selectedValue;
+    currentPage = 1;
+    fetchAndRenderAccounts();
+}
+
 if (sortSelect) {
-    sortSelect.addEventListener("change", () => {
-        currentSort = sortSelect.value;
-        currentPage = 1;
-        fetchAndRenderAccounts();
-    });
+    sortSelect.addEventListener("change", handleSortChange);
+}
+if (sortSelectMobile) {
+    sortSelectMobile.addEventListener("change", handleSortChange);
 }
 
 // ================= CRUD ACC (chỉ admin) =================

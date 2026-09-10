@@ -26,9 +26,19 @@
             <button type="button" id="mobile-menu-btn" class="mobile-menu-btn" aria-label="Mở menu điều hướng" aria-expanded="false" aria-controls="main-nav">
                 <span></span><span></span><span></span>
             </button>
+
             <a href="index.html" class="top-bar-logo" aria-label="Trang chủ">
                 <img class="logo" src="https://res.cloudinary.com/zv0jlmxj/image/upload/v1788875838/ChatGPT_Image_20_55_41_8_thg_9_2026.png" alt="Logo">
             </a>
+
+            <div class="sort-box sort-box-mobile">
+                <select id="sort-select-mobile">
+                    <option value="">Mới nhất</option>
+                    <option value="price_asc">Giá tăng dần</option>
+                    <option value="price_desc">Giá giảm dần</option>
+                </select>
+            </div>
+
             <nav id="main-nav" class="nav-links">
                 <a href="index.html" class="nav-item active">Trang chủ</a>
                 <a href="frontend/lichsumuanick.html" class="nav-item">Lịch sử mua nick</a>
@@ -36,6 +46,10 @@
                 <a href="frontend/baiviet.html" class="nav-item">Bài viết hướng dẫn</a>
                 <a href="frontend/lienhe.html" class="nav-item">Thông tin liên hệ</a>
             </nav>
+
+            <div id="auth-actions">
+                <button id="login-btn" class="btn btn-secondary">Đăng Nhập</button>
+            </div>
 
             <!-- Profile hiển thị thông tin user / admin góc phải tầng 1 -->
             <div id="user-profile-top" class="user-profile-top hidden">
@@ -79,17 +93,13 @@
                 </div>
             </div>
 
-            <div class="sort-box">
-                <select id="sort-select">
-                    <option value="">Mới nhất</option>
-                    <option value="price_asc">Giá tăng dần</option>
-                    <option value="price_desc">Giá giảm dần</option>
-                </select>
-            </div>
-
-            <div id="auth-actions">
-                <button id="login-btn" class="btn btn-secondary">Đăng Nhập</button>
-            </div>
+            <div class="sort-box sort-box-pc">
+            <select id="sort-select">
+                <option value="">Mới nhất</option>
+                <option value="price_asc">Giá tăng dần</option>
+                <option value="price_desc">Giá giảm dần</option>
+            </select>
+        </div>
         </div>
     </header>
 

@@ -1929,6 +1929,17 @@ body {
     .grid { grid-template-columns: repeat(2, 1fr); gap: 20px; }
 }
 
+/* --- HIỂN THỊ TRÊN PC (> 768px) --- */
+@media (min-width: 769px) {
+    .sort-box-mobile {
+        display: none !important;
+    }
+    .sort-box-pc {
+        display: block !important;
+    }
+}
+
+/* --- HIỂN THỊ TRÊN MOBILE (<= 768px) --- */
 @media (max-width: 768px) {
     .top-bar {
         position: relative;
@@ -1938,6 +1949,32 @@ body {
         padding: 10px 16px;
         min-height: 58px;
     }
+
+    /* Ẩn ô sắp xếp Tầng 2, Hiện ô sắp xếp Tầng 1 lệch sang trái */
+    .sort-box-pc {
+        display: none !important;
+    }
+
+    .sort-box-mobile {
+        display: flex !important;
+        position: absolute;
+        left: 36%; /* Vị trí lệch sang trái (chỉnh từ 32% - 40% tùy ý) */
+        top: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 5;
+    }
+
+    .sort-box-mobile select {
+        padding: 5px 26px 5px 10px;
+        font-size: 0.78rem;
+        border-radius: var(--radius-pill);
+        background-position: right 8px center;
+    }
+
+    .top-bar-logo {
+        display: none !important;
+    }
+
     .mobile-menu-btn {
         display: block;
         flex: 0 0 auto;
@@ -1947,32 +1984,6 @@ body {
     .mobile-menu-btn.active span:nth-child(2) { opacity: 0; }
     .mobile-menu-btn.active span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
-    /* Logo nằm chính giữa cùng hàng với thanh 3 ngang và tài khoản số dư */
-    .top-bar-logo {
-        display: flex;
-        position: absolute;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
-        z-index: 2;
-        max-width: 55vw;      /* tránh đè lên logo/user-profile 2 bên trên màn hình rất nhỏ */
-        text-decoration: none;
-        align-items: center;
-        justify-content: center;
-    }
-    .top-bar-logo .logo {
-        width: 170px;
-        height: auto;
-        aspect-ratio: 2170 / 725;   /* giữ đúng tỉ lệ ảnh gốc, không bị méo */
-        object-fit: contain;
-        filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.45));
-        transition: transform 0.2s ease;
-    }
-    .top-bar-logo:hover .logo {
-        transform: scale(1.08);
-    }
-
-    /* Tài khoản & Số dư nằm sát bên phải cùng hàng */
     .user-profile-top {
         margin-left: auto;
         flex: 0 0 auto;
@@ -2019,7 +2030,6 @@ body {
         border-radius: var(--radius-sm);
     }
 
-    /* Ẩn logo ở tầng 2 khi trên mobile để logo tập trung ở tầng 1 */
     .main-bar .brand-logo {
         display: none;
     }
@@ -2037,7 +2047,7 @@ body {
         position: absolute;
         top: 0;
         right: 16px;
-        height: 58px;           /* khớp min-height của .top-bar */
+        height: 58px;
         display: flex;
         align-items: center;
         z-index: 3;
@@ -2050,47 +2060,14 @@ body {
         white-space: nowrap;
     }
 
-    .topup-grid {
-        grid-template-columns: 1fr;
-    }
-
+    .topup-grid { grid-template-columns: 1fr; }
     .grid { grid-template-columns: 1fr; }
-    
-    .history-item {
-        grid-template-columns: 120px minmax(0, 1fr);
-    }
-    .purchase-login-details {
-        grid-column: 1 / -1;
-    }
+    .history-item { grid-template-columns: 120px minmax(0, 1fr); }
+    .purchase-login-details { grid-column: 1 / -1; }
     
     .total-accounts-badge {
         bottom: 16px;
         left: 16px;
         font-size: 0.8rem;
-    }
-}
-
-@media (max-width: 480px) {
-    .history-item {
-        grid-template-columns: 1fr;
-    }
-    .history-item img {
-        width: 100%;
-        height: auto;
-        max-height: 180px;
-    }
-    .purchase-login-details {
-        grid-column: auto;
-    }
-    .purchase-login-row {
-        grid-template-columns: 1fr auto;
-    }
-    .purchase-login-row code {
-        grid-column: 1 / -1;
-        grid-row: 2;
-    }
-    .purchase-login-row .copy-credential-btn {
-        grid-column: 2;
-        grid-row: 1;
     }
 }
