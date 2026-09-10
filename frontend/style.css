@@ -2034,10 +2034,20 @@ body {
         flex: 1 1 auto;
     }
     #auth-actions {
-        width: 100%;
+        position: absolute;
+        top: 0;
+        right: 16px;
+        height: 58px;           /* khớp min-height của .top-bar */
+        display: flex;
+        align-items: center;
+        z-index: 3;
+        width: auto;
     }
     #auth-actions button {
-        width: 100%;
+        width: auto;
+        padding: 8px 16px;
+        font-size: 0.82rem;
+        white-space: nowrap;
     }
 
     .topup-grid {
