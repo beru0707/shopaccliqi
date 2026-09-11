@@ -1726,6 +1726,7 @@ body {
     gap: 6px;
     min-width: 0;
 }
+.sold-history-content { display: contents; }
 .history-date {
     font-size: 0.78rem;
     color: var(--ink-muted);
@@ -2007,7 +2008,7 @@ body {
     .sort-box-mobile {
         display: flex !important;
         position: absolute;
-        left: 34%; /* Vị trí lệch sang trái (chỉnh từ 32% - 40% tùy ý) */
+        left: 33%; /* Vị trí lệch sang trái (chỉnh từ 32% - 40% tùy ý) */
         top: 50%;
         transform: translate(-50%, -50%);
         z-index: 5;
@@ -2129,6 +2130,110 @@ body {
         grid-column: 1 / -1; 
         width: 100%;
         box-sizing: border-box;
+    }
+    /* Trang acc đã bán: bố cục mobile riêng - ảnh+giờ bán cùng hàng, giá lớn có gạch chia, khung người mua bo viền vàng bên dưới. */
+    .sold-history-item {
+        display: grid;
+        grid-template-columns: 128px minmax(0, 1fr);
+        grid-template-areas:
+            "image time"
+            "price price"
+            "buyer buyer";
+        column-gap: 16px;
+        row-gap: 14px;
+        padding: 18px;
+    }
+    .sold-history-item .history-image-button {
+        grid-area: image;
+        width: 100%;
+        height: 70%;
+    }
+    .sold-history-item .history-image-button img {
+        width: 100%;
+        height: 100%;
+        aspect-ratio: 1 / 1;
+    }
+    /* "Mở khóa" khối info để price và date trở thành ô lưới riêng biệt */
+    .sold-history-item .history-item-info {
+        display: contents;
+    }
+    .sold-history-item .card-info-text { display: none; }
+
+    .sold-history-item .history-date.sold-date-panel {
+        grid-area: time;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 8px;
+    }
+    .sold-history-item .sold-date-label {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        color: var(--ink-muted);
+        font-size: 0.8rem;
+    }
+    .sold-history-item .history-date.sold-date-panel strong {
+        font-family: var(--font-body);
+        font-size: 1.55rem;
+        font-weight: 800;
+        color: var(--ink);
+        letter-spacing: 0.3px;
+    }
+    .sold-history-item .sold-date-value {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        color: var(--ink-muted);
+        font-size: 0.8rem;
+    }
+
+    .sold-history-item .price {
+        grid-area: price;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 2.1rem;
+        padding-top: 14px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .sold-history-item .price::before {
+        content: "🪙";
+        font-size: 1.5rem;
+        color: var(--gold-light);
+        -webkit-text-fill-color: var(--gold-light);
+        background: none;
+        -webkit-background-clip: initial;
+        filter: none;
+    }
+
+    .sold-history-item .sold-history-content { display: contents; }
+    .sold-history-item .purchase-login-details {
+        grid-area: buyer;
+        width: 100%;
+        box-sizing: border-box;
+        padding: 14px 16px;
+        border: 1px solid rgba(245, 158, 11, 0.55);
+        border-radius: var(--radius);
+        background: rgba(245, 158, 11, 0.06);
+    }
+    .sold-history-item .purchase-login-details strong {
+        font-size: 0.92rem;
+    }
+    .sold-history-item .purchase-login-row span {
+        color: var(--gold-light);
+        font-weight: 700;
+        font-size: 1.05rem;
+    }
+    .sold-history-item .purchase-login-row code {
+        display: block;
+        width: 100%;
+        margin-top: 2px;
+        padding: 12px 14px;
+        border-radius: var(--radius-sm);
+        background: rgba(0, 0, 0, 0.35);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        font-size: 0.95rem;
     }
 
     /* Chuyển các phần tử (Nhãn, Tài khoản/Mật khẩu, Nút) thành dải cột dọc */

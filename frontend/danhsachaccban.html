@@ -142,23 +142,31 @@
                 return;
             }
             soldList.innerHTML = items.map((item) => {
-                const date = item.purchasedAt ? new Date(item.purchasedAt).toLocaleString("vi-VN") : "";
-                return `<article class="history-item">
+                const soldAt = item.purchasedAt ? new Date(item.purchasedAt) : null;
+                const soldTime = soldAt ? soldAt.toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit", second: "2-digit" }) : "";
+                const soldDate = soldAt ? soldAt.toLocaleDateString("vi-VN") : "";
+                return `<article class="history-item sold-history-item">
                     <button type="button" class="history-image-button" data-preview-image="${escapeAttr(item.image)}" aria-label="Phóng to ảnh acc">
                         <img src="${escapeAttr(item.image)}" alt="Acc đã bán giá ${escapeAttr(formatPrice(item.price))}">
                     </button>
                     <div class="history-item-info">
                         <div class="price">${formatPrice(item.price)}</div>
                         ${item.info ? `<p class="card-info-text">${escapeHTML(item.info)}</p>` : ""}
-                        <span class="history-date">Bán lúc: ${date}</span>
-                    </div>
-                    <aside class="purchase-login-details" aria-label="Thông tin người mua">
-                        <strong>👤 Người mua</strong>
-                        <div class="purchase-login-row">
-                            <span>Username</span>
-                            <code>${escapeHTML(item.buyerUsername || "***")}</code>
+                        <div class="history-date sold-date-panel">
+                            <span class="sold-date-label">⏱️ Bán lúc:</span>
+                            <strong>${soldTime}</strong>
+                            <span class="sold-date-value">📅 ${soldDate}</span>
                         </div>
-                    </aside>
+                    </div>
+                    <div class="sold-history-content">
+                        <aside class="purchase-login-details" aria-label="Thông tin người mua">
+                            <strong>👤 Người mua</strong>
+                            <div class="purchase-login-row">
+                                <span>Username</span>
+                                <code>${escapeHTML(item.buyerUsername || "***")}</code>
+                            </div>
+                        </aside>
+                    </div>
                 </article>`;
             }).join("");
         }
