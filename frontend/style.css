@@ -2007,7 +2007,7 @@ body {
     .sort-box-mobile {
         display: flex !important;
         position: absolute;
-        left: 32%; /* Vị trí lệch sang trái (chỉnh từ 32% - 40% tùy ý) */
+        left: 34%; /* Vị trí lệch sang trái (chỉnh từ 32% - 40% tùy ý) */
         top: 50%;
         transform: translate(-50%, -50%);
         z-index: 5;
