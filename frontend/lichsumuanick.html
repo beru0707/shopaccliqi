@@ -42,22 +42,22 @@
 </head>
 
 <body>
-
     <div id="toast-container" aria-live="polite"></div>
 
     <header class="site-header">
-        <!-- Tầng 1: Navigation Top Bar -->
         <div class="top-bar">
             <button type="button" id="mobile-menu-btn" class="mobile-menu-btn" aria-label="Mở menu điều hướng" aria-expanded="false" aria-controls="main-nav">
                 <span></span><span></span><span></span>
             </button>
+            
             <a href="../index.html" class="top-bar-logo" aria-label="Trang chủ">
                 <img class="logo" src="https://res.cloudinary.com/zv0jlmxj/image/upload/v1788875838/ChatGPT_Image_20_55_41_8_thg_9_2026.png" alt="Logo">
             </a>
             <nav id="main-nav" class="nav-links">
                 <a href="../index.html" class="nav-item">Trang chủ</a>
-                <a href="lichsumuanick.html" class="nav-item active">Lịch sử mua nick</a>
+                <a href="danhsachaccban.html" class="nav-item">Danh sách acc bay</a>
                 <a href="naptien.html" class="nav-item">Nạp tiền</a>
+                <a href="lichsumuanick.html" class="nav-item active">Lịch sử mua nick</a>
                 <a href="baiviet.html" class="nav-item">Bài viết hướng dẫn</a>
                 <a href="lienhe.html" class="nav-item">Liên hệ</a>
             </nav>
@@ -93,52 +93,6 @@
         </div>
     </main>
 
-    <!-- Modal Đăng Nhập / Đăng Ký -->
-    <div id="login-modal" class="modal" role="dialog" aria-hidden="true">
-        <div class="modal-card">
-            <span id="login-modal-close" class="modal-close">&times;</span>
-
-            <div class="auth-tabs">
-                <button type="button" id="tab-login" class="auth-tab active">Đăng nhập</button>
-                <button type="button" id="tab-register" class="auth-tab">Đăng ký</button>
-            </div>
-
-            <form id="login-form">
-                <div class="form-group">
-                    <label for="username">Tên đăng nhập *</label>
-                    <input type="text" id="username" required placeholder="Nhập tên tài khoản">
-                </div>
-                <div class="form-group">
-                    <label for="password">Mật khẩu *</label>
-                    <input type="password" id="password" required placeholder="Nhập mật khẩu">
-                </div>
-                <div id="login-error" class="form-error"></div>
-                <div class="form-actions">
-                    <button type="submit" id="login-submit-btn" class="btn btn-primary" style="width: 100%;">Đăng nhập</button>
-                </div>
-            </form>
-
-            <form id="register-form" class="hidden">
-                <div class="form-group">
-                    <label for="reg-username">Tên đăng nhập *</label>
-                    <input type="text" id="reg-username" required placeholder="Chọn tên đăng nhập">
-                </div>
-                <div class="form-group">
-                    <label for="reg-password">Mật khẩu *</label>
-                    <input type="password" id="reg-password" required placeholder="Tối thiểu 6 ký tự" minlength="6">
-                </div>
-                <div class="form-group">
-                    <label for="reg-password-confirm">Nhập lại mật khẩu *</label>
-                    <input type="password" id="reg-password-confirm" required placeholder="Nhập lại mật khẩu" minlength="6">
-                </div>
-                <div id="register-error" class="form-error"></div>
-                <div class="form-actions">
-                    <button type="submit" id="register-submit-btn" class="btn btn-primary" style="width: 100%;">Tạo tài khoản</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
     <script src="config.js"></script>
     <script src="scripts.js"></script>
     <script>
@@ -168,9 +122,6 @@
             }
 
             loadPageHistory();
-            // Sau khi phiên đấu giá kết thúc, đơn mua được tạo tự động ở backend.
-            // Làm mới nhẹ để người thắng nhìn thấy acc mà không cần tải lại trang.
-            setInterval(loadPageHistory, 15000);
 
             // Override logout handler to refresh history view
             document.getElementById("profile-logout-btn").addEventListener("click", () => {

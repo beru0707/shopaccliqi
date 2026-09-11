@@ -8,6 +8,7 @@ let totalPages = 1;
 let editingId = null;
 let searchDebounceTimer = null;
 let currentItems = []; // danh sách acc đang hiển thị, dùng để modal "Xem" tra cứu thông tin
+let isPlacingBid = false;
 
 // Token + user hiện tại lấy từ localStorage
 let authToken = localStorage.getItem("authToken") || null;
@@ -81,6 +82,8 @@ const modalScrollHint = document.getElementById("modal-scroll-hint");
 const imageModalInner = document.getElementById("image-modal-inner");
 let currentModalItemId = null; // acc đang được xem trong modal, dùng khi bấm "Mua"
 let modalAuctionLoadPromise = null;
+let auctionPollingTimer = null;
+let auctionPollInFlight = false;
 
 // Ví tiền (Wallet)
 const walletBtn = document.getElementById("wallet-btn");
@@ -256,6 +259,7 @@ if (userProfileTop && adminMenuDropdown) {
 }
 
 function switchAuthTab(tab) {
+    if (!tabLogin || !tabRegister || !loginForm || !registerForm) return;
     const isLogin = tab === "login";
     tabLogin.classList.toggle("active", isLogin);
     tabRegister.classList.toggle("active", !isLogin);
@@ -265,17 +269,19 @@ function switchAuthTab(tab) {
     registerError.textContent = "";
 }
 
-tabLogin.addEventListener("click", () => switchAuthTab("login"));
-tabRegister.addEventListener("click", () => switchAuthTab("register"));
+if (tabLogin) tabLogin.addEventListener("click", () => switchAuthTab("login"));
+if (tabRegister) tabRegister.addEventListener("click", () => switchAuthTab("register"));
 
-loginBtn.addEventListener("click", () => {
-    switchAuthTab("login");
-    loginModal.classList.add("active");
-});
+function goToLoginPage() {
+    window.location.href = window.location.pathname.includes("/frontend/") ? "dangnhap.html" : "frontend/dangnhap.html";
+}
 
-loginModalClose.addEventListener("click", closeLoginModal);
+if (loginBtn) loginBtn.addEventListener("click", goToLoginPage);
+
+if (loginModalClose) loginModalClose.addEventListener("click", closeLoginModal);
 
 function closeLoginModal() {
+    if (!loginModal || !loginForm || !registerForm) return;
     loginModal.classList.remove("active");
     loginForm.reset();
     registerForm.reset();
@@ -288,7 +294,7 @@ function setButtonLoading(btn, loading, label) {
     btn.innerHTML = loading ? `<span class="spinner"></span>Đang xử lý...` : label;
 }
 
-loginForm.addEventListener("submit", async (e) => {
+if (loginForm) loginForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     loginError.textContent = "";
     const username = document.getElementById("username").value.trim();
@@ -316,7 +322,7 @@ loginForm.addEventListener("submit", async (e) => {
     }
 });
 
-registerForm.addEventListener("submit", async (e) => {
+if (registerForm) registerForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     registerError.textContent = "";
     const username = document.getElementById("reg-username").value.trim();
@@ -574,8 +580,17 @@ function renderPagination() {
     };
 
     pagination.appendChild(makeBtn("‹", currentPage - 1, { disabled: currentPage <= 1 }));
-    for (let i = 1; i <= totalPages; i++) {
+    const visiblePages = Math.min(3, totalPages);
+    for (let i = 1; i <= visiblePages; i++) {
         pagination.appendChild(makeBtn(String(i), i, { active: i === currentPage }));
+    }
+    if (totalPages > 3) {
+        const ellipsis = document.createElement("span");
+        ellipsis.className = "pagination-ellipsis";
+        ellipsis.textContent = "…";
+        ellipsis.setAttribute("aria-hidden", "true");
+        pagination.appendChild(ellipsis);
+        pagination.appendChild(makeBtn(String(totalPages), totalPages, { active: currentPage === totalPages }));
     }
     pagination.appendChild(makeBtn("›", currentPage + 1, { disabled: currentPage >= totalPages }));
 }
@@ -896,8 +911,7 @@ window.buyAccountById = async function (id) {
         // Chưa đăng nhập -> mở form đăng nhập trước
         if (!currentUser) {
             closeModal();
-            switchAuthTab("login");
-            loginModal.classList.add("active");
+            goToLoginPage();
             showToast("Vui lòng đăng nhập để mua tài khoản.", "info");
             return;
         }
@@ -935,28 +949,104 @@ window.openAuction = async function (id) {
     window.openImageModal(id, { focusAuction: true });
 };
 
+function renderAuctionHistory(auction) {
+    if (!modalAuctionHistory) return;
+    const maskName = (name) => `${String(name || "").slice(0, 3)}${"*".repeat(Math.max(3, String(name || "").length - 3))}`;
+    const currentPrice = auction.highestBid || auction.startPrice;
+    modalAuctionHistory.innerHTML = `<strong>🔨 Lịch sử đấu giá</strong><div class="auction-meta">Giá hiện tại: <b>${formatPrice(currentPrice)}</b> · Kết thúc: ${new Date(auction.endsAt).toLocaleString("vi-VN")}</div>${auction.bids.length ? auction.bids.map((bid) => `<div class="auction-bid"><span>${escapeHTML(maskName(bid.username))}</span><b>${formatPrice(bid.amount)}</b><time>${new Date(bid.createdAt).toLocaleString("vi-VN")}</time></div>`).join("") : "<p>Chưa có lượt đấu giá.</p>"}`;
+    modalAuctionHistory.classList.remove("hidden");
+}
+
+function updateAuctionBidArea(auction, reset = false) {
+    if (!modalBidArea) return;
+    const currentPrice = auction.highestBid || auction.startPrice;
+    const minimum = currentPrice + (auction.highestBid ? 100 : 0);
+    const bidInput = document.getElementById("modal-bid-input");
+    if (!auction.active) {
+        modalBidArea.classList.add("hidden");
+        return;
+    }
+    if (reset || !bidInput) {
+        modalBidArea.innerHTML = `<label for="modal-bid-input">Đặt giá của bạn (tối thiểu ${formatPrice(minimum)})</label><div class="modal-bid-form"><input id="modal-bid-input" type="number" min="${minimum}" step="100" value="${minimum}"><button id="modal-bid-submit" type="button" class="btn btn-primary" onclick="placeBidFromModal('${auction.accountId}')">Đặt giá</button></div><p id="modal-bid-status" class="modal-bid-status" aria-live="polite"></p>`;
+    } else {
+        bidInput.min = String(minimum);
+        const bidLabel = modalBidArea.querySelector("label");
+        if (bidLabel) bidLabel.textContent = `Đặt giá của bạn (tối thiểu ${formatPrice(minimum)})`;
+    }
+    modalBidArea.classList.remove("hidden");
+}
+
+function stopAuctionPolling() {
+    if (auctionPollingTimer) clearTimeout(auctionPollingTimer);
+    auctionPollingTimer = null;
+}
+
+function scheduleAuctionPolling(accountId, endsAt) {
+    stopAuctionPolling();
+    if (!modal?.classList.contains("active") || currentModalItemId !== accountId) return;
+    const remainingMs = new Date(endsAt).getTime() - Date.now();
+    const delay = remainingMs <= 30_000 ? 5_000 : Math.min(60_000, Math.max(1_000, remainingMs - 30_000));
+    auctionPollingTimer = setTimeout(() => pollAuction(accountId), delay);
+}
+
+async function pollAuction(accountId) {
+    if (auctionPollInFlight || document.visibilityState !== "visible" || currentModalItemId !== accountId || !modal?.classList.contains("active")) return;
+    auctionPollInFlight = true;
+    try {
+        const { auction } = await apiFetch(`/auctions/${accountId}`);
+        if (currentModalItemId !== accountId) return;
+        renderAuctionHistory(auction);
+        updateAuctionBidArea(auction);
+        if (auction.active) scheduleAuctionPolling(accountId, auction.endsAt);
+    } catch (_) {
+        // Lỗi mạng tạm thời: thử lại theo nhịp bình thường, không làm gián đoạn modal.
+        scheduleAuctionPolling(accountId, new Date(Date.now() + 60_000).toISOString());
+    } finally {
+        auctionPollInFlight = false;
+    }
+}
+
 window.placeBidFromModal = async function (id) {
-    if (!currentUser) { switchAuthTab("login"); openLoginModal(); return; }
+    if (!currentUser) { goToLoginPage(); return; }
+    if (isPlacingBid) return;
+    const bidButton = document.getElementById("modal-bid-submit");
+    const bidInput = document.getElementById("modal-bid-input");
+    const bidStatus = document.getElementById("modal-bid-status");
+    isPlacingBid = true;
+    if (bidButton) {
+        bidButton.disabled = true;
+        bidButton.innerHTML = '<span class="spinner"></span> Đang đặt giá...';
+    }
+    if (bidInput) bidInput.disabled = true;
+    if (bidStatus) bidStatus.textContent = "Đang gửi giá của bạn, vui lòng không bấm lại.";
     try {
         const { auction } = await apiFetch(`/auctions/${id}`);
         if (!auction.active) return showToast("Đấu giá chưa bắt đầu hoặc đã kết thúc.", "error");
         const minimum = (auction.highestBid || auction.startPrice) + (auction.highestBid ? 100 : 0);
-        const bidInput = document.getElementById("modal-bid-input");
         const amount = Number(bidInput?.value);
         if (!Number.isSafeInteger(amount)) return;
         await apiFetch(`/auctions/${id}/bids`, { method: "POST", body: JSON.stringify({ amount }) });
         showToast("Đã đặt giá đấu thành công.", "success");
         fetchAndRenderAccounts();
         window.openImageModal(id, { focusAuction: true });
-    } catch (err) { showToast(err.message, "error"); }
+    } catch (err) {
+        showToast(err.message, "error");
+    } finally {
+        isPlacingBid = false;
+        if (bidButton?.isConnected) {
+            bidButton.disabled = false;
+            bidButton.textContent = "Đặt giá";
+        }
+        if (bidInput?.isConnected) bidInput.disabled = false;
+        if (bidStatus?.isConnected) bidStatus.textContent = "";
+    }
 };
 
 // ================= VÍ TIỀN (Wallet) =================
 
 async function openWalletModal() {
     if (!currentUser) {
-        switchAuthTab("login");
-        loginModal.classList.add("active");
+        goToLoginPage();
         return;
     }
     walletModal.classList.add("active");
@@ -1244,6 +1334,7 @@ window.openImageModal = function (id, options = {}) {
     if (!item || !modalImg || !modal) return;
 
     currentModalItemId = id;
+    stopAuctionPolling();
 
     // Hiện ngay ảnh nhẹ (thường đã có trong cache từ card), sau đó tải ảnh gốc
     // ở nền để người dùng không phải nhìn modal trống khi ảnh lớn đang tải.
@@ -1295,15 +1386,9 @@ window.openImageModal = function (id, options = {}) {
         }
         modalAuctionLoadPromise = apiFetch(`/auctions/${id}`).then(({ auction }) => {
             if (currentModalItemId !== id) return;
-            const maskName = (name) => `${String(name || "").slice(0, 3)}${"*".repeat(Math.max(3, String(name || "").length - 3))}`;
-            const currentPrice = auction.highestBid || auction.startPrice;
-            const minimum = currentPrice + (auction.highestBid ? 100 : 0);
-            modalAuctionHistory.innerHTML = `<strong>🔨 Lịch sử đấu giá</strong><div class="auction-meta">Giá hiện tại: <b>${formatPrice(currentPrice)}</b> · Kết thúc: ${new Date(auction.endsAt).toLocaleString("vi-VN")}</div>${auction.bids.length ? auction.bids.map((bid) => `<div class="auction-bid"><span>${escapeHTML(maskName(bid.username))}</span><b>${formatPrice(bid.amount)}</b><time>${new Date(bid.createdAt).toLocaleString("vi-VN")}</time></div>`).join("") : "<p>Chưa có lượt đấu giá.</p>"}`;
-            modalAuctionHistory.classList.remove("hidden");
-            if (modalBidArea && auction.active) {
-                modalBidArea.innerHTML = `<label for="modal-bid-input">Đặt giá của bạn (tối thiểu ${formatPrice(minimum)})</label><div class="modal-bid-form"><input id="modal-bid-input" type="number" min="${minimum}" step="100" value="${minimum}"><button type="button" class="btn btn-primary" onclick="placeBidFromModal('${id}')">Đặt giá</button></div>`;
-                modalBidArea.classList.remove("hidden");
-            }
+            renderAuctionHistory(auction);
+            updateAuctionBidArea(auction, true);
+            if (auction.active) scheduleAuctionPolling(id, auction.endsAt);
             if (options.focusAuction) {
                 requestAnimationFrame(scrollToAuctionHistory);
             }
@@ -1341,6 +1426,7 @@ document.addEventListener("keydown", (e) => {
 });
 
 function closeModal() {
+    stopAuctionPolling();
     if (modal) modal.classList.remove("active");
 }
 
@@ -1349,10 +1435,10 @@ function closeModal() {
 updateAuthUI();
 if (grid && pagination) fetchAndRenderAccounts();
 
-// Cập nhật thẻ acc khi một phiên đấu giá trên trang hiện tại vừa hết hạn.
-setInterval(() => {
-    const hasVisibleAuction = currentItems.some((item) => item.auctionStartsAt && item.auctionEndsAt && !item.sold);
-    if (grid && document.visibilityState === "visible" && hasVisibleAuction) {
-        fetchAndRenderAccounts();
+// Khi quay lại tab đang mở modal đấu giá, cập nhật ngay vùng giá và lượt đấu giá.
+document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible" && currentModalItemId && modal?.classList.contains("active")) {
+        stopAuctionPolling();
+        pollAuction(currentModalItemId);
     }
-}, 15_000);
+});

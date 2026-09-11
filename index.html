@@ -16,7 +16,6 @@
 </head>
 
 <body>
-
     <!-- Khung hiển thị thông báo (toast) -->
     <div id="toast-container" aria-live="polite"></div>
 
@@ -41,8 +40,9 @@
 
             <nav id="main-nav" class="nav-links">
                 <a href="index.html" class="nav-item active">Trang chủ</a>
-                <a href="frontend/lichsumuanick.html" class="nav-item">Lịch sử mua nick</a>
+                <a href="frontend/danhsachaccban.html" class="nav-item">Danh sách acc bay</a>
                 <a href="frontend/naptien.html" class="nav-item">Nạp tiền</a>
+                <a href="frontend/lichsumuanick.html" class="nav-item">Lịch sử mua nick</a>
                 <a href="frontend/baiviet.html" class="nav-item">Bài viết hướng dẫn</a>
                 <a href="frontend/lienhe.html" class="nav-item">Thông tin liên hệ</a>
             </nav>
@@ -131,54 +131,6 @@
                     <div id="modal-sold-label" class="sold-label hidden">✅ Tài khoản này đã được bán</div>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <!-- Modal Đăng Nhập / Đăng Ký -->
-    <div id="login-modal" class="modal" role="dialog" aria-hidden="true">
-        <div class="modal-card">
-            <span id="login-modal-close" class="modal-close">&times;</span>
-
-            <div class="auth-tabs">
-                <button type="button" id="tab-login" class="auth-tab active">Đăng nhập</button>
-                <button type="button" id="tab-register" class="auth-tab">Đăng ký</button>
-            </div>
-
-            <!-- Form đăng nhập -->
-            <form id="login-form">
-                <div class="form-group">
-                    <label for="username">Tên đăng nhập *</label>
-                    <input type="text" id="username" required placeholder="Nhập tên tài khoản">
-                </div>
-                <div class="form-group">
-                    <label for="password">Mật khẩu *</label>
-                    <input type="password" id="password" required placeholder="Nhập mật khẩu">
-                </div>
-                <div id="login-error" class="form-error"></div>
-                <div class="form-actions">
-                    <button type="submit" id="login-submit-btn" class="btn btn-primary" style="width: 100%;">Đăng nhập</button>
-                </div>
-            </form>
-
-            <!-- Form đăng ký -->
-            <form id="register-form" class="hidden">
-                <div class="form-group">
-                    <label for="reg-username">Tên đăng nhập *</label>
-                    <input type="text" id="reg-username" required placeholder="Chọn tên đăng nhập">
-                </div>
-                <div class="form-group">
-                    <label for="reg-password">Mật khẩu *</label>
-                    <input type="password" id="reg-password" required placeholder="Tối thiểu 6 ký tự" minlength="6">
-                </div>
-                <div class="form-group">
-                    <label for="reg-password-confirm">Nhập lại mật khẩu *</label>
-                    <input type="password" id="reg-password-confirm" required placeholder="Nhập lại mật khẩu" minlength="6">
-                </div>
-                <div id="register-error" class="form-error"></div>
-                <div class="form-actions">
-                    <button type="submit" id="register-submit-btn" class="btn btn-primary" style="width: 100%;">Tạo tài khoản</button>
-                </div>
-            </form>
         </div>
     </div>
 

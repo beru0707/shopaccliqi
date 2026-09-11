@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Danh sách tài khoản đã bán - Shop Acc Liqi">
+    <title>Danh Sách Acc Đã Bán - Shop Acc Liqi</title>
+
+    <link rel="icon" type="image/png" href="https://res.cloudinary.com/zv0jlmxj/image/upload/r_max/v1787241826/96477251-8c82-4f3f-a032-8719e420fb94.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Spectral:ital,wght@0,600;0,700;1,600;1,700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .page-title { 
+            font-family: var(--font-display); 
+            color: var(--gold); 
+            font-size: 1.8rem; 
+            margin-bottom: 24px; 
+        }
+        .history-page-card { 
+            background: var(--bg-elevated); 
+            border: 1px solid rgba(216,181,104,.25); 
+            border-radius: var(--radius); 
+            padding: 28px; 
+            box-shadow: var(--shadow); 
+        }
+        .login-notice { 
+            text-align: center; 
+            padding: 40px 20px; 
+            color: var(--ink-muted); 
+        }
+    </style>
+</head>
+<body>
+    <div id="toast-container" aria-live="polite"></div>
+
+    <header class="site-header">
+        <div class="top-bar">
+            <button type="button" id="mobile-menu-btn" class="mobile-menu-btn" aria-label="Mở menu điều hướng" aria-expanded="false" aria-controls="main-nav">
+                <span></span><span></span><span></span>
+            </button>
+
+            <a href="../index.html" class="top-bar-logo" aria-label="Trang chủ">Shop Acc Liqi</a>
+            <nav id="main-nav" class="nav-links">
+                <a href="../index.html" class="nav-item">Trang chủ</a>
+                <a href="danhsachaccban.html" class="nav-item active">Danh sách acc bán</a>
+                <a href="naptien.html" class="nav-item">Nạp tiền</a>
+                <a href="lichsumuanick.html" class="nav-item">Lịch sử mua nick</a>
+                <a href="baiviet.html" class="nav-item">Bài viết hướng dẫn</a>
+                <a href="lienhe.html" class="nav-item">Liên hệ</a>
+            </nav>
+
+            <div id="auth-actions">
+                <button id="login-btn" class="btn btn-secondary">Đăng Nhập</button>
+            </div>
+
+            <div id="user-profile-top" class="user-profile-top hidden">
+                <img class="user-avatar" src="https://res.cloudinary.com/zv0jlmxj/image/upload/v1787241826/96477251-8c82-4f3f-a032-8719e420fb94.png" alt="Avatar">
+                <div class="user-details">
+                    <span id="user-display" class="user-name"></span>
+                    <span class="user-balance">Số dư: <strong id="wallet-balance-display">0 đ</strong></span>
+                </div>
+
+                <div id="admin-menu-dropdown" class="admin-menu-dropdown hidden">
+                    <button type="button" id="add-acc-btn" class="admin-menu-item admin-only-menu-item">➕ Thêm acc mới</button>
+                    <button type="button" id="manage-users-btn" class="admin-menu-item admin-only-menu-item">👤 Quản lý người dùng</button>
+                    <button type="button" id="change-password-btn" class="admin-menu-item profile-menu-item">🔐 Đổi mật khẩu</button>
+                    <button type="button" id="profile-logout-btn" class="admin-menu-item profile-menu-item profile-logout-item">↪ Đăng xuất</button>
+                </div>
+            </div>
+        </div>
+    </header>
+    <main class="container">
+        <h1 class="page-title">📋 Danh Sách Acc Đã Bán</h1>
+        <div class="history-page-card">
+            <div id="sold-list" class="history-list"><div class="empty-state"><span class="spinner"></span>Đang tải danh sách acc đã bán...</div></div>
+        </div>
+    </main>
+    <script src="config.js"></script>
+    <script>
+        const soldList = document.getElementById("sold-list");
+        const mobileMenuBtn = document.getElementById("mobile-menu-btn");
+        const mainNav = document.getElementById("main-nav");
+        const loginBtn = document.getElementById("login-btn");
+        const authActions = document.getElementById("auth-actions");
+        const userProfile = document.getElementById("user-profile-top");
+        const userDisplay = document.getElementById("user-display");
+        const walletBalance = document.getElementById("wallet-balance-display");
+        const profileMenu = document.getElementById("admin-menu-dropdown");
+        const profileLogoutBtn = document.getElementById("profile-logout-btn");
+        let currentUser = null;
+        try { currentUser = JSON.parse(localStorage.getItem("currentUser") || "null"); } catch (_) {}
+
+        if (mobileMenuBtn && mainNav) {
+            mobileMenuBtn.addEventListener("click", () => {
+                const isOpen = mainNav.classList.toggle("mobile-open");
+                mobileMenuBtn.classList.toggle("active", isOpen);
+                mobileMenuBtn.setAttribute("aria-expanded", String(isOpen));
+            });
+            mainNav.querySelectorAll("a").forEach((link) => link.addEventListener("click", () => {
+                mainNav.classList.remove("mobile-open");
+                mobileMenuBtn.classList.remove("active");
+                mobileMenuBtn.setAttribute("aria-expanded", "false");
+            }));
+        }
+
+        if (loginBtn) loginBtn.addEventListener("click", () => { window.location.href = "dangnhap.html"; });
+        if (currentUser) {
+            authActions.classList.add("hidden");
+            userProfile.classList.remove("hidden");
+            userDisplay.textContent = `${currentUser.username}${currentUser.role === "admin" ? " ▾" : ""}`;
+            walletBalance.textContent = `${Number(currentUser.balance || 0).toLocaleString("vi-VN")} đ`;
+            profileMenu.querySelectorAll(".admin-only-menu-item").forEach((item) => item.classList.toggle("hidden", currentUser.role !== "admin"));
+            userProfile.addEventListener("click", (event) => {
+                if (!event.target.closest(".profile-menu-item")) profileMenu.classList.toggle("hidden");
+            });
+            document.addEventListener("click", (event) => {
+                if (!userProfile.contains(event.target)) profileMenu.classList.add("hidden");
+            });
+            profileLogoutBtn.addEventListener("click", () => {
+                localStorage.removeItem("authToken");
+                localStorage.removeItem("currentUser");
+                window.location.reload();
+            });
+        }
+        const escapeHTML = (value) => {
+            const el = document.createElement("div");
+            el.textContent = value || "";
+            return el.innerHTML;
+        };
+        const escapeAttr = escapeHTML;
+        const formatPrice = (value) => `${Number(value || 0).toLocaleString("vi-VN")} đ`;
+
+        function render(items) {
+            if (!items.length) {
+                soldList.innerHTML = '<div class="empty-state"><span class="empty-icon">🧾</span>Chưa có tài khoản nào được bán.</div>';
+                return;
+            }
+            soldList.innerHTML = items.map((item) => {
+                const skins = (item.skins || []).map((skin) => `<span class="skin-tag">${escapeHTML(skin)}</span>`).join("");
+                const date = item.purchasedAt ? new Date(item.purchasedAt).toLocaleString("vi-VN") : "";
+                return `<article class="history-item">
+                    <img src="${escapeAttr(item.image)}" alt="Acc đã bán giá ${escapeAttr(formatPrice(item.price))}">
+                    <div class="history-item-info">
+                        <div class="price">${formatPrice(item.price)}</div>
+                        ${item.info ? `<p class="card-info-text">${escapeHTML(item.info)}</p>` : ""}
+                        <div class="skin-list">${skins}</div>
+                        <span class="history-date">Bán lúc: ${date}</span>
+                    </div>
+                    <aside class="purchase-login-details" aria-label="Thông tin người mua">
+                        <strong>👤 Người mua</strong>
+                        <div class="purchase-login-row">
+                            <span>Username</span>
+                            <code>${escapeHTML(item.buyerUsername || "***")}</code>
+                        </div>
+                    </aside>
+                </article>`;
+            }).join("");
+        }
+
+        async function loadSoldAccounts() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/purchases/sold`);
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.error || "Không tải được danh sách.");
+                render(data.items || []);
+            } catch (error) {
+                soldList.innerHTML = `<div class="empty-state">⚠️ ${escapeHTML(error.message)}</div>`;
+            }
+        }
+        loadSoldAccounts();
+    </script>
+</body>
+</html>

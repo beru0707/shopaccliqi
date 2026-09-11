@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Đăng nhập hoặc đăng ký tài khoản Shop Acc Liqi">
+    <title>Đăng nhập - Shop Acc Liqi</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>.auth-page { max-width: 480px; margin: 70px auto; } .auth-page .modal-card { display:block; position:static; width:auto; } .back-home { display:block; margin:18px auto 0; width:max-content; }</style>
+</head>
+<body>
+    <main class="auth-page">
+        <section class="modal-card" aria-label="Đăng nhập hoặc đăng ký">
+            <div class="auth-tabs">
+                <button type="button" id="tab-login" class="auth-tab active">Đăng nhập</button>
+                <button type="button" id="tab-register" class="auth-tab">Đăng ký</button>
+            </div>
+            <form id="login-form">
+                <div class="form-group"><label for="username">Tên đăng nhập *</label><input type="text" id="username" required placeholder="Nhập tên tài khoản"></div>
+                <div class="form-group"><label for="password">Mật khẩu *</label><input type="password" id="password" required placeholder="Nhập mật khẩu"></div>
+                <div id="login-error" class="form-error"></div>
+                <div class="form-actions"><button type="submit" id="login-submit-btn" class="btn btn-primary" style="width:100%">Đăng nhập</button></div>
+            </form>
+            <form id="register-form" class="hidden">
+                <div class="form-group"><label for="reg-username">Tên đăng nhập *</label><input type="text" id="reg-username" required placeholder="Chọn tên đăng nhập"></div>
+                <div class="form-group"><label for="reg-password">Mật khẩu *</label><input type="password" id="reg-password" required minlength="6" placeholder="Tối thiểu 6 ký tự"></div>
+                <div class="form-group"><label for="reg-password-confirm">Nhập lại mật khẩu *</label><input type="password" id="reg-password-confirm" required minlength="6" placeholder="Nhập lại mật khẩu"></div>
+                <div id="register-error" class="form-error"></div>
+                <div class="form-actions"><button type="submit" id="register-submit-btn" class="btn btn-primary" style="width:100%">Tạo tài khoản</button></div>
+            </form>
+            <a class="btn btn-secondary back-home" href="../index.html">← Về trang chủ</a>
+        </section>
+    </main>
+    <script src="config.js"></script>
+    <script>
+        const loginForm = document.getElementById("login-form");
+        const registerForm = document.getElementById("register-form");
+        const loginError = document.getElementById("login-error");
+        const registerError = document.getElementById("register-error");
+        const switchTab = (tab) => {
+            const isLogin = tab === "login";
+            document.getElementById("tab-login").classList.toggle("active", isLogin);
+            document.getElementById("tab-register").classList.toggle("active", !isLogin);
+            loginForm.classList.toggle("hidden", !isLogin);
+            registerForm.classList.toggle("hidden", isLogin);
+        };
+        document.getElementById("tab-login").onclick = () => switchTab("login");
+        document.getElementById("tab-register").onclick = () => switchTab("register");
+        async function request(path, body) {
+            const response = await fetch(`${API_BASE_URL}${path}`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.error || "Không thể thực hiện yêu cầu.");
+            return data;
+        }
+        function saveSession(data) { localStorage.setItem("authToken", data.token); localStorage.setItem("currentUser", JSON.stringify(data.user)); window.location.href = "../index.html"; }
+        loginForm.onsubmit = async (event) => { event.preventDefault(); loginError.textContent = ""; try { saveSession(await request("/auth/login", { username: username.value.trim(), password: password.value })); } catch (error) { loginError.textContent = error.message; } };
+        registerForm.onsubmit = async (event) => { event.preventDefault(); registerError.textContent = ""; if (regPassword.value !== regPasswordConfirm.value) { registerError.textContent = "Mật khẩu nhập lại không khớp."; return; } try { saveSession(await request("/auth/register", { username: regUsername.value.trim(), password: regPassword.value })); } catch (error) { registerError.textContent = error.message; } };
+        const username = document.getElementById("username"), password = document.getElementById("password"), regUsername = document.getElementById("reg-username"), regPassword = document.getElementById("reg-password"), regPasswordConfirm = document.getElementById("reg-password-confirm");
+    </script>
+</body>
+</html>

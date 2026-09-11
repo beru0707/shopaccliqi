@@ -824,6 +824,23 @@ body {
     background: #0d121c;
 }
 
+/* Chỉ đánh số thứ tự cho từng ô acc: 1, 2, 3... */
+.account-sequence {
+    position: absolute;
+    z-index: 2;
+    top: 10px;
+    left: 10px;
+    min-width: 32px;
+    padding: 5px 9px;
+    border-radius: var(--radius-pill);
+    background: rgba(8, 12, 20, 0.86);
+    border: 1px solid rgba(245, 158, 11, 0.72);
+    color: var(--gold-light);
+    font-weight: 800;
+    line-height: 1;
+    text-align: center;
+}
+
 .card img {
     width: 100%;
     aspect-ratio: 16 / 9;
@@ -1465,6 +1482,12 @@ body {
 .modal-bid-form button {
     white-space: nowrap;
 }
+.modal-bid-status {
+    min-height: 1.2em;
+    margin: 0;
+    color: var(--gold-light);
+    font-size: 0.82rem;
+}
 
 /* ===== 12. FORM & INPUTS TRONG MODALS ===== */
 .form-group {
@@ -1683,7 +1706,8 @@ body {
     color: var(--ink-muted);
 }
 .purchase-login-details {
-    display: grid;
+    display: flex;
+    flex-direction: column;
     gap: 10px;
     padding: 12px 14px;
     border: 1px solid rgba(245, 158, 11, 0.35);
@@ -1695,10 +1719,10 @@ body {
     color: var(--gold-light);
 }
 .purchase-login-row {
-    display: grid;
-    grid-template-columns: 80px minmax(0, 1fr) auto;
+    display: flex;
     align-items: center;
-    gap: 8px;
+    justify-content: space-between;
+    gap: 10px;
 }
 .purchase-login-details code {
     padding: 4px 8px;
@@ -2069,5 +2093,46 @@ body {
         bottom: 16px;
         left: 16px;
         font-size: 0.8rem;
+    }
+
+    /* Tối ưu ô thông tin đăng nhập trên Mobile */
+    .history-item { 
+        grid-template-columns: 120px minmax(0, 1fr); 
+    }
+    
+    .purchase-login-details { 
+        grid-column: 1 / -1; 
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    /* Chuyển các phần tử (Nhãn, Tài khoản/Mật khẩu, Nút) thành dải cột dọc */
+    .purchase-login-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 6px;
+        padding-bottom: 8px;
+        border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+    }
+
+    .purchase-login-row:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+
+    /* Ép chuỗi văn bản tài khoản/mật khẩu mở rộng tối đa chiều ngang ở dòng dưới */
+    .purchase-login-row code {
+        width: 100%;
+        box-sizing: border-box;
+        text-align: left;
+        white-space: normal;
+        word-break: break-all;
+        padding: 6px 10px;
+    }
+
+    /* Đưa nút sao chép nằm căn trái gọn gàng dưới chuỗi tài khoản */
+    .purchase-login-row .copy-credential-btn {
+        align-self: flex-start;
+        margin-top: 2px;
     }
 }
