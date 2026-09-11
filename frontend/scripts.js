@@ -84,6 +84,7 @@ let currentModalItemId = null; // acc đang được xem trong modal, dùng khi 
 let modalAuctionLoadPromise = null;
 let auctionPollingTimer = null;
 let auctionPollInFlight = false;
+const settledAuctionNotifications = new Set();
 
 // Ví tiền (Wallet)
 const walletBtn = document.getElementById("wallet-btn");
@@ -976,6 +977,27 @@ function updateAuctionBidArea(auction, reset = false) {
     modalBidArea.classList.remove("hidden");
 }
 
+async function updateBalanceAfterWinningAuction(auction) {
+    const ended = new Date(auction.endsAt).getTime() <= Date.now();
+    if (!currentUser || auction.active || !ended || settledAuctionNotifications.has(auction.accountId)) return;
+    settledAuctionNotifications.add(auction.accountId);
+    try {
+        const purchases = await apiFetch("/purchases/me");
+        if (!purchases.items?.some((purchase) => purchase.accountId === auction.accountId)) return;
+        const previousBalance = Number(currentUser.balance || 0);
+        const wallet = await apiFetch("/wallet/me");
+        currentUser.balance = wallet.balance;
+        localStorage.setItem("currentUser", JSON.stringify(currentUser));
+        updateAuthUI();
+        if (walletBalanceAmount) walletBalanceAmount.textContent = formatPrice(wallet.balance);
+        const deducted = Math.max(0, previousBalance - Number(wallet.balance || 0));
+        showToast(deducted ? `Bạn đã thắng đấu giá. Đã trừ ${formatPrice(deducted)} khỏi số dư.` : "Bạn đã thắng đấu giá. Số dư đã được cập nhật.", "success");
+    } catch (_) {
+        settledAuctionNotifications.delete(auction.accountId);
+        // Không ảnh hưởng dữ liệu đấu giá; số dư sẽ được đồng bộ khi người dùng mở ví.
+    }
+}
+
 function stopAuctionPolling() {
     if (auctionPollingTimer) clearTimeout(auctionPollingTimer);
     auctionPollingTimer = null;
@@ -997,6 +1019,7 @@ async function pollAuction(accountId) {
         if (currentModalItemId !== accountId) return;
         renderAuctionHistory(auction);
         updateAuctionBidArea(auction);
+        void updateBalanceAfterWinningAuction(auction);
         if (auction.active) scheduleAuctionPolling(accountId, auction.endsAt);
     } catch (_) {
         // Lỗi mạng tạm thời: thử lại theo nhịp bình thường, không làm gián đoạn modal.
@@ -1093,15 +1116,15 @@ function renderHistoryList(items) {
     }
 
     historyList.innerHTML = items.map((p) => {
-        const skinsHTML = (p.skins || []).map((s) => `<span class="skin-tag">${escapeHTML(s)}</span>`).join("");
         const purchasedDate = p.purchasedAt ? new Date(p.purchasedAt).toLocaleString("vi-VN") : "";
         return `
             <div class="history-item">
-                <img src="${escapeAttr(p.image)}" alt="${escapeAttr(formatPrice(p.price))}">
+                <button type="button" class="history-image-button" data-preview-image="${escapeAttr(p.image)}" aria-label="Phóng to ảnh acc">
+                    <img src="${escapeAttr(p.image)}" alt="${escapeAttr(formatPrice(p.price))}">
+                </button>
                 <div class="history-item-info">
                     <div class="price">${formatPrice(p.price)}</div>
                     ${p.info ? `<p class="card-info-text">${escapeHTML(p.info)}</p>` : ""}
-                    <div class="skin-list">${skinsHTML}</div>
                     <span class="history-date">Mua lúc: ${purchasedDate}</span>
                 </div>
                 ${p.gameUsername && p.gamePassword ? `
@@ -1142,9 +1165,26 @@ async function copyCredential(value, label) {
 
 if (historyList) {
     historyList.addEventListener("click", (event) => {
+        const previewButton = event.target.closest(".history-image-button");
+        if (previewButton) return openHistoryImage(previewButton.dataset.previewImage);
         const button = event.target.closest(".copy-credential-btn");
         if (button) copyCredential(button.dataset.copyValue, button.dataset.copyLabel);
     });
+}
+
+function openHistoryImage(imageUrl) {
+    if (!imageUrl) return;
+    let lightbox = document.getElementById("history-image-lightbox");
+    if (!lightbox) {
+        lightbox = document.createElement("div");
+        lightbox.id = "history-image-lightbox";
+        lightbox.className = "history-image-lightbox";
+        lightbox.innerHTML = '<button type="button" class="history-image-close" aria-label="Đóng ảnh phóng to">&times;</button><img alt="Ảnh acc phóng to">';
+        lightbox.addEventListener("click", (event) => { if (event.target === lightbox || event.target.closest(".history-image-close")) lightbox.classList.remove("active"); });
+        document.body.appendChild(lightbox);
+    }
+    lightbox.querySelector("img").src = imageUrl;
+    lightbox.classList.add("active");
 }
 
 if (openHistoryBtn) openHistoryBtn.addEventListener("click", openHistoryModal);
@@ -1388,6 +1428,7 @@ window.openImageModal = function (id, options = {}) {
             if (currentModalItemId !== id) return;
             renderAuctionHistory(auction);
             updateAuctionBidArea(auction, true);
+            void updateBalanceAfterWinningAuction(auction);
             if (auction.active) scheduleAuctionPolling(id, auction.endsAt);
             if (options.focusAuction) {
                 requestAnimationFrame(scrollToAuctionHistory);

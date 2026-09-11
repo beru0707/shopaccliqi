@@ -61,7 +61,7 @@
                 <img class="user-avatar" src="https://res.cloudinary.com/zv0jlmxj/image/upload/v1787241826/96477251-8c82-4f3f-a032-8719e420fb94.png" alt="Avatar">
                 <div class="user-details">
                     <span id="user-display" class="user-name"></span>
-                    <span class="user-balance">Số dư: <strong id="wallet-balance-display">0 đ</strong></span>
+                    <span class="user-balance"><strong id="wallet-balance-display">0đ</strong></span>
                 </div>
 
                 <div id="admin-menu-dropdown" class="admin-menu-dropdown hidden">
@@ -123,7 +123,9 @@
             profileLogoutBtn.addEventListener("click", () => {
                 localStorage.removeItem("authToken");
                 localStorage.removeItem("currentUser");
-                window.location.reload();
+                profileMenu.classList.add("hidden");
+                userProfile.classList.add("hidden");
+                authActions.classList.remove("hidden");
             });
         }
         const escapeHTML = (value) => {
@@ -140,14 +142,14 @@
                 return;
             }
             soldList.innerHTML = items.map((item) => {
-                const skins = (item.skins || []).map((skin) => `<span class="skin-tag">${escapeHTML(skin)}</span>`).join("");
                 const date = item.purchasedAt ? new Date(item.purchasedAt).toLocaleString("vi-VN") : "";
                 return `<article class="history-item">
-                    <img src="${escapeAttr(item.image)}" alt="Acc đã bán giá ${escapeAttr(formatPrice(item.price))}">
+                    <button type="button" class="history-image-button" data-preview-image="${escapeAttr(item.image)}" aria-label="Phóng to ảnh acc">
+                        <img src="${escapeAttr(item.image)}" alt="Acc đã bán giá ${escapeAttr(formatPrice(item.price))}">
+                    </button>
                     <div class="history-item-info">
                         <div class="price">${formatPrice(item.price)}</div>
                         ${item.info ? `<p class="card-info-text">${escapeHTML(item.info)}</p>` : ""}
-                        <div class="skin-list">${skins}</div>
                         <span class="history-date">Bán lúc: ${date}</span>
                     </div>
                     <aside class="purchase-login-details" aria-label="Thông tin người mua">
@@ -160,6 +162,24 @@
                 </article>`;
             }).join("");
         }
+
+        soldList.addEventListener("click", (event) => {
+            const previewButton = event.target.closest(".history-image-button");
+            if (!previewButton) return;
+            let lightbox = document.getElementById("history-image-lightbox");
+            if (!lightbox) {
+                lightbox = document.createElement("div");
+                lightbox.id = "history-image-lightbox";
+                lightbox.className = "history-image-lightbox";
+                lightbox.innerHTML = '<button type="button" class="history-image-close" aria-label="Đóng ảnh phóng to">&times;</button><img alt="Ảnh acc phóng to">';
+                lightbox.addEventListener("click", (clickEvent) => {
+                    if (clickEvent.target === lightbox || clickEvent.target.closest(".history-image-close")) lightbox.classList.remove("active");
+                });
+                document.body.appendChild(lightbox);
+            }
+            lightbox.querySelector("img").src = previewButton.dataset.previewImage;
+            lightbox.classList.add("active");
+        });
 
         async function loadSoldAccounts() {
             try {

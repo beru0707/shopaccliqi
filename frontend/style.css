@@ -1695,6 +1695,31 @@ body {
     border-radius: var(--radius-sm);
     flex-shrink: 0;
 }
+.history-image-button {
+    width: 130px;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    cursor: zoom-in;
+}
+.history-image-button img {
+    transition: transform 0.2s ease, filter 0.2s ease;
+}
+.history-image-button:hover img { transform: scale(1.03); filter: brightness(1.12); }
+.history-image-lightbox {
+    position: fixed;
+    z-index: 3000;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 28px;
+    background: rgba(0, 0, 0, 0.88);
+}
+.history-image-lightbox.active { display: flex; }
+.history-image-lightbox img { max-width: min(1100px, 94vw); max-height: 88vh; object-fit: contain; border-radius: var(--radius-sm); }
+.history-image-close { position: fixed; top: 18px; right: 24px; border: 0; background: transparent; color: #fff; font-size: 2.5rem; line-height: 1; cursor: pointer; }
 .history-item-info {
     display: flex;
     flex-direction: column;
