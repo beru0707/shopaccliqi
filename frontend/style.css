@@ -2175,7 +2175,7 @@ body {
     }
     .sold-history-item .history-date.sold-date-panel strong {
         font-family: var(--font-body);
-        font-size: 1.55rem;
+        font-size: 1.15rem;
         font-weight: 800;
         color: var(--ink);
         letter-spacing: 0.3px;
