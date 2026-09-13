@@ -457,6 +457,8 @@ async function fetchAndRenderAccounts() {
 
         renderGrid(data.items || [], data.total || 0);
         renderPagination();
+        
+        window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (err) {
         renderErrorState(err.message);
     }
@@ -615,14 +617,6 @@ function renderPagination() {
         }
     };
     pagination.appendChild(nextBtn);
-
-    // 4. Tự động cuộn trang hiện tại vào giữa tầm nhìn
-    requestAnimationFrame(() => {
-        const activeBtn = wrapper.querySelector("button.active");
-        if (activeBtn) {
-            activeBtn.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
-        }
-    });
 }
 
 if (search) {
