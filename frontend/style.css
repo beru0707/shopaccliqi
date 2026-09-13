@@ -1780,8 +1780,9 @@ body {
 /* ===== 16. PHÂN TRANG (PAGINATION) ===== */
 #pagination {
     display: flex;
+    align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: 14px;
     margin-top: 50px;
 }
 #pagination button {
@@ -1812,6 +1813,42 @@ body {
 #pagination button:disabled {
     opacity: 0.35;
     cursor: not-allowed;
+}
+.page-numbers-wrapper {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    width: 185px; 
+    padding: 6px 4px 10px 4px;
+}
+
+/* Tùy chỉnh thanh kéo (Scrollbar) to hơn và dễ bám hơn */
+.page-numbers-wrapper::-webkit-scrollbar {
+    height: 10px; 
+}
+
+.page-numbers-wrapper::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+}
+
+.page-numbers-wrapper::-webkit-scrollbar-thumb {
+    background: var(--gold);
+    border-radius: 10px;
+    border: 2px solid rgba(18, 24, 36, 0.95); }
+
+.page-numbers-wrapper::-webkit-scrollbar-thumb:hover {
+    background: var(--gold-light);
+}
+
+/* Tăng kích thước nút số trang bên trong */
+.page-numbers-wrapper button {
+    flex-shrink: 0;
+    min-width: 46px;
+    height: 46px;    
+    font-size: 1rem; 
 }
 
 /* ===== 17. BADGE TỔNG SỐ ACC (CỐ ĐỊNH GÓC TRÁI DƯỚI) ===== */

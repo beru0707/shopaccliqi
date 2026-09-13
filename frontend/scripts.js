@@ -1,7 +1,8 @@
 const ITEMS_PER_PAGE = 8;
 const SEARCH_DEBOUNCE_MS = 350;
 
-let currentPage = 1;
+const urlParams = new URLSearchParams(window.location.search);
+let currentPage = parseInt(urlParams.get("page"), 10) || 1;
 let currentQuery = "";
 let currentSort = "";
 let totalPages = 1;
@@ -433,6 +434,11 @@ function renderSkeleton(count = 8) {
 
 async function fetchAndRenderAccounts() {
     renderSkeleton();
+
+    const newUrl = new URL(window.location.href);
+    newUrl.searchParams.set("page", currentPage);
+    window.history.pushState({}, "", newUrl);
+
     try {
         const params = new URLSearchParams({
             q: currentQuery,
@@ -567,33 +573,56 @@ function renderPagination() {
     pagination.innerHTML = "";
     if (totalPages <= 1) return;
 
-    const makeBtn = (label, page, opts = {}) => {
+    // 1. Nút Prev
+    const prevBtn = document.createElement("button");
+    prevBtn.textContent = "‹ Prev";
+    prevBtn.disabled = currentPage <= 1;
+    prevBtn.onclick = () => {
+        if (currentPage > 1) {
+            currentPage--;
+            fetchAndRenderAccounts();
+        }
+    };
+    pagination.appendChild(prevBtn);
+
+    // 2. Khung trượt chứa tất cả số trang
+    const wrapper = document.createElement("div");
+    wrapper.className = "page-numbers-wrapper";
+
+    for (let i = 1; i <= totalPages; i++) {
         const btn = document.createElement("button");
-        btn.textContent = label;
-        if (opts.active) btn.classList.add("active");
-        if (opts.disabled) btn.disabled = true;
+        btn.textContent = String(i);
+        if (i === currentPage) btn.classList.add("active");
+
         btn.onclick = () => {
-            if (opts.disabled) return;
-            currentPage = page;
+            currentPage = i;
             fetchAndRenderAccounts();
         };
-        return btn;
-    };
 
-    pagination.appendChild(makeBtn("‹", currentPage - 1, { disabled: currentPage <= 1 }));
-    const visiblePages = Math.min(3, totalPages);
-    for (let i = 1; i <= visiblePages; i++) {
-        pagination.appendChild(makeBtn(String(i), i, { active: i === currentPage }));
+        wrapper.appendChild(btn);
     }
-    if (totalPages > 3) {
-        const ellipsis = document.createElement("span");
-        ellipsis.className = "pagination-ellipsis";
-        ellipsis.textContent = "…";
-        ellipsis.setAttribute("aria-hidden", "true");
-        pagination.appendChild(ellipsis);
-        pagination.appendChild(makeBtn(String(totalPages), totalPages, { active: currentPage === totalPages }));
-    }
-    pagination.appendChild(makeBtn("›", currentPage + 1, { disabled: currentPage >= totalPages }));
+
+    pagination.appendChild(wrapper);
+
+    // 3. Nút Next
+    const nextBtn = document.createElement("button");
+    nextBtn.textContent = "Next ›";
+    nextBtn.disabled = currentPage >= totalPages;
+    nextBtn.onclick = () => {
+        if (currentPage < totalPages) {
+            currentPage++;
+            fetchAndRenderAccounts();
+        }
+    };
+    pagination.appendChild(nextBtn);
+
+    // 4. Tự động cuộn trang hiện tại vào giữa tầm nhìn
+    requestAnimationFrame(() => {
+        const activeBtn = wrapper.querySelector("button.active");
+        if (activeBtn) {
+            activeBtn.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+        }
+    });
 }
 
 if (search) {
@@ -606,6 +635,12 @@ if (search) {
         }, SEARCH_DEBOUNCE_MS);
     });
 }
+
+window.addEventListener("popstate", () => {
+    const params = new URLSearchParams(window.location.search);
+    currentPage = parseInt(params.get("page"), 10) || 1;
+    fetchAndRenderAccounts();
+});
 
 // ================= GỢI Ý TÌM KIẾM =================
 
