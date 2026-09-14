@@ -594,7 +594,17 @@ function renderPagination() {
     for (let i = 1; i <= totalPages; i++) {
         const btn = document.createElement("button");
         btn.textContent = String(i);
-        if (i === currentPage) btn.classList.add("active");
+        if (i === currentPage) {
+            btn.classList.add("active");
+            
+            setTimeout(() => {
+                btn.scrollIntoView({
+                    behavior: "smooth",
+                    inline: "center",
+                    block: "nearest"
+                });
+            }, 50);
+        }
 
         btn.onclick = () => {
             currentPage = i;
