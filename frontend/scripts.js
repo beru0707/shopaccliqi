@@ -610,7 +610,6 @@ function renderPagination() {
                     });
                 }, 50);
             }
-        }
 
         btn.onclick = () => {
             currentPage = i;
