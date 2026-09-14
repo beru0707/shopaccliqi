@@ -598,12 +598,18 @@ function renderPagination() {
             btn.classList.add("active");
             
             setTimeout(() => {
-                btn.scrollIntoView({
-                    behavior: "smooth",
-                    inline: "center",
-                    block: "nearest"
-                });
-            }, 50);
+                const wrapperRect = wrapper.getBoundingClientRect();
+                const btnRect = btn.getBoundingClientRect();
+
+                const btnLeftInWrapper = wrapper.scrollLeft + (btnRect.left - wrapperRect.left);
+                const targetLeft = btnLeftInWrapper - (wrapper.clientWidth / 2) + (btn.clientWidth / 2);
+
+                wrapper.scrollTo({
+                        left: Math.max(0, targetLeft),
+                        behavior: "smooth"
+                    });
+                }, 50);
+            }
         }
 
         btn.onclick = () => {
