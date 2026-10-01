@@ -55,9 +55,9 @@ changePasswordModal.innerHTML = `
         <button type="button" id="change-password-close" class="modal-close" aria-label="Đóng">&times;</button>
         <h2>Đổi mật khẩu</h2>
         <form id="change-password-form">
-            <div class="form-group"><label for="current-password">Mật khẩu hiện tại *</label><input id="current-password" type="password" required autocomplete="current-password"></div>
+            <div class="form-group"><label for="current-password">Mật khẩu hiện tại *</label><input id="current-password" type="password" required autocomplete="current-password" placeholder="Nhập mật khẩu cũ"></div>
             <div class="form-group"><label for="new-password">Mật khẩu mới *</label><input id="new-password" type="password" required minlength="6" autocomplete="new-password" placeholder="Tối thiểu 6 ký tự"></div>
-            <div class="form-group"><label for="new-password-confirm">Nhập lại mật khẩu mới *</label><input id="new-password-confirm" type="password" required minlength="6" autocomplete="new-password"></div>
+            <div class="form-group"><label for="new-password-confirm">Nhập lại mật khẩu mới *</label><input id="new-password-confirm" type="password" required minlength="6" autocomplete="new-password" placeholder="Tối thiểu 6 ký tự"></div>
             <div id="change-password-error" class="form-error"></div>
             <div class="form-actions"><button type="submit" id="change-password-submit" class="btn btn-primary" style="width: 100%;">Cập nhật mật khẩu</button></div>
         </form>
