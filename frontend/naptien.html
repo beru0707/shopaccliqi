@@ -66,6 +66,36 @@
             object-fit: contain;
             display: block;
         }
+        .qr-notice {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            aspect-ratio: 1;
+            padding: 24px;
+            box-sizing: border-box;
+            background-color: rgba(230, 57, 70, 0.05);
+            border: 2px dashed #e63946;
+            border-radius: 8px;
+        }
+        .qr-notice-icon {
+            font-size: 3.5rem;
+            margin-bottom: 16px;
+            animation: pulse 2s infinite;
+        }
+        .qr-notice-text {
+            color: #d90429;
+            font-size: 1.05rem;
+            font-weight: 700;
+            line-height: 1.6;
+            text-align: center;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
         .bank-info-item {
             display: flex;
             justify-content: space-between;
@@ -223,9 +253,15 @@
 
                 <div style="text-align: center;">
                     <div class="qr-placeholder">
-                        <img id="vietqr-img" src="https://img.vietqr.io/image/MB-130907072007-qronly.png" alt="QR Thanh Toán VietQR">
+                        <div id="qr-notice" class="qr-notice">
+                            <div class="qr-notice-icon">⚠️</div>
+                            <div id="qr-notice-text" class="qr-notice-text">
+                                Vui lòng nhập số tiền từ 10.000đ trở lên để hiển thị mã QR nạp tiền.
+                            </div>
+                        </div>
+                        <img id="vietqr-img" src="" alt="QR Thanh Toán VietQR" style="display: none;">
                     </div>
-                    <button type="button" id="download-qr-btn" class="btn btn-secondary qr-download-btn">⬇️ Tải mã QR</button>
+                    <button type="button" id="download-qr-btn" class="btn btn-secondary qr-download-btn" style="display: none;">⬇️ Tải mã QR</button>
                 </div>
 
             </div>
@@ -245,6 +281,8 @@
             const topupInput = document.getElementById("page-topup-amount");
             const transferContentEl = document.getElementById("transfer-content");
             const vietqrImg = document.getElementById("vietqr-img");
+            const qrNotice = document.getElementById("qr-notice");
+            const qrNoticeText = document.getElementById("qr-notice-text");
             const downloadQrBtn = document.getElementById("download-qr-btn");
             const topupHistoryList = document.getElementById("topup-history-list");
             let historyUsername = null;
@@ -254,13 +292,38 @@
             const ACCOUNT_NAME = "NGUYEN THANH VIET";
             let rechargeTimer;
 
+            // Hàm ẩn/hiện mã QR dựa vào trạng thái hợp lệ
+            function toggleQRDisplay(show, noticeMsg = "") {
+                if (show) {
+                    vietqrImg.style.display = "block";
+                    downloadQrBtn.style.display = "inline-block";
+                    qrNotice.style.display = "none";
+                } else {
+                    vietqrImg.style.display = "none";
+                    downloadQrBtn.style.display = "none";
+                    qrNotice.style.display = "flex";
+                    if (noticeMsg) {
+                        qrNoticeText.textContent = noticeMsg;
+                    }
+                }
+            }
+
             // Mỗi QR dùng mã nạp do API phát hành; không đặt username vào nội dung CK.
             async function updateVietQR() {
                 const amount = Number(topupInput.value) || 0;
-                if (!currentUser || amount < 10000) {
+
+                if (!currentUser) {
                     transferContentEl.textContent = "Đăng nhập và chọn số tiền từ 10.000đ";
+                    toggleQRDisplay(false, "VUI LÒNG ĐĂNG NHẬP TÀI KHOẢN ĐỂ HIỂN THỊ MÃ QR NẠP TIỀN");
                     return;
                 }
+
+                if (amount < 10000) {
+                    transferContentEl.textContent = "Chọn số tiền để tạo mã nạp";
+                    toggleQRDisplay(false, "VUI LÒNG NHẬP SỐ TIỀN TỐI THIỂU 10.000đ ĐỂ HIỂN THỊ MÃ QR");
+                    return;
+                }
+
                 transferContentEl.textContent = "Đang tạo mã nạp...";
                 try {
                     const recharge = await apiFetch("/wallet/recharges", {
@@ -270,9 +333,12 @@
                     const memo = recharge.code;
                     transferContentEl.textContent = memo;
                     const qrUrl = `https://img.vietqr.io/image/${BANK_ID}-${ACCOUNT_NO}-qronly.png?amount=${recharge.amount}&addInfo=${encodeURIComponent(memo)}&accountName=${encodeURIComponent(ACCOUNT_NAME)}`;
+                    
                     vietqrImg.src = qrUrl;
+                    toggleQRDisplay(true);
                 } catch (err) {
                     transferContentEl.textContent = "Không thể tạo mã nạp";
+                    toggleQRDisplay(false, "CÓ LỖI XẢY RA KHI TẠO MÃ NẠP: " + err.message.toUpperCase());
                     showToast(err.message, "error");
                 }
             }
