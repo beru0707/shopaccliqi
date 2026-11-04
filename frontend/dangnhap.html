@@ -60,8 +60,38 @@
             return data;
         }
         function saveSession(data) { localStorage.setItem("authToken", data.token); localStorage.setItem("currentUser", JSON.stringify(data.user)); window.location.href = "../index.html"; }
-        loginForm.onsubmit = async (event) => { event.preventDefault(); loginError.textContent = ""; try { saveSession(await request("/auth/login", { username: username.value.trim(), password: password.value })); } catch (error) { loginError.textContent = error.message; } };
-        registerForm.onsubmit = async (event) => { event.preventDefault(); registerError.textContent = ""; if (regPassword.value !== regPasswordConfirm.value) { registerError.textContent = "Mật khẩu nhập lại không khớp."; return; } try { saveSession(await request("/auth/register", { username: regUsername.value.trim(), password: regPassword.value })); } catch (error) { registerError.textContent = error.message; } };
+        // Hiện trạng thái "Đang xử lý..." và khóa nút để Enter/bấm nhiều lần không gửi trùng
+        function setBusy(btn, busy, label) {
+            btn.disabled = busy;
+            btn.innerHTML = busy ? '<span class="spinner"></span>Đang xử lý...' : label;
+        }
+        loginForm.onsubmit = async (event) => {
+            event.preventDefault();
+            const btn = document.getElementById("login-submit-btn");
+            if (btn.disabled) return;
+            loginError.textContent = "";
+            setBusy(btn, true);
+            try {
+                saveSession(await request("/auth/login", { username: username.value.trim(), password: password.value }));
+            } catch (error) {
+                loginError.textContent = error.message;
+                setBusy(btn, false, "Đăng nhập");
+            }
+        };
+        registerForm.onsubmit = async (event) => {
+            event.preventDefault();
+            const btn = document.getElementById("register-submit-btn");
+            if (btn.disabled) return;
+            registerError.textContent = "";
+            if (regPassword.value !== regPasswordConfirm.value) { registerError.textContent = "Mật khẩu nhập lại không khớp."; return; }
+            setBusy(btn, true);
+            try {
+                saveSession(await request("/auth/register", { username: regUsername.value.trim(), password: regPassword.value }));
+            } catch (error) {
+                registerError.textContent = error.message;
+                setBusy(btn, false, "Tạo tài khoản");
+            }
+        };
         const username = document.getElementById("username"), password = document.getElementById("password"), regUsername = document.getElementById("reg-username"), regPassword = document.getElementById("reg-password"), regPasswordConfirm = document.getElementById("reg-password-confirm");
 
         // ===== Đăng nhập bằng Google =====
