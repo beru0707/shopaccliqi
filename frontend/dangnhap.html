@@ -10,7 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <script src="https://accounts.google.com/gsi/client" async defer></script>
-    <style>.auth-page { max-width: 480px; margin: 70px auto; } .auth-page .modal-card { display:block; position:static; width:auto; } .back-home { display:block; margin:18px auto 0; width:max-content; }</style>
+    <style>.auth-page { max-width: 466px; margin: 70px auto; } .auth-page .modal-card { display:block; position:static; width:auto; } .back-home { display:block; margin:18px auto 0; width:max-content; }</style>
 </head>
 <body>
     <main class="auth-page">
@@ -33,7 +33,7 @@
                 <div class="form-actions"><button type="submit" id="register-submit-btn" class="btn btn-primary" style="width:100%">Tạo tài khoản</button></div>
             </form>
             <div style="text-align:center;margin:18px 0 4px;color:var(--ink-muted)">— hoặc —</div>
-            <div id="google-btn" style="display:flex;justify-content:center"></div>
+            <div id="google-btn" style="display:flex;justify-content:center;width:100%"></div>
             <div id="google-error" class="form-error" style="text-align:center"></div>
             <a class="btn btn-secondary back-home" href="../index.html">← Về trang chủ</a>
         </section>
@@ -79,8 +79,11 @@
                 return;
             }
             google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: handleGoogleCredential });
-            google.accounts.id.renderButton(document.getElementById("google-btn"), {
-                theme: "filled_black", size: "large", text: "continue_with", shape: "pill", width: 320,
+            // Google chỉ nhận chiều rộng bằng pixel (200-400), nên lấy đúng bề rộng ô đăng nhập.
+            const googleBtn = document.getElementById("google-btn");
+            const googleWidth = Math.max(200, Math.min(400, Math.floor(googleBtn.clientWidth)));
+            google.accounts.id.renderButton(googleBtn, {
+                theme: "filled_black", size: "large", text: "continue_with", shape: "pill", width: googleWidth,
             });
         });
     </script>
