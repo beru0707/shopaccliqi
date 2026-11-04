@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <style>.auth-page { max-width: 480px; margin: 70px auto; } .auth-page .modal-card { display:block; position:static; width:auto; } .back-home { display:block; margin:18px auto 0; width:max-content; }</style>
 </head>
 <body>
@@ -31,6 +32,9 @@
                 <div id="register-error" class="form-error"></div>
                 <div class="form-actions"><button type="submit" id="register-submit-btn" class="btn btn-primary" style="width:100%">Tạo tài khoản</button></div>
             </form>
+            <div style="text-align:center;margin:18px 0 4px;color:var(--ink-muted)">— hoặc —</div>
+            <div id="google-btn" style="display:flex;justify-content:center"></div>
+            <div id="google-error" class="form-error" style="text-align:center"></div>
             <a class="btn btn-secondary back-home" href="../index.html">← Về trang chủ</a>
         </section>
     </main>
@@ -59,6 +63,26 @@
         loginForm.onsubmit = async (event) => { event.preventDefault(); loginError.textContent = ""; try { saveSession(await request("/auth/login", { username: username.value.trim(), password: password.value })); } catch (error) { loginError.textContent = error.message; } };
         registerForm.onsubmit = async (event) => { event.preventDefault(); registerError.textContent = ""; if (regPassword.value !== regPasswordConfirm.value) { registerError.textContent = "Mật khẩu nhập lại không khớp."; return; } try { saveSession(await request("/auth/register", { username: regUsername.value.trim(), password: regPassword.value })); } catch (error) { registerError.textContent = error.message; } };
         const username = document.getElementById("username"), password = document.getElementById("password"), regUsername = document.getElementById("reg-username"), regPassword = document.getElementById("reg-password"), regPasswordConfirm = document.getElementById("reg-password-confirm");
+
+        // ===== Đăng nhập bằng Google =====
+        async function handleGoogleCredential(response) {
+            document.getElementById("google-error").textContent = "";
+            try {
+                saveSession(await request("/auth/google", { credential: response.credential }));
+            } catch (error) {
+                document.getElementById("google-error").textContent = error.message;
+            }
+        }
+        window.addEventListener("load", () => {
+            if (!window.google || !window.google.accounts) {
+                document.getElementById("google-error").textContent = "Không tải được Google. Vui lòng thử lại.";
+                return;
+            }
+            google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: handleGoogleCredential });
+            google.accounts.id.renderButton(document.getElementById("google-btn"), {
+                theme: "filled_black", size: "large", text: "continue_with", shape: "pill", width: 320,
+            });
+        });
     </script>
 </body>
 </html>
