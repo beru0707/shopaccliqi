@@ -12,9 +12,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <script src="https://accounts.google.com/gsi/client" async defer></script>
-    <style>.auth-page { max-width: 466px; margin: 70px auto; } .auth-page .modal-card { display:block; position:relative; width:auto; padding-top:56px; }
-        .auth-close { top:12px; right:12px; width:34px; height:34px; text-decoration:none; color:#fff; background:#ef4444; border-color:#ef4444; box-shadow:0 4px 12px rgba(239,68,68,.4); }
-        .auth-close:hover { background:#dc2626; border-color:#dc2626; } .back-home { display:block; margin:18px auto 0; width:max-content; }
+    <style>.auth-page { max-width: 466px; margin: 70px auto; } .auth-page .modal-card { display:block; position:relative; width:auto; padding-top:64px; }
+        /* Dùng nguyên kiểu .modal-close của style.css (cùng kích thước, màu, hiệu ứng xoay khi rê chuột); chỉ bỏ gạch chân vì đây là thẻ <a> */
+        /* Giống hệt nút X của thẻ acc (.modal-image-close): tròn 44px, nền đỏ, viền trắng mờ, bóng đổ, hover phóng to 1.1, không xoay */
+        .auth-close { top:12px; right:12px; width:44px; height:44px; font-family:Arial,sans-serif; font-size:32px; line-height:1; text-decoration:none; color:#fff; background:rgba(239,68,68,.85); border:1px solid rgba(255,255,255,.4); box-shadow:0 4px 18px rgba(0,0,0,.6); }
+        .auth-close:hover { background:#dc2626; border-color:rgba(255,255,255,.4); transform:scale(1.1); } .back-home { display:block; margin:18px auto 0; width:max-content; }
         /* Nút Google: nút vàng tự vẽ nằm dưới, nút thật của Google trong suốt phủ lên trên để nhận click */
         .google-login-wrap { position:relative; width:100%; height:46px; }
         .google-login-wrap .btn { width:100%; height:100%; pointer-events:none; }
