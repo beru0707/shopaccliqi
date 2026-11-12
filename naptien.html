@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Nạp tiền vào tài khoản - Shop Acc Liqi">
+    <title>Nạp Tiền - Shop Acc Liqi</title>
+
+    <link rel="icon" type="image/png" href="https://res.cloudinary.com/zv0jlmxj/image/upload/r_max/v1787241826/96477251-8c82-4f3f-a032-8719e420fb94.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Spectral:ital,wght@0,600;0,700;1,600;1,700&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        body: ['"Be Vietnam Pro"', 'system-ui', '-apple-system', 'sans-serif'],
+                        display: ['Spectral', 'Georgia', 'serif'],
+                    },
+                    colors: {
+                        surface: '#1a2336',
+                        'bg-dark': '#0a0e17',
+                        'bg-elevated': '#121824',
+                    },
+                }
+            }
+        }
+    </script>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="font-body antialiased min-h-screen">
+    <div id="toast-container" aria-live="polite"
+         class="fixed top-6 right-6 z-[2000] flex flex-col gap-3 max-w-[360px] w-[calc(100vw-3rem)] pointer-events-none">
+    </div>
+
+    <header class="site-header sticky top-0 z-[100] bg-[#0b0f17] border-b border-white/5 transition-all">
+        <div class="top-bar relative flex justify-between items-center px-4 md:px-10 py-3 bg-[#0b0f17] border-b border-white/5 min-h-[54px]">
+            <button type="button" id="mobile-menu-btn" class="mobile-menu-btn md:hidden flex-shrink-0 w-10 h-9 p-1.5 border border-white/18 rounded-lg bg-white/5 hover:bg-white/12 hover:border-amber-500 transition-all z-[2]" aria-label="Mở menu điều hướng" aria-expanded="false" aria-controls="main-nav">
+                <span></span><span></span><span></span>
+            </button>
+
+            <a href="../index.html" class="top-bar-logo hidden" aria-label="Trang chủ">
+                <img class="logo h-8 w-auto" src="https://res.cloudinary.com/zv0jlmxj/image/upload/v1788875838/ChatGPT_Image_20_55_41_8_thg_9_2026.png" alt="Logo">
+            </a>
+
+            <nav id="main-nav" class="nav-links hidden md:flex items-center gap-7">
+                <a href="../index.html" class="nav-item text-slate-300 hover:text-white text-[0.88rem] font-medium px-1 py-1 transition-colors">Trang chủ</a>
+                <a href="danhsachaccban.html" class="nav-item text-slate-300 hover:text-white text-[0.88rem] font-medium px-1 py-1 transition-colors">Danh sách acc bay</a>
+                <a href="naptien.html" class="nav-item active text-white bg-[#151a24] border border-amber-500/70 text-[0.88rem] font-semibold px-5 py-1.5 rounded-full inline-flex items-center transition-all">Nạp tiền</a>
+                <a href="lichsumuanick.html" class="nav-item text-slate-300 hover:text-white text-[0.88rem] font-medium px-1 py-1 transition-colors">Lịch sử mua nick</a>
+                <a href="baiviet.html" class="nav-item text-slate-300 hover:text-white text-[0.88rem] font-medium px-1 py-1 transition-colors">Bài viết hướng dẫn</a>
+                <a href="lienhe.html" class="nav-item text-slate-300 hover:text-white text-[0.88rem] font-medium px-1 py-1 transition-colors">Liên hệ</a>
+            </nav>
+
+            <div id="auth-actions" class="absolute right-4 top-0 h-[54px] flex items-center z-[3] md:static md:h-auto">
+                <button id="login-btn" class="btn btn-secondary inline-flex items-center gap-2 px-5 py-1.5 rounded-full font-bold text-[0.85rem] bg-white/10 text-white border border-white/15 hover:bg-white/20 transition-all whitespace-nowrap">Đăng Nhập</button>
+            </div>
+
+            <div id="user-profile-top" class="user-profile-top hidden relative items-center gap-3 cursor-pointer p-0 bg-transparent border-0 absolute right-4 md:static z-[2]">
+                <img class="user-avatar w-9 h-9 rounded-full object-cover border-2 border-amber-500 shadow-sm" src="https://res.cloudinary.com/zv0jlmxj/image/upload/v1787241826/96477251-8c82-4f3f-a032-8719e420fb94.png" alt="Avatar">
+                <div class="user-details flex flex-col text-white text-[0.85rem] leading-tight">
+                    <span id="user-display" class="user-name font-bold tracking-wide max-w-[120px] truncate md:max-w-none"></span>
+                    <span class="user-balance text-[0.78rem] font-bold text-amber-400"><strong id="wallet-balance-display" class="text-amber-400 font-bold">0đ</strong></span>
+                </div>
+                <div id="admin-menu-dropdown" class="admin-menu-dropdown hidden absolute top-[calc(100%+10px)] right-0 min-w-[230px] bg-[#121824] border border-amber-500/35 rounded-2xl p-2 z-[120] flex flex-col gap-1 shadow-[0_18px_44px_rgba(0,0,0,0.8)] backdrop-blur-xl">
+                    <button type="button" id="add-acc-btn" class="admin-menu-item admin-only-menu-item w-full bg-transparent border-none text-slate-100 px-3.5 py-2.5 text-left rounded-lg text-[0.88rem] font-semibold cursor-pointer hover:bg-amber-500/15 hover:text-amber-400 hover:translate-x-1 transition-all flex items-center gap-2">➕ Thêm acc mới</button>
+                    <button type="button" id="manage-users-btn" class="admin-menu-item admin-only-menu-item w-full bg-transparent border-none text-slate-100 px-3.5 py-2.5 text-left rounded-lg text-[0.88rem] font-semibold cursor-pointer hover:bg-amber-500/15 hover:text-amber-400 hover:translate-x-1 transition-all flex items-center gap-2">👤 Quản lý người dùng</button>
+                    <button type="button" id="change-password-btn" class="admin-menu-item profile-menu-item w-full bg-transparent border-none text-slate-100 px-3.5 py-2.5 text-left rounded-lg text-[0.88rem] font-semibold cursor-pointer hover:bg-amber-500/15 hover:text-amber-400 hover:translate-x-1 transition-all flex items-center gap-2">🔐 Đổi mật khẩu</button>
+                    <button type="button" id="profile-logout-btn" class="admin-menu-item profile-menu-item profile-logout-item w-full bg-transparent border-none text-rose-300 px-3.5 py-3 text-left rounded-lg text-[0.88rem] font-semibold cursor-pointer hover:bg-rose-500/15 hover:text-rose-400 hover:translate-x-1 transition-all flex items-center gap-2 mt-1 pt-3 border-t border-white/8">↪ Đăng xuất</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-[1340px] mx-auto px-4 md:px-8 pt-9 pb-20">
+        <h1 class="page-title font-black text-amber-400 text-[1.8rem] mb-6 flex items-center gap-3">💳 Nạp Tiền</h1>
+
+        <div class="topup-grid grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Cột thông tin chuyển khoản -->
+            <div class="topup-card bg-gradient-to-b from-[#161d2c]/95 to-[#0d111a]/98 border border-amber-500/30 rounded-2xl p-6 md:p-7 shadow-[0_12px_32px_-6px_rgba(0,0,0,0.65)]">
+                <h2 class="font-black text-amber-400 text-[1.35rem] mt-0 mb-4 flex items-center gap-2.5">💳 Thông Tin Chuyển Khoản</h2>
+
+                <div class="wallet-balance-box bg-gradient-to-br from-[#1a2336]/90 to-[#121824]/95 border border-amber-500/35 rounded-2xl p-6 flex flex-col gap-1.5 mb-5 shadow-[inset_0_0_20px_rgba(245,158,11,0.05)]">
+                    <span class="wallet-balance-label text-[0.82rem] text-slate-400 uppercase tracking-wide">Số dư hiện tại</span>
+                    <span id="page-wallet-balance" class="wallet-balance-amount font-black text-[2.2rem]">0 đ</span>
+                </div>
+
+                <div class="form-group flex flex-col gap-1.5 mb-[18px]">
+                    <label for="page-topup-amount" class="text-[0.86rem] font-semibold text-slate-400">Số tiền chuyển khoản (VNĐ)</label>
+                    <input type="number" id="page-topup-amount" min="10000" step="10000" placeholder="Ví dụ: 100000"
+                           class="w-full bg-surface border border-white/12 rounded-lg px-3.5 py-2.5 text-slate-100 text-[0.92rem] outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/25 focus:bg-[#1e283c] transition-all font-body">
+                </div>
+
+                <div class="topup-quick-amounts flex flex-wrap gap-2 my-2 mb-5">
+                    <button type="button" class="topup-chip page-chip px-4 py-2 rounded-full text-[0.84rem] font-semibold bg-amber-500/8 text-amber-400 border border-amber-500/25 hover:bg-amber-500/20 hover:border-amber-500 hover:text-white hover:-translate-y-px transition-all cursor-pointer" data-amount="10000">10k</button>
+                    <button type="button" class="topup-chip page-chip px-4 py-2 rounded-full text-[0.84rem] font-semibold bg-amber-500/8 text-amber-400 border border-amber-500/25 hover:bg-amber-500/20 hover:border-amber-500 hover:text-white hover:-translate-y-px transition-all cursor-pointer" data-amount="20000">20k</button>
+                    <button type="button" class="topup-chip page-chip px-4 py-2 rounded-full text-[0.84rem] font-semibold bg-amber-500/8 text-amber-400 border border-amber-500/25 hover:bg-amber-500/20 hover:border-amber-500 hover:text-white hover:-translate-y-px transition-all cursor-pointer" data-amount="50000">50k</button>
+                    <button type="button" class="topup-chip page-chip px-4 py-2 rounded-full text-[0.84rem] font-semibold bg-amber-500/8 text-amber-400 border border-amber-500/25 hover:bg-amber-500/20 hover:border-amber-500 hover:text-white hover:-translate-y-px transition-all cursor-pointer" data-amount="100000">100k</button>
+                    <button type="button" class="topup-chip page-chip px-4 py-2 rounded-full text-[0.84rem] font-semibold bg-amber-500/8 text-amber-400 border border-amber-500/25 hover:bg-amber-500/20 hover:border-amber-500 hover:text-white hover:-translate-y-px transition-all cursor-pointer" data-amount="200000">200k</button>
+                    <button type="button" class="topup-chip page-chip px-4 py-2 rounded-full text-[0.84rem] font-semibold bg-amber-500/8 text-amber-400 border border-amber-500/25 hover:bg-amber-500/20 hover:border-amber-500 hover:text-white hover:-translate-y-px transition-all cursor-pointer" data-amount="500000">500k</button>
+                </div>
+
+                <p class="wallet-note text-[0.82rem] text-slate-400 mb-5 leading-relaxed">Nhập số tiền trước khi quét QR để tạo đúng số tiền và nội dung chuyển khoản.</p>
+
+                <div class="bank-info-list mt-5 space-y-0">
+                    <div class="bank-info-item flex justify-between py-2.5 border-b border-dashed border-white/10 text-[0.92rem]">
+                        <span class="text-slate-400">Ngân hàng:</span>
+                        <span class="font-bold text-slate-100">MBBANK (Quân Đội)</span>
+                    </div>
+                    <div class="bank-info-item flex justify-between py-2.5 border-b border-dashed border-white/10 text-[0.92rem]">
+                        <span class="text-slate-400">Số tài khoản:</span>
+                        <span class="font-bold text-amber-500">130907072007</span>
+                    </div>
+                    <div class="bank-info-item flex justify-between py-2.5 border-b border-dashed border-white/10 text-[0.92rem]">
+                        <span class="text-slate-400">Chủ tài khoản:</span>
+                        <span class="font-bold text-slate-100">NGUYEN THANH VIET</span>
+                    </div>
+                    <div class="bank-info-item flex justify-between py-2.5 text-[0.92rem]">
+                        <span class="text-slate-400">Nội dung CK:</span>
+                        <span id="transfer-content" class="font-bold text-rose-400">Chọn số tiền để tạo mã nạp</span>
+                    </div>
+                </div>
+
+                <p class="wallet-note text-[0.82rem] text-slate-400 mt-4 leading-relaxed">
+                    📌 <strong class="text-slate-200">Lưu ý:</strong> Vui lòng quét mã QR hoặc nhập <strong class="text-slate-200">đúng Nội dung CK</strong> để hệ thống SePay tự động cộng tiền trong vòng 1-3 phút.
+                </p>
+            </div>
+
+            <!-- Cột QR -->
+            <div class="topup-card bg-gradient-to-b from-[#161d2c]/95 to-[#0d111a]/98 border border-amber-500/30 rounded-2xl p-6 md:p-7 shadow-[0_12px_32px_-6px_rgba(0,0,0,0.65)]">
+                <h2 class="font-black text-amber-400 text-[1.35rem] mt-0 mb-4 flex items-center gap-2.5">🏦 Chuyển Khoản Tự Động (VietQR)</h2>
+
+                <div class="text-center">
+                    <div class="qr-placeholder bg-white p-3 rounded-xl inline-block mb-3 shadow-[0_4px_16px_rgba(0,0,0,0.4)]" style="width: min(100%, 500px); box-sizing: border-box;">
+                        <div id="qr-notice" class="qr-notice">
+                            <div class="qr-notice-icon">⚠️</div>
+                            <div id="qr-notice-text" class="qr-notice-text">
+                                Vui lòng nhập số tiền từ 10.000đ trở lên để hiển thị mã QR nạp tiền.
+                            </div>
+                        </div>
+                        <img id="vietqr-img" src="" alt="QR Thanh Toán VietQR" style="display: none;" class="w-full h-auto aspect-square object-contain block">
+                    </div>
+                    <button type="button" id="download-qr-btn" class="btn btn-secondary qr-download-btn inline-flex items-center gap-2 px-6 py-2.5 rounded-full font-bold text-[0.92rem] bg-white/8 text-slate-100 border border-white/14 hover:bg-white/15 hover:text-white hover:-translate-y-px transition-all mt-3" style="display: none;">⬇️ Tải mã QR</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lịch sử nạp tiền -->
+        <section class="topup-card topup-history-card bg-gradient-to-b from-[#161d2c]/95 to-[#0d111a]/98 border border-amber-500/30 rounded-2xl p-6 md:p-7 shadow-[0_12px_32px_-6px_rgba(0,0,0,0.65)] mt-7" aria-labelledby="topup-history-title">
+            <h2 id="topup-history-title" class="font-black text-amber-400 text-[1.35rem] mt-0 mb-4 flex items-center gap-2.5">📜 Lịch Sử Nạp Tiền</h2>
+            <div id="topup-history-list" class="topup-history-list grid gap-3" aria-live="polite"></div>
+        </section>
+    </main>
+
+    <script src="config.js"></script>
+    <script src="scripts.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const balanceEl = document.getElementById("page-wallet-balance");
+            const topupInput = document.getElementById("page-topup-amount");
+            const transferContentEl = document.getElementById("transfer-content");
+            const vietqrImg = document.getElementById("vietqr-img");
+            const qrNotice = document.getElementById("qr-notice");
+            const qrNoticeText = document.getElementById("qr-notice-text");
+            const downloadQrBtn = document.getElementById("download-qr-btn");
+            const topupHistoryList = document.getElementById("topup-history-list");
+            let historyUsername = null;
+
+            const BANK_ID = "MB";
+            const ACCOUNT_NO = "130907072007";
+            const ACCOUNT_NAME = "NGUYEN THANH VIET";
+            let rechargeTimer;
+            let qrRequestId = 0;
+
+            function toggleQRDisplay(show, noticeMsg = "") {
+                if (show) {
+                    vietqrImg.style.display = "block";
+                    downloadQrBtn.style.display = "inline-flex";
+                    qrNotice.style.display = "none";
+                } else {
+                    vietqrImg.style.display = "none";
+                    downloadQrBtn.style.display = "none";
+                    qrNotice.style.display = "flex";
+                    if (noticeMsg) qrNoticeText.textContent = noticeMsg;
+                }
+            }
+
+            async function updateVietQR() {
+                const amount = Number(topupInput.value) || 0;
+                const requestId = ++qrRequestId;
+                if (!currentUser) {
+                    transferContentEl.textContent = "Đăng nhập và chọn số tiền từ 10.000đ";
+                    toggleQRDisplay(false, "VUI LÒNG ĐĂNG NHẬP TÀI KHOẢN ĐỂ HIỂN THỊ MÃ QR NẠP TIỀN");
+                    return;
+                }
+                if (amount < 10000) {
+                    transferContentEl.textContent = "Chọn số tiền để tạo mã nạp";
+                    toggleQRDisplay(false, "VUI LÒNG NHẬP SỐ TIỀN TỐI THIỂU 10.000đ ĐỂ HIỂN THỊ MÃ QR");
+                    return;
+                }
+                transferContentEl.textContent = "Đang tạo mã nạp...";
+                toggleQRDisplay(false, "ĐANG TẠO MÃ NẠP, VUI LÒNG CHỜ...");
+                try {
+                    const recharge = await apiFetch("/wallet/recharges", { method: "POST", body: JSON.stringify({ amount }) });
+                    if (requestId !== qrRequestId) return;
+                    const memo = recharge.code;
+                    transferContentEl.textContent = memo;
+                    const qrUrl = `https://img.vietqr.io/image/${BANK_ID}-${ACCOUNT_NO}-qronly.png?amount=${recharge.amount}&addInfo=${encodeURIComponent(memo)}&accountName=${encodeURIComponent(ACCOUNT_NAME)}`;
+                    vietqrImg.onload = () => { if (requestId === qrRequestId) toggleQRDisplay(true); };
+                    vietqrImg.onerror = () => { if (requestId === qrRequestId) toggleQRDisplay(false, "KHÔNG TẢI ĐƯỢC ẢNH QR. VUI LÒNG THỬ LẠI."); };
+                    vietqrImg.src = qrUrl;
+                } catch (err) {
+                    if (requestId !== qrRequestId) return;
+                    transferContentEl.textContent = "Không thể tạo mã nạp";
+                    toggleQRDisplay(false, "CÓ LỖI XẢY RA KHI TẠO MÃ NẠP: " + err.message.toUpperCase());
+                    showToast(err.message, "error");
+                }
+            }
+
+            function scheduleVietQRUpdate() {
+                clearTimeout(rechargeTimer);
+                rechargeTimer = setTimeout(updateVietQR, 400);
+            }
+
+            function updateTopupUI() {
+                if (currentUser) {
+                    balanceEl.textContent = formatPrice(currentUser.balance || 0);
+                } else {
+                    balanceEl.textContent = "0 đ";
+                }
+                scheduleVietQRUpdate();
+            }
+
+            function formatTransactionDate(value) {
+                return new Intl.DateTimeFormat("vi-VN", { dateStyle: "short", timeStyle: "short" }).format(new Date(value));
+            }
+
+            function escapeHtml(value) {
+                const element = document.createElement("div");
+                element.textContent = String(value || "");
+                return element.innerHTML;
+            }
+
+            function renderTopupHistory(items) {
+                if (!items.length) {
+                    topupHistoryList.innerHTML = `<div class="empty-state text-center py-20 text-slate-400 text-lg col-span-full"><span class="empty-icon text-5xl block mb-3.5 filter drop-shadow-[0_0_16px_rgba(245,158,11,0.3)]">🧾</span>Bạn chưa có giao dịch nạp tiền nào.</div>`;
+                    return;
+                }
+                topupHistoryList.innerHTML = items.map((item) => `
+                    <article class="topup-history-item flex items-center justify-between gap-4 py-3.5 border-b border-dashed border-white/10 last:border-b-0 last:pb-0 flex-wrap sm:flex-nowrap">
+                        <div class="topup-history-meta grid gap-1">
+                            <strong class="text-slate-100 font-semibold">Giao dịch nạp tiền thành công</strong>
+                            <span class="topup-history-date text-slate-400 text-[0.86rem]">${formatTransactionDate(item.createdAt)}</span>
+                            <span class="topup-history-code text-slate-400 text-[0.86rem]">Mã giao dịch: ${escapeHtml(item.referenceCode)}</span>
+                        </div>
+                        <span class="topup-history-amount text-emerald-400 font-black text-[1.05rem] whitespace-nowrap [text-shadow:0_0_10px_rgba(16,185,129,0.3)]">+${formatPrice(item.amount)}</span>
+                    </article>
+                `).join("");
+            }
+
+            async function loadTopupHistory() {
+                if (!currentUser) {
+                    historyUsername = null;
+                    topupHistoryList.innerHTML = `<div class="empty-state text-center py-20 text-slate-400 text-lg"><span class="text-5xl block mb-3.5">🔐</span>Vui lòng đăng nhập để xem lịch sử nạp tiền.</div>`;
+                    return;
+                }
+                historyUsername = currentUser.username;
+                topupHistoryList.innerHTML = `<div class="empty-state text-center py-20 text-slate-400"><span class="spinner"></span>Đang tải lịch sử nạp tiền...</div>`;
+                try {
+                    const data = await apiFetch("/wallet/transactions");
+                    renderTopupHistory(data.items || []);
+                } catch (err) {
+                    topupHistoryList.innerHTML = `<div class="empty-state text-center py-20 text-slate-400">⚠️ ${err.message}</div>`;
+                }
+            }
+
+            updateTopupUI();
+            loadTopupHistory();
+
+            topupInput.addEventListener("input", scheduleVietQRUpdate);
+
+            document.querySelectorAll(".page-chip").forEach(chip => {
+                chip.addEventListener("click", () => {
+                    topupInput.value = chip.dataset.amount;
+                    scheduleVietQRUpdate();
+                });
+            });
+
+            downloadQrBtn.addEventListener("click", async () => {
+                try {
+                    const response = await fetch(vietqrImg.src);
+                    if (!response.ok) throw new Error("Không thể tải ảnh QR");
+                    const fileUrl = URL.createObjectURL(await response.blob());
+                    const link = document.createElement("a");
+                    link.href = fileUrl;
+                    link.download = "ma-qr-nap-tien.png";
+                    link.click();
+                    URL.revokeObjectURL(fileUrl);
+                } catch (err) {
+                    showToast("Không thể tải QR. Vui lòng mở ảnh QR và lưu thủ công.", "error");
+                }
+            });
+
+            setInterval(async () => {
+                if (!currentUser) {
+                    if (historyUsername) loadTopupHistory();
+                    return;
+                }
+                try {
+                    const data = await apiFetch("/wallet/me");
+                    if (historyUsername !== currentUser.username) loadTopupHistory();
+                    if (data.balance !== currentUser.balance) {
+                        currentUser.balance = data.balance;
+                        localStorage.setItem("currentUser", JSON.stringify(currentUser));
+                        updateAuthUI();
+                        updateTopupUI();
+                        loadTopupHistory();
+                        showToast(`🎉 Nạp tiền tự động thành công! Số dư mới: ${formatPrice(data.balance)}`, "success");
+                    }
+                } catch (err) {}
+            }, 4000);
+        });
+    </script>
+</body>
+
+</html>

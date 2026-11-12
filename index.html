@@ -12,123 +12,154 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Spectral:ital,wght@0,600;0,700;1,600;1,700&display=swap" rel="stylesheet">
 
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        body: ['"Be Vietnam Pro"', 'system-ui', '-apple-system', 'sans-serif'],
+                        display: ['Spectral', 'Georgia', 'serif'],
+                    },
+                    colors: {
+                        surface: '#1a2336',
+                        'surface-hover': '#222e46',
+                        'bg-dark': '#0a0e17',
+                        'bg-elevated': '#121824',
+                    },
+                    animation: {
+                        'badge-pulse': 'badgePulse 2s infinite ease-in-out',
+                        'scroll-hint': 'scroll-hint-pulse 1.8s ease-in-out infinite',
+                    }
+                }
+            }
+        }
+    </script>
+
     <link rel="stylesheet" href="frontend/style.css">
 </head>
 
-<body>
+<body class="font-body antialiased min-h-screen overflow-x-hidden">
     <!-- Khung hiển thị thông báo (toast) -->
-    <div id="toast-container" aria-live="polite"></div>
+    <div id="toast-container" aria-live="polite"
+         class="fixed top-6 right-6 z-[2000] flex flex-col gap-3 max-w-[360px] w-[calc(100vw-3rem)] pointer-events-none">
+    </div>
 
-    <header class="site-header">
+    <header class="site-header sticky top-0 z-[100] bg-[#0b0f17] border-b border-white/5 transition-all duration-300">
         <!-- Tầng 1: Navigation Top Bar -->
-        <div class="top-bar">
-            <button type="button" id="mobile-menu-btn" class="mobile-menu-btn" aria-label="Mở menu điều hướng" aria-expanded="false" aria-controls="main-nav">
+        <div class="top-bar relative flex justify-between items-center px-4 md:px-10 py-3 bg-[#0b0f17] border-b border-white/5 min-h-[54px]">
+            <button type="button" id="mobile-menu-btn" class="mobile-menu-btn md:hidden flex-shrink-0 w-10 h-9 p-1.5 border border-white/18 rounded-lg bg-white/5 hover:bg-white/12 hover:border-amber-500 transition-all z-[2]" aria-label="Mở menu điều hướng" aria-expanded="false" aria-controls="main-nav">
                 <span></span><span></span><span></span>
             </button>
 
-            <a href="index.html" class="top-bar-logo" aria-label="Trang chủ">
-                <img class="logo" src="https://res.cloudinary.com/zv0jlmxj/image/upload/v1788875838/ChatGPT_Image_20_55_41_8_thg_9_2026.png" alt="Logo">
+            <a href="index.html" class="top-bar-logo hidden" aria-label="Trang chủ">
+                <img class="logo h-8 w-auto" src="https://res.cloudinary.com/zv0jlmxj/image/upload/v1788875838/ChatGPT_Image_20_55_41_8_thg_9_2026.png" alt="Logo">
             </a>
 
+            <!-- Sort mobile (absolute center) -->
             <div class="sort-box sort-box-mobile">
-                <select id="sort-select-mobile">
+                <select id="sort-select-mobile" class="bg-[#131926] text-slate-100 border border-slate-700/60 rounded-full pl-3 py-1.5 text-xs outline-none focus:border-amber-500 transition-all">
                     <option value="">Mới nhất</option>
                     <option value="price_asc">Giá tăng dần</option>
                     <option value="price_desc">Giá giảm dần</option>
                 </select>
             </div>
 
-            <nav id="main-nav" class="nav-links">
-                <a href="index.html" class="nav-item active">Trang chủ</a>
-                <a href="frontend/danhsachaccban.html" class="nav-item">Danh sách acc bay</a>
-                <a href="frontend/naptien.html" class="nav-item">Nạp tiền</a>
-                <a href="frontend/lichsumuanick.html" class="nav-item">Lịch sử mua nick</a>
-                <a href="frontend/baiviet.html" class="nav-item">Bài viết hướng dẫn</a>
-                <a href="frontend/lienhe.html" class="nav-item">Thông tin liên hệ</a>
+            <nav id="main-nav" class="nav-links hidden md:flex items-center gap-7">
+                <a href="index.html" class="nav-item text-white bg-[#151a24] border border-amber-500/70 text-[0.88rem] font-semibold px-5 py-1.5 rounded-full inline-flex items-center transition-all">Trang chủ</a>
+                <a href="frontend/danhsachaccban.html" class="nav-item text-slate-300 hover:text-white text-[0.88rem] font-medium px-1 py-1 transition-colors">Danh sách acc bay</a>
+                <a href="frontend/naptien.html" class="nav-item text-slate-300 hover:text-white text-[0.88rem] font-medium px-1 py-1 transition-colors">Nạp tiền</a>
+                <a href="frontend/lichsumuanick.html" class="nav-item text-slate-300 hover:text-white text-[0.88rem] font-medium px-1 py-1 transition-colors">Lịch sử mua nick</a>
+                <a href="frontend/baiviet.html" class="nav-item text-slate-300 hover:text-white text-[0.88rem] font-medium px-1 py-1 transition-colors">Bài viết hướng dẫn</a>
+                <a href="frontend/lienhe.html" class="nav-item text-slate-300 hover:text-white text-[0.88rem] font-medium px-1 py-1 transition-colors">Thông tin liên hệ</a>
             </nav>
 
-            <div id="auth-actions">
-                <button id="login-btn" class="btn btn-secondary">Đăng Nhập</button>
+            <div id="auth-actions" class="absolute right-4 top-0 h-[54px] flex items-center z-[3] md:static md:h-auto">
+                <button id="login-btn" class="btn btn-secondary inline-flex items-center gap-2 px-5 py-1.5 rounded-full font-bold text-[0.85rem] bg-white/10 text-white border border-white/15 hover:bg-white/20 transition-all whitespace-nowrap">Đăng Nhập</button>
             </div>
 
-            <!-- Profile hiển thị thông tin user / admin góc phải tầng 1 -->
-            <div id="user-profile-top" class="user-profile-top hidden">
-                <img class="user-avatar" src="https://res.cloudinary.com/zv0jlmxj/image/upload/v1787241826/96477251-8c82-4f3f-a032-8719e420fb94.png" alt="Avatar">
-                <div class="user-details">
-                    <span id="user-display" class="user-name"></span>
-                    <span class="user-balance"><strong id="wallet-balance-display">0đ</strong></span>
+            <!-- Profile user top bar -->
+            <div id="user-profile-top" class="user-profile-top hidden relative items-center gap-3 cursor-pointer p-0 bg-transparent border-0 absolute right-4 md:static z-[2]">
+                <img class="user-avatar w-9 h-9 rounded-full object-cover border-2 border-amber-500 shadow-sm" src="https://res.cloudinary.com/zv0jlmxj/image/upload/v1787241826/96477251-8c82-4f3f-a032-8719e420fb94.png" alt="Avatar">
+                <div class="user-details flex flex-col text-white text-[0.85rem] leading-tight">
+                    <span id="user-display" class="user-name font-bold tracking-wide max-w-[120px] truncate md:max-w-none"></span>
+                    <span class="user-balance text-[0.78rem] font-bold text-amber-400"><strong id="wallet-balance-display" class="text-amber-400 font-bold">0đ</strong></span>
                 </div>
 
-                <!-- Menu tính năng Admin thả xuống khi bấm vào Profile -->
-                <div id="admin-menu-dropdown" class="admin-menu-dropdown hidden">
-                    <button type="button" id="add-acc-btn" class="admin-menu-item admin-only-menu-item">➕ Thêm acc mới</button>
-                    <button type="button" id="import-acc-btn" class="admin-menu-item admin-only-menu-item">📄 Nhập acc từ CSV</button>
-                    <button type="button" id="manage-users-btn" class="admin-menu-item admin-only-menu-item">👤 Quản lý người dùng</button>
-                    <button type="button" id="change-password-btn" class="admin-menu-item profile-menu-item">🔐 Đổi mật khẩu</button>
-                    <button type="button" id="profile-logout-btn" class="admin-menu-item profile-menu-item profile-logout-item">↪ Đăng xuất</button>
+                <!-- Menu Admin dropdown -->
+                <div id="admin-menu-dropdown" class="admin-menu-dropdown hidden absolute top-[calc(100%+10px)] right-0 min-w-[230px] bg-[#121824] border border-amber-500/35 rounded-2xl p-2 z-[120] flex flex-col gap-1 shadow-[0_18px_44px_rgba(0,0,0,0.8),0_0_24px_rgba(245,158,11,0.12)] backdrop-blur-xl">
+                    <button type="button" id="add-acc-btn" class="admin-menu-item admin-only-menu-item w-full bg-transparent border-none text-slate-100 px-3.5 py-2.5 text-left rounded-lg text-[0.88rem] font-semibold cursor-pointer hover:bg-amber-500/15 hover:text-amber-400 hover:translate-x-1 transition-all flex items-center gap-2">➕ Thêm acc mới</button>
+                    <button type="button" id="import-acc-btn" class="admin-menu-item admin-only-menu-item w-full bg-transparent border-none text-slate-100 px-3.5 py-2.5 text-left rounded-lg text-[0.88rem] font-semibold cursor-pointer hover:bg-amber-500/15 hover:text-amber-400 hover:translate-x-1 transition-all flex items-center gap-2">📄 Nhập acc từ CSV</button>
+                    <button type="button" id="manage-users-btn" class="admin-menu-item admin-only-menu-item w-full bg-transparent border-none text-slate-100 px-3.5 py-2.5 text-left rounded-lg text-[0.88rem] font-semibold cursor-pointer hover:bg-amber-500/15 hover:text-amber-400 hover:translate-x-1 transition-all flex items-center gap-2">👤 Quản lý người dùng</button>
+                    <button type="button" id="change-password-btn" class="admin-menu-item profile-menu-item w-full bg-transparent border-none text-slate-100 px-3.5 py-2.5 text-left rounded-lg text-[0.88rem] font-semibold cursor-pointer hover:bg-amber-500/15 hover:text-amber-400 hover:translate-x-1 transition-all flex items-center gap-2">🔐 Đổi mật khẩu</button>
+                    <button type="button" id="profile-logout-btn" class="admin-menu-item profile-menu-item profile-logout-item w-full bg-transparent border-none text-rose-300 px-3.5 py-3 text-left rounded-lg text-[0.88rem] font-semibold cursor-pointer hover:bg-rose-500/15 hover:text-rose-400 hover:translate-x-1 transition-all flex items-center gap-2 mt-1 pt-3 border-t border-white/8">↪ Đăng xuất</button>
                 </div>
             </div>
         </div>
 
         <!-- Tầng 2: Search Bar & Action -->
-        <div class="main-bar">
-            <div class="brand-logo">
-                <img class="logo" src="https://res.cloudinary.com/zv0jlmxj/image/upload/v1788875838/ChatGPT_Image_20_55_41_8_thg_9_2026.png" alt="Logo">
+        <div class="main-bar flex items-center justify-between gap-6 px-4 md:px-10 py-3 bg-[#0b0f17]">
+            <div class="brand-logo hidden md:flex items-center flex-shrink-0">
+                <img class="logo h-12 w-auto object-contain rounded-xl" src="https://res.cloudinary.com/zv0jlmxj/image/upload/v1788875838/ChatGPT_Image_20_55_41_8_thg_9_2026.png" alt="Logo">
             </div>
 
-            <div class="search-box">
-                <span class="search-icon">🔍</span>
-                <input id="search" type="text" placeholder="Nhập tên tướng hoặc skin, vật phẩm hoặc giá tiền..." autocomplete="off">
+            <div class="search-box relative flex items-center flex-1 max-w-[820px]">
+                <span class="search-icon absolute left-4 top-1/2 -translate-y-1/2 text-cyan-400 pointer-events-none z-[3] text-base leading-none flex items-center justify-center">🔍</span>
+                <input id="search" type="text"
+                       placeholder="Nhập tên tướng hoặc skin, vật phẩm hoặc giá tiền..."
+                       autocomplete="off"
+                       class="w-full bg-[#131926] text-slate-100 border border-slate-700/60 rounded-full pl-11 pr-5 py-2.5 text-[0.88rem] font-body outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500/30 transition-all placeholder:text-slate-400">
 
-                <!-- Gợi ý cách tìm kiếm -->
-                <div id="search-hints" class="search-hints hidden">
-                    <div class="search-hint-group">
-                        <span class="search-hint-label">🎮 Tìm theo skin</span>
-                        <p class="search-hint-desc">Nhập tên skin, ví dụ: <em>Murad siêu việt</em></p>
+                <!-- Gợi ý tìm kiếm -->
+                <div id="search-hints" class="search-hints hidden absolute top-[calc(100%+12px)] left-0 w-full bg-[#121824]/97 border border-amber-500/35 rounded-2xl p-4 px-5 z-[999] shadow-[0_18px_44px_rgba(0,0,0,0.85),0_0_25px_rgba(245,158,11,0.1)] backdrop-blur-xl">
+                    <div class="search-hint-group mb-3 last:mb-0">
+                        <span class="search-hint-label inline-block text-amber-400 font-bold text-[0.9rem] mb-1">🎮 Tìm theo skin</span>
+                        <p class="search-hint-desc text-slate-400 text-[0.86rem] m-0">Nhập tên skin, ví dụ: <em class="text-white bg-white/8 px-1.5 py-0.5 rounded not-italic border border-white/12">Murad siêu việt</em></p>
                     </div>
-                    <div class="search-hint-group">
-                        <span class="search-hint-label">💰 Tìm theo giá tiền</span>
-                        <p class="search-hint-desc">Nhập giá tiền, ví dụ: <em>1x(10k-19k) 1xx(100-199k)</em></p>
+                    <div class="search-hint-group mb-0">
+                        <span class="search-hint-label inline-block text-amber-400 font-bold text-[0.9rem] mb-1">💰 Tìm theo giá tiền</span>
+                        <p class="search-hint-desc text-slate-400 text-[0.86rem] m-0">Nhập giá tiền, ví dụ: <em class="text-white bg-white/8 px-1.5 py-0.5 rounded not-italic border border-white/12">1x(10k-19k) 1xx(100-199k)</em></p>
                     </div>
                 </div>
             </div>
 
-            <div class="sort-box sort-box-pc">
-            <select id="sort-select">
-                <option value="">Mới nhất</option>
-                <option value="price_asc">Giá tăng dần</option>
-                <option value="price_desc">Giá giảm dần</option>
-            </select>
-        </div>
+            <div class="sort-box sort-box-pc hidden md:block">
+                <select id="sort-select" class="bg-[#131926] text-slate-100 border border-slate-700/60 rounded-full pl-5 pr-9 py-2.5 text-[0.88rem] font-medium outline-none focus:border-amber-500 transition-all cursor-pointer">
+                    <option value="">Mới nhất</option>
+                    <option value="price_asc">Giá tăng dần</option>
+                    <option value="price_desc">Giá giảm dần</option>
+                </select>
+            </div>
         </div>
     </header>
 
-    <main class="container">
+    <main class="container max-w-[1340px] mx-auto px-4 md:px-8 pt-9 pb-20">
         <!-- Danh sách acc -->
-        <div id="grid" class="grid"></div>
+        <div id="grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
 
         <!-- Phân trang -->
-        <div id="pagination"></div>
+        <div id="pagination" class="flex items-center justify-center gap-3.5 mt-12"></div>
     </main>
 
     <!-- Modal Xem Ảnh + Thông tin Acc -->
     <div id="image-modal" class="modal" role="dialog" aria-hidden="true">
-        <div id="image-modal-inner" class="image-modal-inner">
-            <button type="button" id="modal-close" class="modal-close modal-image-close" aria-label="Đóng phần xem ảnh phóng to">&times;</button>
-            <div class="modal-image-wrap">
-                <img id="modal-img" class="modal-content" src="" alt="Ảnh phóng to">
-                <div id="modal-info-note" class="modal-note-tag hidden"></div>
+        <div id="image-modal-inner" class="image-modal-inner flex flex-col items-center max-w-[90vw] max-h-[92vh] overflow-y-auto relative rounded-2xl shadow-[0_25px_60px_rgba(0,0,0,0.9),0_0_40px_rgba(245,158,11,0.12)]">
+            <button type="button" id="modal-close" class="modal-close modal-image-close fixed z-[1010] top-5 right-6 w-11 h-11 rounded-full bg-red-500/85 border border-white/40 text-white text-[32px] leading-none grid place-items-center shadow-[0_4px_18px_rgba(0,0,0,0.6)] cursor-pointer hover:bg-red-600 hover:scale-110 transition-all" aria-label="Đóng phần xem ảnh phóng to">&times;</button>
+            <div class="modal-image-wrap relative bg-[#0d121c]" style="width: min(90vw, 900px)">
+                <img id="modal-img" class="modal-content w-full max-h-[60vh] rounded-t-2xl object-contain block" src="" alt="Ảnh phóng to">
+                <div id="modal-info-note" class="modal-note-tag hidden absolute z-[2] top-3 right-3 max-w-[calc(100%-24px)] px-3.5 py-1.5 border border-red-500/50 rounded-full text-white bg-red-700/92 text-[0.82rem] font-bold shadow-[0_4px_12px_rgba(0,0,0,0.5)]"></div>
             </div>
-            <div id="modal-info-panel" class="modal-info-panel">
-                <button type="button" id="modal-scroll-hint" class="modal-scroll-hint" aria-controls="modal-auction-history">↓ Kéo xuống để mua hoặc đấu giá</button>
-                <div id="modal-info-title" class="modal-info-title"></div>
-                <div id="modal-info-text" class="modal-info-text"></div>
-                <div id="modal-info-skins" class="skin-list"></div>
-                <div id="modal-auction-history" class="auction-history hidden"></div>
-                <div id="modal-bid-area" class="modal-bid-area hidden"></div>
-                <div id="modal-buy-area" class="modal-buy-area">
-                    <button type="button" id="modal-buy-btn" class="btn btn-primary modal-buy-btn">🛒 Mua tài khoản này</button>
-                    <div id="modal-sold-label" class="sold-label hidden">✅ Tài khoản này đã được bán</div>
+            <div id="modal-info-panel" class="modal-info-panel bg-gradient-to-b from-[#161d2c]/98 to-[#0d111a]/99 border border-amber-500/35 border-t-0 rounded-b-2xl p-6 md:px-7 w-full max-w-[680px] flex flex-col gap-3">
+                <button type="button" id="modal-scroll-hint" class="modal-scroll-hint w-full py-3 px-3.5 text-[#1a1202] bg-gradient-to-br from-yellow-200 via-amber-500 to-amber-700 rounded-lg text-center font-bold text-[0.92rem] shadow-[0_4px_16px_rgba(245,158,11,0.35)] mb-1.5 border-0" aria-controls="modal-auction-history">↓ Kéo xuống để mua hoặc đấu giá</button>
+                <div id="modal-info-title" class="modal-info-title font-bold text-[1.5rem] tracking-tight"></div>
+                <div id="modal-info-text" class="modal-info-text text-[0.94rem] text-slate-100 leading-relaxed m-0"></div>
+                <div id="modal-info-skins" class="skin-list flex flex-wrap gap-1.5 mt-1"></div>
+                <div id="modal-auction-history" class="auction-history hidden mt-3.5 border-t border-amber-500/25 pt-3 text-[0.88rem]"></div>
+                <div id="modal-bid-area" class="modal-bid-area hidden flex-col gap-2 mt-2"></div>
+                <div id="modal-buy-area" class="modal-buy-area mt-2.5">
+                    <button type="button" id="modal-buy-btn" class="btn btn-primary modal-buy-btn w-full py-3.5 px-4 text-base font-bold inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-br from-orange-400 via-orange-500 to-orange-700 text-white shadow-[0_4px_18px_rgba(234,88,12,0.45)] hover:brightness-110 hover:shadow-[0_6px_24px_rgba(234,88,12,0.6)] transition-all active:scale-[0.97]">🛒 Mua tài khoản này</button>
+                    <div id="modal-sold-label" class="sold-label hidden text-center bg-emerald-500/16 text-emerald-500 font-bold text-[0.95rem] py-3 rounded-lg border border-emerald-500/30 mt-2">✅ Tài khoản này đã được bán</div>
                 </div>
             </div>
         </div>
@@ -136,48 +167,48 @@
 
     <!-- Modal CRUD (Thêm/Sửa Acc) -->
     <div id="crud-modal" class="modal" role="dialog" aria-hidden="true">
-        <div class="modal-card">
-            <span id="crud-modal-close" class="modal-close">&times;</span>
-            <h2 id="modal-form-title">Thêm Tài Khoản Mới</h2>
+        <div class="modal-card bg-gradient-to-b from-[#161d2c]/98 to-[#0d111a]/99 border border-amber-500/35 rounded-2xl p-8 w-[90%] max-w-lg relative max-h-[90vh] overflow-y-auto shadow-[0_24px_60px_rgba(0,0,0,0.85),0_0_35px_rgba(245,158,11,0.1)]">
+            <span id="crud-modal-close" class="modal-close absolute top-[18px] right-5 grid place-items-center w-9 h-9 border border-white/20 rounded-full bg-white/8 text-slate-400 text-2xl cursor-pointer hover:bg-red-500 hover:text-white hover:border-red-500 hover:rotate-90 transition-all">&times;</span>
+            <h2 id="modal-form-title" class="mt-0 mb-5 font-bold text-[1.45rem] text-amber-400 tracking-tight">Thêm Tài Khoản Mới</h2>
             <form id="acc-form">
-                <div class="form-group">
-                    <label for="acc-admin-note">Tag lưu ý hiển thị trên thẻ acc</label>
-                    <input type="text" id="acc-admin-note" maxlength="160" placeholder="Ví dụ: Hỗ trợ đổi mật khẩu sau mua">
+                <div class="form-group flex flex-col gap-1.5 mb-[18px]">
+                    <label for="acc-admin-note" class="text-[0.86rem] font-semibold text-slate-400">Tag lưu ý hiển thị trên thẻ acc</label>
+                    <input type="text" id="acc-admin-note" maxlength="160" placeholder="Ví dụ: Hỗ trợ đổi mật khẩu sau mua" class="w-full bg-surface border border-white/12 rounded-lg px-3.5 py-2.5 text-slate-100 text-[0.92rem] outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/25 focus:bg-[#1e283c] transition-all font-body">
                 </div>
-                <div class="form-group">
-                    <label for="acc-price">Giá mua chốt / Giá account (VNĐ) *</label>
-                    <input type="number" id="acc-price" required min="0" step="1000" placeholder="Ví dụ: 350000">
+                <div class="form-group flex flex-col gap-1.5 mb-[18px]">
+                    <label for="acc-price" class="text-[0.86rem] font-semibold text-slate-400">Giá mua chốt / Giá account (VNĐ) *</label>
+                    <input type="number" id="acc-price" required min="0" step="1000" placeholder="Ví dụ: 350000" class="w-full bg-surface border border-white/12 rounded-lg px-3.5 py-2.5 text-slate-100 text-[0.92rem] outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/25 focus:bg-[#1e283c] transition-all font-body">
                 </div>
-                <fieldset class="auction-settings">
-                    <legend>Thiết lập đấu giá (để trống nếu không đấu giá)</legend>
-                    <div class="form-group"><label for="auction-start-price">Giá khởi điểm (bội số 100đ)</label><input type="number" id="auction-start-price" min="0" step="100"></div>
-                    <div class="form-group"><label for="auction-starts-at">Bắt đầu</label><input type="datetime-local" id="auction-starts-at"></div>
-                    <div class="form-group"><label for="auction-ends-at">Kết thúc</label><input type="datetime-local" id="auction-ends-at"></div>
+                <fieldset class="auction-settings border border-amber-500/30 rounded-lg mx-0 my-[18px] px-[18px] py-3.5 bg-amber-500/[0.04]">
+                    <legend class="text-amber-400 font-bold px-2">Thiết lập đấu giá (để trống nếu không đấu giá)</legend>
+                    <div class="form-group flex flex-col gap-1.5 mb-[18px]"><label for="auction-start-price" class="text-[0.86rem] font-semibold text-slate-400">Giá khởi điểm (bội số 100đ)</label><input type="number" id="auction-start-price" min="0" step="100" class="w-full bg-surface border border-white/12 rounded-lg px-3.5 py-2.5 text-slate-100 text-[0.92rem] outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/25 focus:bg-[#1e283c] transition-all font-body"></div>
+                    <div class="form-group flex flex-col gap-1.5 mb-[18px]"><label for="auction-starts-at" class="text-[0.86rem] font-semibold text-slate-400">Bắt đầu</label><input type="datetime-local" id="auction-starts-at" class="w-full bg-surface border border-white/12 rounded-lg px-3.5 py-2.5 text-slate-100 text-[0.92rem] outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/25 focus:bg-[#1e283c] transition-all font-body"></div>
+                    <div class="form-group flex flex-col gap-1.5 mb-[18px]"><label for="auction-ends-at" class="text-[0.86rem] font-semibold text-slate-400">Kết thúc</label><input type="datetime-local" id="auction-ends-at" class="w-full bg-surface border border-white/12 rounded-lg px-3.5 py-2.5 text-slate-100 text-[0.92rem] outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/25 focus:bg-[#1e283c] transition-all font-body"></div>
                 </fieldset>
-                <div class="form-group">
-                    <label for="acc-image">URL Hình Ảnh *</label>
-                    <input type="url" id="acc-image" required placeholder="https://res.cloudinary.com/...">
+                <div class="form-group flex flex-col gap-1.5 mb-[18px]">
+                    <label for="acc-image" class="text-[0.86rem] font-semibold text-slate-400">URL Hình Ảnh *</label>
+                    <input type="url" id="acc-image" required placeholder="https://res.cloudinary.com/..." class="w-full bg-surface border border-white/12 rounded-lg px-3.5 py-2.5 text-slate-100 text-[0.92rem] outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/25 focus:bg-[#1e283c] transition-all font-body">
                 </div>
-                <div class="form-group">
-                    <label for="acc-info">Thông tin Acc (rank, số tướng...)</label>
-                    <textarea id="acc-info" rows="3" placeholder="Ví dụ: Rank Cao Thủ, 45 tướng, 60 skin"></textarea>
+                <div class="form-group flex flex-col gap-1.5 mb-[18px]">
+                    <label for="acc-info" class="text-[0.86rem] font-semibold text-slate-400">Thông tin Acc (rank, số tướng...)</label>
+                    <textarea id="acc-info" rows="3" placeholder="Ví dụ: Rank Cao Thủ, 45 tướng, 60 skin" class="w-full bg-surface border border-white/12 rounded-lg px-3.5 py-2.5 text-slate-100 text-[0.92rem] outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/25 focus:bg-[#1e283c] transition-all font-body resize-y"></textarea>
                 </div>
-                <div class="form-group">
-                    <label for="acc-skins">Danh sách Skins (mỗi skin một dòng)</label>
-                    <textarea id="acc-skins" rows="4" placeholder="Ryoma samurai huyền thoại&#10;Zephyr kỷ nguyên hổ phách"></textarea>
+                <div class="form-group flex flex-col gap-1.5 mb-[18px]">
+                    <label for="acc-skins" class="text-[0.86rem] font-semibold text-slate-400">Danh sách Skins (mỗi skin một dòng)</label>
+                    <textarea id="acc-skins" rows="4" placeholder="Ryoma samurai huyền thoại&#10;Zephyr kỷ nguyên hổ phách" class="w-full bg-surface border border-white/12 rounded-lg px-3.5 py-2.5 text-slate-100 text-[0.92rem] outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/25 focus:bg-[#1e283c] transition-all font-body resize-y"></textarea>
                 </div>
-                <div class="form-group">
-                    <label for="acc-game-username">Tài khoản game *</label>
-                    <input type="text" id="acc-game-username" required autocomplete="off" placeholder="Tài khoản đăng nhập game">
+                <div class="form-group flex flex-col gap-1.5 mb-[18px]">
+                    <label for="acc-game-username" class="text-[0.86rem] font-semibold text-slate-400">Tài khoản game *</label>
+                    <input type="text" id="acc-game-username" required autocomplete="off" placeholder="Tài khoản đăng nhập game" class="w-full bg-surface border border-white/12 rounded-lg px-3.5 py-2.5 text-slate-100 text-[0.92rem] outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/25 focus:bg-[#1e283c] transition-all font-body">
                 </div>
-                <div class="form-group">
-                    <label for="acc-game-password">Mật khẩu game *</label>
-                    <input type="text" id="acc-game-password" required autocomplete="off" placeholder="Mật khẩu đăng nhập game">
+                <div class="form-group flex flex-col gap-1.5 mb-[18px]">
+                    <label for="acc-game-password" class="text-[0.86rem] font-semibold text-slate-400">Mật khẩu game *</label>
+                    <input type="text" id="acc-game-password" required autocomplete="off" placeholder="Mật khẩu đăng nhập game" class="w-full bg-surface border border-white/12 rounded-lg px-3.5 py-2.5 text-slate-100 text-[0.92rem] outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/25 focus:bg-[#1e283c] transition-all font-body">
                 </div>
-                <div id="crud-error" class="form-error"></div>
-                <div class="form-actions">
-                    <button type="button" id="cancel-form-btn" class="btn btn-secondary">Hủy</button>
-                    <button type="submit" id="crud-submit-btn" class="btn btn-primary">Lưu lại</button>
+                <div id="crud-error" class="form-error text-red-300 text-[0.84rem] font-semibold -mt-1.5 mb-3.5 min-h-[1em]"></div>
+                <div class="form-actions flex justify-end gap-3 mt-6">
+                    <button type="button" id="cancel-form-btn" class="btn btn-secondary inline-flex items-center gap-2 px-6 py-2.5 rounded-full font-bold text-[0.92rem] bg-white/8 text-slate-100 border border-white/14 hover:bg-white/15 hover:text-white hover:-translate-y-px transition-all">Hủy</button>
+                    <button type="submit" id="crud-submit-btn" class="btn btn-primary inline-flex items-center gap-2 px-6 py-2.5 rounded-full font-bold text-[0.92rem] bg-gradient-to-br from-yellow-200 via-amber-500 to-amber-700 text-[#1a1202] shadow-[0_4px_16px_rgba(245,158,11,0.35)] hover:-translate-y-0.5 hover:shadow-[0_6px_22px_rgba(245,158,11,0.5)] transition-all active:scale-95 disabled:opacity-50">Lưu lại</button>
                 </div>
             </form>
         </div>
@@ -185,87 +216,87 @@
 
     <!-- Modal Quản lý người dùng (Admin) -->
     <div id="users-modal" class="modal" role="dialog" aria-hidden="true">
-        <div class="modal-card wide">
-            <span id="users-modal-close" class="modal-close">&times;</span>
-            <h2>Quản Lý Người Dùng</h2>
+        <div class="modal-card wide bg-gradient-to-b from-[#161d2c]/98 to-[#0d111a]/99 border border-amber-500/35 rounded-2xl p-8 w-[90%] max-w-3xl relative max-h-[90vh] overflow-y-auto shadow-[0_24px_60px_rgba(0,0,0,0.85)]">
+            <span id="users-modal-close" class="modal-close absolute top-[18px] right-5 grid place-items-center w-9 h-9 border border-white/20 rounded-full bg-white/8 text-slate-400 text-2xl cursor-pointer hover:bg-red-500 hover:text-white hover:rotate-90 transition-all">&times;</span>
+            <h2 class="mt-0 mb-5 font-bold text-[1.45rem] text-amber-400 tracking-tight">Quản Lý Người Dùng</h2>
 
-            <div class="user-table-wrap">
-                <table class="user-table">
+            <div class="user-table-wrap overflow-x-auto">
+                <table class="user-table w-full border-collapse text-[0.88rem]">
                     <thead>
                         <tr>
-                            <th>Tên đăng nhập</th>
-                            <th>Số dư (đ)</th>
-                            <th>Vai trò</th>
-                            <th>Ngày tạo</th>
-                            <th>Thao tác</th>
+                            <th class="px-3.5 py-3 text-left text-amber-400 font-bold text-[0.78rem] uppercase tracking-wide bg-white/[0.02] border-b border-white/8">Tên đăng nhập</th>
+                            <th class="px-3.5 py-3 text-left text-amber-400 font-bold text-[0.78rem] uppercase tracking-wide bg-white/[0.02] border-b border-white/8">Số dư (đ)</th>
+                            <th class="px-3.5 py-3 text-left text-amber-400 font-bold text-[0.78rem] uppercase tracking-wide bg-white/[0.02] border-b border-white/8">Vai trò</th>
+                            <th class="px-3.5 py-3 text-left text-amber-400 font-bold text-[0.78rem] uppercase tracking-wide bg-white/[0.02] border-b border-white/8">Ngày tạo</th>
+                            <th class="px-3.5 py-3 text-left text-amber-400 font-bold text-[0.78rem] uppercase tracking-wide bg-white/[0.02] border-b border-white/8">Thao tác</th>
                         </tr>
                     </thead>
                     <tbody id="users-table-body"></tbody>
                 </table>
             </div>
 
-            <div id="users-error" class="form-error"></div>
+            <div id="users-error" class="form-error text-red-300 text-[0.84rem] font-semibold mt-2 min-h-[1em]"></div>
 
-            <h2 style="font-size: 1rem; margin-top: 24px;">Thêm người dùng mới</h2>
-            <form id="add-user-form" class="add-user-row">
-                <input type="text" id="new-user-username" placeholder="Tên đăng nhập" required>
-                <input type="password" id="new-user-password" placeholder="Mật khẩu (tối thiểu 6 ký tự)" required minlength="6">
-                <select id="new-user-role">
+            <h2 class="font-bold text-base mt-6 mb-3 text-amber-400">Thêm người dùng mới</h2>
+            <form id="add-user-form" class="add-user-row flex gap-2.5 mt-[18px] flex-wrap">
+                <input type="text" id="new-user-username" placeholder="Tên đăng nhập" required class="flex-1 min-w-[150px] bg-surface border border-white/15 rounded-lg px-3.5 py-2.5 text-slate-100 font-body outline-none focus:border-amber-500 transition-all">
+                <input type="password" id="new-user-password" placeholder="Mật khẩu (tối thiểu 6 ký tự)" required minlength="6" class="flex-1 min-w-[150px] bg-surface border border-white/15 rounded-lg px-3.5 py-2.5 text-slate-100 font-body outline-none focus:border-amber-500 transition-all">
+                <select id="new-user-role" class="bg-surface text-slate-100 border border-white/15 rounded-lg px-3 py-2.5 font-body outline-none focus:border-amber-500 transition-all">
                     <option value="user">User</option>
                     <option value="admin">Admin</option>
                 </select>
-                <button type="submit" class="btn btn-primary btn-small">+ Thêm</button>
+                <button type="submit" class="btn btn-primary btn-small inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full font-bold text-[0.82rem] bg-gradient-to-br from-yellow-200 via-amber-500 to-amber-700 text-[#1a1202] shadow-[0_4px_16px_rgba(245,158,11,0.35)] hover:-translate-y-0.5 transition-all active:scale-95">+ Thêm</button>
             </form>
         </div>
     </div>
 
     <!-- Modal Nhập Acc Từ CSV -->
     <div id="csv-import-modal" class="modal" role="dialog" aria-hidden="true">
-        <div class="modal-card wide csv-import-card">
-            <span id="csv-import-modal-close" class="modal-close">&times;</span>
-            <h2>📄 Nhập Nhiều Acc Từ CSV</h2>
-            <p class="csv-import-help">Chọn file CSV có các cột theo thứ tự: <code>tag lưu ý, giá, URL ảnh, thông tin, skins, tài khoản game, mật khẩu game</code>. Các skin cách nhau bằng dấu <code>|</code>.</p>
-            <div class="form-group">
-                <label for="csv-import-file">File CSV</label>
-                <input type="file" id="csv-import-file" accept=".csv,text/csv">
+        <div class="modal-card wide csv-import-card bg-gradient-to-b from-[#161d2c]/98 to-[#0d111a]/99 border border-amber-500/35 rounded-2xl p-8 w-[90%] max-w-[780px] relative max-h-[90vh] overflow-y-auto shadow-[0_24px_60px_rgba(0,0,0,0.85)]">
+            <span id="csv-import-modal-close" class="modal-close absolute top-[18px] right-5 grid place-items-center w-9 h-9 border border-white/20 rounded-full bg-white/8 text-slate-400 text-2xl cursor-pointer hover:bg-red-500 hover:text-white hover:rotate-90 transition-all">&times;</span>
+            <h2 class="mt-0 mb-5 font-bold text-[1.45rem] text-amber-400 tracking-tight">📄 Nhập Nhiều Acc Từ CSV</h2>
+            <p class="csv-import-help text-slate-400 text-[0.86rem] leading-relaxed mb-4">Chọn file CSV có các cột theo thứ tự: <code class="px-1.5 py-0.5 rounded text-amber-400 bg-surface">tag lưu ý, giá, URL ảnh, thông tin, skins, tài khoản game, mật khẩu game</code>. Các skin cách nhau bằng dấu <code class="px-1.5 py-0.5 rounded text-amber-400 bg-surface">|</code>.</p>
+            <div class="form-group flex flex-col gap-1.5 mb-[18px]">
+                <label for="csv-import-file" class="text-[0.86rem] font-semibold text-slate-400">File CSV</label>
+                <input type="file" id="csv-import-file" accept=".csv,text/csv" class="w-full bg-surface border border-white/12 rounded-lg px-3.5 py-2.5 text-slate-100 text-[0.92rem] outline-none focus:border-amber-500 transition-all font-body file:mr-3 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-amber-500/20 file:text-amber-400 hover:file:bg-amber-500/30">
             </div>
-            <div id="csv-import-error" class="form-error"></div>
-            <div id="csv-import-preview" class="csv-import-preview hidden"></div>
-            <div class="form-actions">
-                <button type="button" id="csv-import-cancel-btn" class="btn btn-secondary">Hủy</button>
-                <button type="button" id="csv-import-submit-btn" class="btn btn-primary" disabled>Nhập acc</button>
+            <div id="csv-import-error" class="form-error text-red-300 text-[0.84rem] font-semibold -mt-1.5 mb-3.5 min-h-[1em]"></div>
+            <div id="csv-import-preview" class="csv-import-preview hidden mt-4 p-3.5 border border-amber-500/30 rounded-lg bg-surface text-[0.86rem] overflow-x-auto"></div>
+            <div class="form-actions flex justify-end gap-3 mt-6">
+                <button type="button" id="csv-import-cancel-btn" class="btn btn-secondary inline-flex items-center gap-2 px-6 py-2.5 rounded-full font-bold text-[0.92rem] bg-white/8 text-slate-100 border border-white/14 hover:bg-white/15 hover:text-white hover:-translate-y-px transition-all">Hủy</button>
+                <button type="button" id="csv-import-submit-btn" class="btn btn-primary inline-flex items-center gap-2 px-6 py-2.5 rounded-full font-bold text-[0.92rem] bg-gradient-to-br from-yellow-200 via-amber-500 to-amber-700 text-[#1a1202] shadow-[0_4px_16px_rgba(245,158,11,0.35)] hover:-translate-y-0.5 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed" disabled>Nhập acc</button>
             </div>
         </div>
     </div>
 
-    <!-- Modal Ví Của Tôi (Nạp tiền) -->
+    <!-- Modal Ví Của Tôi -->
     <div id="wallet-modal" class="modal" role="dialog" aria-hidden="true">
-        <div class="modal-card">
-            <span id="wallet-modal-close" class="modal-close">&times;</span>
-            <h2>💰 Ví Của Tôi</h2>
+        <div class="modal-card bg-gradient-to-b from-[#161d2c]/98 to-[#0d111a]/99 border border-amber-500/35 rounded-2xl p-8 w-[90%] max-w-lg relative max-h-[90vh] overflow-y-auto shadow-[0_24px_60px_rgba(0,0,0,0.85)]">
+            <span id="wallet-modal-close" class="modal-close absolute top-[18px] right-5 grid place-items-center w-9 h-9 border border-white/20 rounded-full bg-white/8 text-slate-400 text-2xl cursor-pointer hover:bg-red-500 hover:text-white hover:rotate-90 transition-all">&times;</span>
+            <h2 class="mt-0 mb-5 font-bold text-[1.45rem] text-amber-400 tracking-tight">💰 Ví Của Tôi</h2>
 
-            <div class="wallet-balance-box">
-                <span class="wallet-balance-label">Số dư hiện tại</span>
-                <span id="wallet-balance-amount" class="wallet-balance-amount">0 đ</span>
+            <div class="wallet-balance-box bg-gradient-to-br from-[#1a2336]/90 to-[#121824]/95 border border-amber-500/35 rounded-2xl p-6 flex flex-col gap-1.5 mb-5 shadow-[inset_0_0_20px_rgba(245,158,11,0.05)]">
+                <span class="wallet-balance-label text-[0.82rem] text-slate-400 uppercase tracking-wide">Số dư hiện tại</span>
+                <span id="wallet-balance-amount" class="wallet-balance-amount font-black text-[2.2rem]">0 đ</span>
             </div>
 
-            <p class="wallet-note">Nạp tiền bằng chuyển khoản ngân hàng tại trang <a href="frontend/naptien.html">Nạp tiền</a>. Số dư sẽ được cập nhật tự động sau khi giao dịch được xác nhận.</p>
+            <p class="wallet-note text-[0.82rem] text-slate-400 mt-4 leading-relaxed">Nạp tiền bằng chuyển khoản ngân hàng tại trang <a href="frontend/naptien.html" class="text-amber-400 underline">Nạp tiền</a>. Số dư sẽ được cập nhật tự động sau khi giao dịch được xác nhận.</p>
 
-            <button type="button" id="open-history-btn" class="btn btn-secondary" style="width: 100%; margin-top: 14px;">📜 Xem lịch sử mua acc</button>
+            <button type="button" id="open-history-btn" class="btn btn-secondary w-full mt-3.5 inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full font-bold text-[0.92rem] bg-white/8 text-slate-100 border border-white/14 hover:bg-white/15 hover:text-white hover:-translate-y-px transition-all">📜 Xem lịch sử mua acc</button>
         </div>
     </div>
 
     <!-- Modal Lịch Sử Mua Acc -->
     <div id="history-modal" class="modal" role="dialog" aria-hidden="true">
-        <div class="modal-card wide">
-            <span id="history-modal-close" class="modal-close">&times;</span>
-            <h2>📜 Lịch Sử Mua Acc</h2>
-            <div id="history-list" class="history-list"></div>
+        <div class="modal-card wide bg-gradient-to-b from-[#161d2c]/98 to-[#0d111a]/99 border border-amber-500/35 rounded-2xl p-8 w-[90%] max-w-3xl relative max-h-[90vh] overflow-y-auto shadow-[0_24px_60px_rgba(0,0,0,0.85)]">
+            <span id="history-modal-close" class="modal-close absolute top-[18px] right-5 grid place-items-center w-9 h-9 border border-white/20 rounded-full bg-white/8 text-slate-400 text-2xl cursor-pointer hover:bg-red-500 hover:text-white hover:rotate-90 transition-all">&times;</span>
+            <h2 class="mt-0 mb-5 font-bold text-[1.45rem] text-amber-400 tracking-tight">📜 Lịch Sử Mua Acc</h2>
+            <div id="history-list" class="history-list flex flex-col gap-4 max-h-[60vh] overflow-y-auto"></div>
         </div>
     </div>
 
-    <!-- Badge hiển thị tổng số tài khoản ở góc trái dưới -->
-    <div id="total-accounts-badge" class="total-accounts-badge">Tổng số acc: <span id="total-accounts-count">0</span>
+    <!-- Badge tổng số tài khoản -->
+    <div id="total-accounts-badge" class="total-accounts-badge fixed bottom-6 left-6 z-[999] bg-[#0f141f] text-white border border-amber-500/50 px-4 py-2 rounded-full text-[0.88rem] font-semibold shadow-[0_4px_16px_rgba(0,0,0,0.7)] backdrop-blur-md pointer-events-none flex items-center gap-1.5">Tổng số acc: <span id="total-accounts-count" class="text-amber-400 font-bold">0</span>
     </div>
 
     <script src="frontend/config.js"></script>

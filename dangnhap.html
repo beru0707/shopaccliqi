@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Đăng nhập hoặc đăng ký tài khoản Shop Acc Liqi">
+    <title>Đăng nhập - Shop Acc Liqi</title>
+
+    <link rel="icon" type="image/png" href="https://res.cloudinary.com/zv0jlmxj/image/upload/r_max/v1787241826/96477251-8c82-4f3f-a032-8719e420fb94.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        body: ['"Be Vietnam Pro"', 'system-ui', '-apple-system', 'sans-serif'],
+                    },
+                    colors: {
+                        surface: '#1a2336',
+                        'bg-dark': '#0a0e17',
+                        'bg-elevated': '#121824',
+                    },
+                }
+            }
+        }
+    </script>
+
+    <link rel="stylesheet" href="style.css">
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body class="font-body antialiased min-h-screen">
+    <main class="max-w-[466px] mx-auto px-4 py-[70px]">
+        <section class="relative bg-gradient-to-b from-[#161d2c]/98 to-[#0d111a]/99 border border-amber-500/35 rounded-2xl pt-16 px-8 pb-8 shadow-[0_24px_60px_rgba(0,0,0,0.85),0_0_35px_rgba(245,158,11,0.1)]" aria-label="Đăng nhập hoặc đăng ký">
+            <!-- Nút đóng / về trang chủ -->
+            <a href="../index.html"
+               class="modal-close auth-close absolute top-3 right-3 w-11 h-11 rounded-full bg-red-500/85 border border-white/40 text-white text-[32px] leading-none grid place-items-center shadow-[0_4px_18px_rgba(0,0,0,0.6)] no-underline cursor-pointer hover:bg-red-600 hover:scale-110 transition-all"
+               aria-label="Về trang chủ" title="Về trang chủ">&times;</a>
+
+            <!-- Tabs -->
+            <div class="auth-tabs flex gap-1.5 bg-surface rounded-full p-1.5 mb-6 border border-white/8">
+                <button type="button" id="tab-login"
+                        class="auth-tab active flex-1 text-center py-2 rounded-full border-none font-bold text-[0.88rem] cursor-pointer transition-all bg-gradient-to-br from-yellow-200 via-amber-500 to-amber-700 text-[#1a1202] shadow-[0_4px_12px_rgba(245,158,11,0.3)]">Đăng nhập</button>
+                <button type="button" id="tab-register"
+                        class="auth-tab flex-1 text-center py-2 rounded-full border-none bg-transparent text-slate-400 font-bold text-[0.88rem] cursor-pointer transition-all hover:text-white">Đăng ký</button>
+            </div>
+
+            <!-- Form đăng nhập -->
+            <form id="login-form">
+                <div class="form-group flex flex-col gap-1.5 mb-[18px]">
+                    <label for="username" class="text-[0.86rem] font-semibold text-slate-400">Tên đăng nhập *</label>
+                    <input type="text" id="username" required placeholder="Nhập tên tài khoản"
+                           class="w-full bg-surface border border-white/12 rounded-lg px-3.5 py-2.5 text-slate-100 text-[0.92rem] outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/25 focus:bg-[#1e283c] transition-all font-body">
+                </div>
+                <div class="form-group flex flex-col gap-1.5 mb-[18px]">
+                    <label for="password" class="text-[0.86rem] font-semibold text-slate-400">Mật khẩu *</label>
+                    <input type="password" id="password" required placeholder="Nhập mật khẩu"
+                           class="w-full bg-surface border border-white/12 rounded-lg px-3.5 py-2.5 text-slate-100 text-[0.92rem] outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/25 focus:bg-[#1e283c] transition-all font-body">
+                </div>
+                <div id="login-error" class="form-error text-red-300 text-[0.84rem] font-semibold -mt-1.5 mb-3.5 min-h-[1em]"></div>
+                <div class="form-actions">
+                    <button type="submit" id="login-submit-btn"
+                            class="btn btn-primary w-full inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full font-bold text-[0.92rem] bg-gradient-to-br from-yellow-200 via-amber-500 to-amber-700 text-[#1a1202] shadow-[0_4px_16px_rgba(245,158,11,0.35)] hover:-translate-y-0.5 hover:shadow-[0_6px_22px_rgba(245,158,11,0.5)] transition-all active:scale-95 disabled:opacity-50">Đăng nhập</button>
+                </div>
+            </form>
+
+            <!-- Form đăng ký -->
+            <form id="register-form" class="hidden">
+                <div class="form-group flex flex-col gap-1.5 mb-[18px]">
+                    <label for="reg-username" class="text-[0.86rem] font-semibold text-slate-400">Tên đăng nhập *</label>
+                    <input type="text" id="reg-username" required placeholder="Chọn tên đăng nhập"
+                           class="w-full bg-surface border border-white/12 rounded-lg px-3.5 py-2.5 text-slate-100 text-[0.92rem] outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/25 focus:bg-[#1e283c] transition-all font-body">
+                </div>
+                <div class="form-group flex flex-col gap-1.5 mb-[18px]">
+                    <label for="reg-password" class="text-[0.86rem] font-semibold text-slate-400">Mật khẩu *</label>
+                    <input type="password" id="reg-password" required minlength="6" placeholder="Tối thiểu 6 ký tự"
+                           class="w-full bg-surface border border-white/12 rounded-lg px-3.5 py-2.5 text-slate-100 text-[0.92rem] outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/25 focus:bg-[#1e283c] transition-all font-body">
+                </div>
+                <div class="form-group flex flex-col gap-1.5 mb-[18px]">
+                    <label for="reg-password-confirm" class="text-[0.86rem] font-semibold text-slate-400">Nhập lại mật khẩu *</label>
+                    <input type="password" id="reg-password-confirm" required minlength="6" placeholder="Nhập lại mật khẩu"
+                           class="w-full bg-surface border border-white/12 rounded-lg px-3.5 py-2.5 text-slate-100 text-[0.92rem] outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/25 focus:bg-[#1e283c] transition-all font-body">
+                </div>
+                <div id="register-error" class="form-error text-red-300 text-[0.84rem] font-semibold -mt-1.5 mb-3.5 min-h-[1em]"></div>
+                <div class="form-actions">
+                    <button type="submit" id="register-submit-btn"
+                            class="btn btn-primary w-full inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full font-bold text-[0.92rem] bg-gradient-to-br from-yellow-200 via-amber-500 to-amber-700 text-[#1a1202] shadow-[0_4px_16px_rgba(245,158,11,0.35)] hover:-translate-y-0.5 hover:shadow-[0_6px_22px_rgba(245,158,11,0.5)] transition-all active:scale-95 disabled:opacity-50">Tạo tài khoản</button>
+                </div>
+            </form>
+
+            <!-- Divider -->
+            <div class="text-center my-4 text-slate-500 text-sm">— hoặc —</div>
+
+            <!-- Google login -->
+            <div class="google-login-wrap">
+                <span class="btn btn-primary inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full font-bold text-[0.92rem] bg-gradient-to-br from-yellow-200 via-amber-500 to-amber-700 text-[#1a1202] shadow-[0_4px_16px_rgba(245,158,11,0.35)]" aria-hidden="true">
+                    <span class="google-g">
+                        <svg width="14" height="14" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.9 6.1C12.4 13.6 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.5 5.8c4.4-4.1 7.1-10.1 7.1-17.5z"/><path fill="#FBBC05" d="M10.5 28.7c-.5-1.5-.8-3-.8-4.7s.3-3.2.8-4.7l-7.9-6.1C.9 16.4 0 20.1 0 24s.9 7.6 2.6 10.8l7.9-6.1z"/><path fill="#34A853" d="M24 48c6.3 0 11.6-2.1 15.5-5.7l-7.5-5.8c-2.1 1.4-4.8 2.3-8 2.3-6.3 0-11.6-4.1-13.5-9.8l-7.9 6.1C6.5 42.6 14.6 48 24 48z"/></svg>
+                    </span>
+                    Đăng nhập bằng Google
+                </span>
+                <div id="google-btn"></div>
+            </div>
+            <div id="google-error" class="form-error text-red-300 text-[0.84rem] font-semibold text-center mt-2 min-h-[1em]"></div>
+
+            <!-- Về trang chủ -->
+            <a href="../index.html" class="back-home block mx-auto mt-4 w-max text-sm text-slate-400 hover:text-amber-400 transition-colors">← Về trang chủ</a>
+        </section>
+    </main>
+
+    <script src="config.js"></script>
+    <script>
+        const loginForm = document.getElementById("login-form");
+        const registerForm = document.getElementById("register-form");
+        const loginError = document.getElementById("login-error");
+        const registerError = document.getElementById("register-error");
+
+        function switchTab(tab) {
+            const isLogin = tab === "login";
+            const tabLoginBtn = document.getElementById("tab-login");
+            const tabRegBtn = document.getElementById("tab-register");
+
+            const activeClasses = ["bg-gradient-to-br", "from-yellow-200", "via-amber-500", "to-amber-700", "text-[#1a1202]", "shadow-[0_4px_12px_rgba(245,158,11,0.3)]"];
+            const inactiveClasses = ["bg-transparent", "text-slate-400"];
+
+            if (isLogin) {
+                tabLoginBtn.classList.add(...activeClasses);
+                tabLoginBtn.classList.remove(...inactiveClasses);
+                tabRegBtn.classList.remove(...activeClasses);
+                tabRegBtn.classList.add(...inactiveClasses);
+            } else {
+                tabRegBtn.classList.add(...activeClasses);
+                tabRegBtn.classList.remove(...inactiveClasses);
+                tabLoginBtn.classList.remove(...activeClasses);
+                tabLoginBtn.classList.add(...inactiveClasses);
+            }
+            tabLoginBtn.classList.toggle("active", isLogin);
+            tabRegBtn.classList.toggle("active", !isLogin);
+            loginForm.classList.toggle("hidden", !isLogin);
+            registerForm.classList.toggle("hidden", isLogin);
+        }
+
+        document.getElementById("tab-login").onclick = () => switchTab("login");
+        document.getElementById("tab-register").onclick = () => switchTab("register");
+
+        async function request(path, body) {
+            const response = await fetch(`${API_BASE_URL}${path}`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.error || "Không thể thực hiện yêu cầu.");
+            return data;
+        }
+
+        function saveSession(data) {
+            localStorage.setItem("authToken", data.token);
+            localStorage.setItem("currentUser", JSON.stringify(data.user));
+            window.location.href = "../index.html";
+        }
+
+        function setBusy(btn, busy, label) {
+            btn.disabled = busy;
+            btn.innerHTML = busy ? '<span class="spinner"></span>Đang xử lý...' : label;
+        }
+
+        loginForm.onsubmit = async (event) => {
+            event.preventDefault();
+            const btn = document.getElementById("login-submit-btn");
+            if (btn.disabled) return;
+            loginError.textContent = "";
+            setBusy(btn, true);
+            try {
+                saveSession(await request("/auth/login", { username: username.value.trim(), password: password.value }));
+            } catch (error) {
+                loginError.textContent = error.message;
+                setBusy(btn, false, "Đăng nhập");
+            }
+        };
+
+        registerForm.onsubmit = async (event) => {
+            event.preventDefault();
+            const btn = document.getElementById("register-submit-btn");
+            if (btn.disabled) return;
+            registerError.textContent = "";
+            if (regPassword.value !== regPasswordConfirm.value) { registerError.textContent = "Mật khẩu nhập lại không khớp."; return; }
+            setBusy(btn, true);
+            try {
+                saveSession(await request("/auth/register", { username: regUsername.value.trim(), password: regPassword.value }));
+            } catch (error) {
+                registerError.textContent = error.message;
+                setBusy(btn, false, "Tạo tài khoản");
+            }
+        };
+
+        const username = document.getElementById("username"), password = document.getElementById("password"),
+              regUsername = document.getElementById("reg-username"), regPassword = document.getElementById("reg-password"),
+              regPasswordConfirm = document.getElementById("reg-password-confirm");
+
+        // Đăng nhập bằng Google
+        async function handleGoogleCredential(response) {
+            document.getElementById("google-error").textContent = "";
+            try {
+                saveSession(await request("/auth/google", { credential: response.credential }));
+            } catch (error) {
+                document.getElementById("google-error").textContent = error.message;
+            }
+        }
+
+        window.addEventListener("load", () => {
+            if (!window.google || !window.google.accounts) {
+                document.getElementById("google-error").textContent = "Không tải được Google. Vui lòng thử lại.";
+                return;
+            }
+            google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: handleGoogleCredential });
+            const googleBtn = document.getElementById("google-btn");
+            const googleWidth = Math.max(200, Math.min(400, Math.floor(googleBtn.clientWidth)));
+            google.accounts.id.renderButton(googleBtn, {
+                theme: "filled_black", size: "large", text: "continue_with", shape: "pill", width: googleWidth,
+            });
+        });
+    </script>
+</body>
+</html>
