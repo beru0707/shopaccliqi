@@ -12,78 +12,83 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Spectral:ital,wght@0,600;0,700;1,600;1,700&display=swap" rel="stylesheet">
 
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        body: ['"Be Vietnam Pro"', 'system-ui', '-apple-system', 'sans-serif'],
-                    },
-                    colors: {
-                        surface: '#1a2336',
-                        'bg-dark': '#0a0e17',
-                        'bg-elevated': '#121824',
-                    },
-                }
-            }
-        }
-    </script>
-
     <link rel="stylesheet" href="style.css">
+    <style>
+        .page-title {
+            font-family: var(--font-display);
+            color: var(--gold);
+            font-size: 1.8rem;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .history-page-card {
+            background: var(--bg-elevated);
+            border: 1px solid rgba(216, 181, 104, 0.25);
+            border-radius: var(--radius);
+            padding: 28px;
+            box-shadow: var(--shadow);
+        }
+        .login-notice {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--ink-muted);
+        }
+        .login-notice button {
+            margin-top: 16px;
+        }
+    </style>
 </head>
 
-<body class="font-body antialiased min-h-screen">
-    <div id="toast-container" aria-live="polite"
-         class="fixed top-6 right-6 z-[2000] flex flex-col gap-3 max-w-[360px] w-[calc(100vw-3rem)] pointer-events-none">
-    </div>
+<body>
+    <div id="toast-container" aria-live="polite"></div>
 
-    <header class="site-header sticky top-0 z-[100] bg-[#0b0f17] border-b border-white/5 transition-all">
-        <div class="top-bar relative flex justify-between items-center px-4 md:px-10 py-3 bg-[#0b0f17] border-b border-white/5 min-h-[54px]">
-            <button type="button" id="mobile-menu-btn" class="mobile-menu-btn md:hidden flex-shrink-0 w-10 h-9 p-1.5 border border-white/18 rounded-lg bg-white/5 hover:bg-white/12 hover:border-amber-500 transition-all z-[2]" aria-label="Mở menu điều hướng" aria-expanded="false" aria-controls="main-nav">
+    <header class="site-header">
+        <div class="top-bar">
+            <button type="button" id="mobile-menu-btn" class="mobile-menu-btn" aria-label="Mở menu điều hướng" aria-expanded="false" aria-controls="main-nav">
                 <span></span><span></span><span></span>
             </button>
-
-            <a href="../index.html" class="top-bar-logo hidden" aria-label="Trang chủ">
-                <img class="logo h-8 w-auto" src="https://res.cloudinary.com/zv0jlmxj/image/upload/v1788875838/ChatGPT_Image_20_55_41_8_thg_9_2026.png" alt="Logo">
+            
+            <a href="../index.html" class="top-bar-logo" aria-label="Trang chủ">
+                <img class="logo" src="https://res.cloudinary.com/zv0jlmxj/image/upload/v1788875838/ChatGPT_Image_20_55_41_8_thg_9_2026.png" alt="Logo">
             </a>
-
-            <nav id="main-nav" class="nav-links hidden md:flex items-center gap-7">
-                <a href="../index.html" class="nav-item text-slate-300 hover:text-white text-[0.88rem] font-medium px-1 py-1 transition-colors">Trang chủ</a>
-                <a href="danhsachaccban.html" class="nav-item text-slate-300 hover:text-white text-[0.88rem] font-medium px-1 py-1 transition-colors">Danh sách acc bay</a>
-                <a href="naptien.html" class="nav-item text-slate-300 hover:text-white text-[0.88rem] font-medium px-1 py-1 transition-colors">Nạp tiền</a>
-                <a href="lichsumuanick.html" class="nav-item active text-white bg-[#151a24] border border-amber-500/70 text-[0.88rem] font-semibold px-5 py-1.5 rounded-full inline-flex items-center transition-all">Lịch sử mua nick</a>
-                <a href="baiviet.html" class="nav-item text-slate-300 hover:text-white text-[0.88rem] font-medium px-1 py-1 transition-colors">Bài viết hướng dẫn</a>
-                <a href="lienhe.html" class="nav-item text-slate-300 hover:text-white text-[0.88rem] font-medium px-1 py-1 transition-colors">Liên hệ</a>
+            <nav id="main-nav" class="nav-links">
+                <a href="../index.html" class="nav-item">Trang chủ</a>
+                <a href="danhsachaccban.html" class="nav-item">Danh sách acc bay</a>
+                <a href="naptien.html" class="nav-item">Nạp tiền</a>
+                <a href="lichsumuanick.html" class="nav-item active">Lịch sử mua nick</a>
+                <a href="baiviet.html" class="nav-item">Bài viết hướng dẫn</a>
+                <a href="lienhe.html" class="nav-item">Liên hệ</a>
             </nav>
 
-            <div id="auth-actions" class="absolute right-4 top-0 h-[54px] flex items-center z-[3] md:static md:h-auto">
-                <button id="login-btn" class="btn btn-secondary inline-flex items-center gap-2 px-5 py-1.5 rounded-full font-bold text-[0.85rem] bg-white/10 text-white border border-white/15 hover:bg-white/20 transition-all whitespace-nowrap">Đăng Nhập</button>
+            <div id="auth-actions">
+                <button id="login-btn" class="btn btn-secondary">Đăng Nhập</button>
             </div>
 
-            <div id="user-profile-top" class="user-profile-top hidden relative items-center gap-3 cursor-pointer p-0 bg-transparent border-0 absolute right-4 md:static z-[2]">
-                <img class="user-avatar w-9 h-9 rounded-full object-cover border-2 border-amber-500 shadow-sm" src="https://res.cloudinary.com/zv0jlmxj/image/upload/v1787241826/96477251-8c82-4f3f-a032-8719e420fb94.png" alt="Avatar">
-                <div class="user-details flex flex-col text-white text-[0.85rem] leading-tight">
-                    <span id="user-display" class="user-name font-bold tracking-wide max-w-[120px] truncate md:max-w-none"></span>
-                    <span class="user-balance text-[0.78rem] font-bold text-amber-400"><strong id="wallet-balance-display" class="text-amber-400 font-bold">0đ</strong></span>
+            <div id="user-profile-top" class="user-profile-top hidden">
+                <img class="user-avatar" src="https://res.cloudinary.com/zv0jlmxj/image/upload/v1787241826/96477251-8c82-4f3f-a032-8719e420fb94.png" alt="Avatar">
+                <div class="user-details">
+                    <span id="user-display" class="user-name"></span>
+                    <span class="user-balance"><strong id="wallet-balance-display">0đ</strong></span>
                 </div>
-                <div id="admin-menu-dropdown" class="admin-menu-dropdown hidden absolute top-[calc(100%+10px)] right-0 min-w-[230px] bg-[#121824] border border-amber-500/35 rounded-2xl p-2 z-[120] flex flex-col gap-1 shadow-[0_18px_44px_rgba(0,0,0,0.8)] backdrop-blur-xl">
-                    <button type="button" id="add-acc-btn" class="admin-menu-item admin-only-menu-item w-full bg-transparent border-none text-slate-100 px-3.5 py-2.5 text-left rounded-lg text-[0.88rem] font-semibold cursor-pointer hover:bg-amber-500/15 hover:text-amber-400 hover:translate-x-1 transition-all flex items-center gap-2">➕ Thêm acc mới</button>
-                    <button type="button" id="manage-users-btn" class="admin-menu-item admin-only-menu-item w-full bg-transparent border-none text-slate-100 px-3.5 py-2.5 text-left rounded-lg text-[0.88rem] font-semibold cursor-pointer hover:bg-amber-500/15 hover:text-amber-400 hover:translate-x-1 transition-all flex items-center gap-2">👤 Quản lý người dùng</button>
-                    <button type="button" id="change-password-btn" class="admin-menu-item profile-menu-item w-full bg-transparent border-none text-slate-100 px-3.5 py-2.5 text-left rounded-lg text-[0.88rem] font-semibold cursor-pointer hover:bg-amber-500/15 hover:text-amber-400 hover:translate-x-1 transition-all flex items-center gap-2">🔐 Đổi mật khẩu</button>
-                    <button type="button" id="profile-logout-btn" class="admin-menu-item profile-menu-item profile-logout-item w-full bg-transparent border-none text-rose-300 px-3.5 py-3 text-left rounded-lg text-[0.88rem] font-semibold cursor-pointer hover:bg-rose-500/15 hover:text-rose-400 hover:translate-x-1 transition-all flex items-center gap-2 mt-1 pt-3 border-t border-white/8">↪ Đăng xuất</button>
+
+                <div id="admin-menu-dropdown" class="admin-menu-dropdown hidden">
+                    <button type="button" id="add-acc-btn" class="admin-menu-item admin-only-menu-item">➕ Thêm acc mới</button>
+                    <button type="button" id="manage-users-btn" class="admin-menu-item admin-only-menu-item">👤 Quản lý người dùng</button>
+                    <button type="button" id="change-password-btn" class="admin-menu-item profile-menu-item">🔐 Đổi mật khẩu</button>
+                    <button type="button" id="profile-logout-btn" class="admin-menu-item profile-menu-item profile-logout-item">↪ Đăng xuất</button>
                 </div>
             </div>
         </div>
     </header>
 
-    <main class="max-w-[1340px] mx-auto px-4 md:px-8 pt-9 pb-20">
-        <h1 class="page-title font-black text-amber-400 text-[1.8rem] mb-6 flex items-center gap-3">📜 Lịch Sử Mua Nick</h1>
+    <main class="container">
+        <h1 class="page-title">📜 Lịch Sử Mua Nick</h1>
 
-        <div class="history-page-card bg-gradient-to-b from-[#161d2c]/95 to-[#0d111a]/98 border border-amber-500/30 rounded-2xl p-7 shadow-[0_12px_32px_-6px_rgba(0,0,0,0.65)]">
+        <div class="history-page-card">
             <div id="page-history-content">
-                <div id="history-list" class="history-list flex flex-col gap-4"></div>
+                <div id="history-list" class="history-list"></div>
             </div>
         </div>
     </main>
@@ -93,31 +98,32 @@
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             const historyListEl = document.getElementById("history-list");
-
+            
             async function loadPageHistory() {
                 if (!currentUser) {
                     historyListEl.innerHTML = `
-                        <div class="login-notice text-center py-10 text-slate-400">
-                            <span class="text-[2.5rem] block mb-3">🔒</span>
-                            <p class="mb-4">Vui lòng đăng nhập để xem lịch sử mua nick của bạn.</p>
-                            <button class="btn btn-primary inline-flex items-center gap-2 px-6 py-2.5 rounded-full font-bold text-[0.92rem] bg-gradient-to-br from-yellow-200 via-amber-500 to-amber-700 text-[#1a1202] shadow-[0_4px_16px_rgba(245,158,11,0.35)] hover:-translate-y-0.5 transition-all" onclick="document.getElementById('login-btn').click()">Đăng Nhập Ngay</button>
+                        <div class="login-notice">
+                            <span style="font-size: 2.5rem; display: block; margin-bottom: 12px;">🔒</span>
+                            <p>Vui lòng đăng nhập để xem lịch sử mua nick của bạn.</p>
+                            <button class="btn btn-primary" onclick="document.getElementById('login-btn').click()">Đăng Nhập Ngay</button>
                         </div>
                     `;
                     return;
                 }
 
-                historyListEl.innerHTML = `<div class="empty-state text-center py-20 text-slate-400"><span class="spinner"></span>Đang tải lịch sử mua...</div>`;
+                historyListEl.innerHTML = `<div class="empty-state"><span class="spinner"></span>Đang tải lịch sử mua...</div>`;
 
                 try {
                     const data = await apiFetch("/purchases/me");
                     renderHistoryList(data.items || []);
                 } catch (err) {
-                    historyListEl.innerHTML = `<div class="empty-state text-center py-20 text-slate-400">⚠️ ${err.message}</div>`;
+                    historyListEl.innerHTML = `<div class="empty-state">⚠️ ${err.message}</div>`;
                 }
             }
 
             loadPageHistory();
 
+            // Override logout handler to refresh history view
             document.getElementById("profile-logout-btn").addEventListener("click", () => {
                 setTimeout(loadPageHistory, 100);
             });
