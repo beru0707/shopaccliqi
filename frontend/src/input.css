@@ -1,0 +1,305 @@
+/* =====================================================================
+   Shop Acc Liqi — Tailwind source.  Build:  npm run build:css  ->  frontend/tailwind.css
+   - Token (màu, bóng, gradient, animation) nằm ở tailwind.config.js.
+   - Bố cục từng trang viết bằng utility ngay trong HTML.
+   - Phần dưới là COMPONENT dùng lại nhiều lần (nút, modal, form, thẻ acc, lịch sử...) —
+     giữ tên class vì JS dùng làm "móc" (hook) khi sinh HTML, nhưng style 100% là utility Tailwind.
+   ===================================================================== */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ---------------------------------------------------------------------
+   BASE
+   --------------------------------------------------------------------- */
+@layer base {
+  html { scroll-behavior: smooth; }
+  body {
+    @apply min-h-screen bg-bg bg-page-glow bg-fixed font-body text-[15px] leading-relaxed text-ink antialiased;
+  }
+  :focus-visible { @apply outline outline-2 outline-offset-2 outline-gold; }
+  ::-webkit-scrollbar { @apply h-2 w-2; }
+  ::-webkit-scrollbar-track { background: #090d14; }
+  ::-webkit-scrollbar-thumb { @apply rounded-full bg-slate-800 hover:bg-gold; border: 2px solid #090d14; }
+  /* JS bật/tắt phần tử bằng class "hidden": phải thắng mọi display khác (flex/grid) của component. */
+  .hidden { display: none !important; }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+  }
+}
+
+@layer components {
+  /* ===================== BUTTONS ===================== */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full border border-transparent px-6 py-[11px]
+           text-[.92rem] font-bold no-underline transition duration-200 active:scale-[.97] disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-primary   { @apply bg-gold-gradient text-[#1a1202] shadow-gold enabled:hover:-translate-y-0.5 enabled:hover:bg-gold-gradient-hover enabled:hover:shadow-gold-lg; }
+  .btn-secondary { @apply border-white/15 bg-white/10 text-ink enabled:hover:-translate-y-px enabled:hover:border-white/25 enabled:hover:bg-white/15 enabled:hover:text-white; }
+  .btn-outline   { @apply border-gold/40 bg-transparent px-3.5 py-1.5 text-[.82rem] text-gold-light enabled:hover:border-gold enabled:hover:bg-gold/15 enabled:hover:text-white; }
+  .btn-small     { @apply px-4 py-[7px] text-[.82rem]; }
+  /* Nút trong thẻ acc */
+  .btn-card {
+    @apply inline-flex flex-1 items-center justify-center rounded-ui py-2 text-[.84rem] font-bold leading-snug transition duration-200 active:scale-95;
+  }
+  .buy-btn     { @apply bg-fire-gradient text-white shadow-fire hover:brightness-110; }
+  .auction-btn { @apply bg-violet-gradient text-white shadow-violet hover:brightness-[1.15]; }
+  .edit-btn    { @apply border border-blue-500/40 bg-blue-600/20 text-blue-300 hover:bg-blue-600/35 hover:text-white; }
+  .delete-btn  { @apply border border-red-500/40 bg-maroon/20 text-red-300 hover:bg-maroon/35 hover:text-white; }
+
+  /* ===================== FORM ===================== */
+  .form-group { @apply mb-[18px] flex flex-col gap-1.5; }
+  .form-group label { @apply text-[.86rem] font-semibold text-ink-muted; }
+  .form-group input, .form-group textarea, .form-group select,
+  .field {
+    @apply rounded-ui border border-white/10 bg-surface px-3.5 py-[11px] font-body text-[.92rem] text-ink outline-none transition
+           placeholder:text-ink-subtle focus:border-gold focus:bg-surface-input focus:ring-2 focus:ring-gold/25;
+  }
+  .form-error  { @apply -mt-1.5 mb-3.5 min-h-[1em] text-[.84rem] font-semibold text-red-300; }
+  .form-actions { @apply mt-6 flex justify-end gap-3; }
+  fieldset.auction-settings { @apply my-[18px] rounded-ui border border-gold/30 bg-gold/5 px-[18px] py-3.5; }
+  .auction-settings legend { @apply px-2 font-bold text-gold-light; }
+
+  /* ===================== MODAL ===================== */
+  .modal {
+    @apply fixed inset-0 z-[1000] hidden items-center justify-center bg-[rgba(5,8,14,.88)] p-4 backdrop-blur-[14px];
+  }
+  .modal.active { @apply !flex animate-fade-in; }
+  .modal-card {
+    @apply relative max-h-[90vh] w-[90%] max-w-[500px] overflow-y-auto rounded-card border border-gold/35 bg-card-surface p-8 shadow-modal;
+  }
+  .modal-card.wide { @apply max-w-[760px]; }
+  .modal-card h2 { @apply mb-5 mt-0 text-[1.45rem] font-extrabold tracking-tight text-gold-light; }
+  .modal-close {
+    @apply absolute right-5 top-[18px] grid h-9 w-9 cursor-pointer place-items-center rounded-full border border-white/20 bg-white/10 p-0
+           text-2xl leading-none text-ink-muted transition duration-200 hover:rotate-90 hover:border-red-500 hover:bg-red-500 hover:text-white;
+  }
+  .modal-image-close {
+    @apply fixed right-6 top-5 z-[1010] h-11 w-11 border-white/40 bg-red-500/85 text-[32px] text-white shadow-[0_4px_18px_rgba(0,0,0,.6)] hover:rotate-0 hover:scale-110 hover:bg-red-600;
+  }
+  /* Modal xem ảnh + thông tin acc */
+  .image-modal-inner {
+    @apply relative flex max-h-[92vh] max-w-[90vw] flex-col items-center overflow-y-auto rounded-card shadow-[0_25px_60px_rgba(0,0,0,.9),0_0_40px_rgba(245,158,11,.12)];
+    scrollbar-width: thin; scrollbar-color: rgba(245,158,11,.6) rgba(13,17,26,.8);
+  }
+  .modal-image-wrap { @apply relative w-[min(90vw,900px)] bg-[#0d121c]; }
+  .modal-content { @apply block max-h-[60vh] w-full rounded-t-card object-contain; }
+  .modal-note-tag {
+    @apply absolute right-3 top-3 z-[2] max-w-[calc(100%-24px)] rounded-full border border-red-500/50 bg-red-700/90 px-3.5 py-1.5 text-[.82rem] font-bold text-white shadow-md;
+  }
+  .modal-info-panel {
+    @apply flex w-full max-w-[680px] flex-col gap-2.5 rounded-b-card border border-t-0 border-gold/35 bg-card-surface px-7 py-[22px];
+  }
+  .modal-scroll-hint {
+    @apply mb-1.5 animate-nudge-down cursor-pointer rounded-ui border-0 bg-gold-gradient px-3.5 py-[11px] text-center text-[.92rem] font-bold text-[#1a1202] shadow-gold;
+  }
+  .modal-info-title { @apply text-2xl font-extrabold tracking-tight text-gold-light; }
+  .modal-info-text  { @apply m-0 text-[.94rem] leading-relaxed text-ink; }
+  .modal-buy-area   { @apply mt-2.5; }
+  .modal-buy-btn    { @apply w-full bg-fire-gradient p-[13px] text-base text-white shadow-fire hover:brightness-110; }
+  .sold-label       { @apply rounded-ui border border-success/30 bg-success/15 p-3 text-center text-[.95rem] font-bold text-success; }
+  /* Đấu giá */
+  .auction-history  { @apply mt-3.5 border-t border-gold/25 pt-3 text-[.88rem]; }
+  .auction-meta     { @apply mb-2.5 mt-1.5 text-ink-muted; }
+  .auction-bid      { @apply grid grid-cols-[1fr_auto_auto] items-center gap-3 border-t border-white/5 py-2; }
+  .auction-bid time { @apply text-[.78rem] text-ink-muted; }
+  .modal-bid-area   { @apply mt-2 flex flex-col gap-2; }
+  .modal-bid-area label { @apply text-[.85rem] text-ink-muted; }
+  .modal-bid-form   { @apply flex gap-2.5; }
+  .modal-bid-form input { @apply min-w-0 flex-1 rounded-ui border border-gold/40 bg-surface px-3.5 py-2.5 text-ink; font: inherit; }
+  .modal-bid-form button { @apply whitespace-nowrap; }
+  .modal-bid-status { @apply m-0 min-h-[1.2em] text-[.82rem] text-gold-light; }
+  /* Lightbox ảnh lịch sử */
+  .history-image-lightbox { @apply fixed inset-0 z-[3000] hidden items-center justify-center bg-black/90 p-7; }
+  .history-image-lightbox.active { @apply !flex; }
+  .history-image-lightbox img { @apply max-h-[88vh] max-w-[min(1100px,94vw)] rounded-ui object-contain; }
+  .history-image-close { @apply fixed right-6 top-[18px] border-0 bg-transparent text-[2.5rem] leading-none text-white; }
+
+  /* ===================== TOAST ===================== */
+  #toast-container { @apply fixed right-6 top-6 z-[2000] flex max-w-[360px] flex-col gap-3; }
+  .toast {
+    @apply animate-toast-in rounded-xl border border-white/10 border-l-[5px] border-l-gold bg-bg-elevated/95 px-[18px] py-3.5 text-[.9rem] font-medium
+           shadow-[0_12px_32px_rgba(0,0,0,.7)] backdrop-blur-md;
+  }
+  .toast.success { @apply border-l-success; }
+  .toast.error   { @apply border-l-maroon; }
+  .toast.leaving { @apply animate-toast-out; }
+
+  /* ===================== CARD ACC ===================== */
+  .card {
+    @apply relative flex cursor-pointer flex-col overflow-hidden rounded-card border border-white/10 bg-card-surface shadow-card transition duration-300
+           hover:-translate-y-[7px] hover:border-gold/50 hover:shadow-card-hover;
+  }
+  .card.sold { @apply opacity-50 grayscale-[.85]; }
+  .card-image-wrap { @apply relative cursor-pointer overflow-hidden bg-[#0d121c]; }
+  .card img { @apply block aspect-video w-full bg-surface object-cover transition duration-500; }
+  .card:hover img { @apply scale-105; }
+  .page-edge { @apply h-[3px] bg-[linear-gradient(90deg,transparent,rgba(245,158,11,.7),transparent)] shadow-[0_0_10px_rgba(245,158,11,.5)]; }
+  .card .info { @apply flex flex-1 flex-col gap-2.5 px-[18px] pb-5 pt-4; }
+  .price {
+    @apply bg-gold-gradient bg-clip-text text-[1.3rem] font-extrabold tracking-tight text-transparent drop-shadow-[0_2px_6px_rgba(245,158,11,.3)];
+  }
+  .card-info-text { @apply m-0 line-clamp-2 text-[.84rem] leading-normal text-ink-muted; }
+  .card-actions { @apply mt-auto flex gap-2 pt-3.5; }
+  .skin-list { @apply mt-1 flex flex-wrap gap-1.5; }
+  .skin-tag { @apply rounded-md border border-gold/20 bg-gold/10 px-[9px] py-[5px] text-xs font-medium leading-normal text-gold-light transition hover:border-gold/40 hover:bg-gold/20; }
+  .skin-tag.highlight { @apply border-transparent bg-gold-gradient font-extrabold text-[#1a1202] shadow-[0_0_10px_rgba(245,158,11,.5)]; }
+  .skin-more { @apply px-1.5 py-1 text-xs font-bold text-ink-muted; }
+  /* Nhãn trên ảnh */
+  .admin-note-tag {
+    @apply absolute right-2.5 top-2.5 z-[2] flex max-w-[calc(100%-20px)] items-center gap-1 rounded-full border border-red-500/50 bg-red-800/90 px-2.5 py-1
+           text-[.73rem] font-bold leading-snug text-rose-200 shadow-md backdrop-blur;
+  }
+  .auction-card-badge {
+    @apply absolute left-2.5 top-2.5 z-[3] animate-badge-pulse rounded-full border border-white/35 bg-violet-gradient px-3 py-[5px] text-[.74rem] font-extrabold tracking-wide text-white;
+  }
+  .sold-card-badge { @apply absolute left-2.5 top-2.5 z-[4] rounded-full border border-white/30 bg-maroon/90 px-3 py-1 text-[.74rem] font-extrabold text-white shadow-md; }
+  /* Trạng thái rỗng / lỗi / skeleton */
+  .empty-state { @apply col-span-full px-5 py-20 text-center text-[1.1rem] text-ink-muted; }
+  .empty-state strong { @apply text-gold; }
+  .empty-icon { @apply mb-3.5 block text-[2.8rem] drop-shadow-[0_0_16px_rgba(245,158,11,.3)]; }
+  .empty-action { @apply mt-5; }
+  .skeleton-card { @apply overflow-hidden rounded-card border border-white/10 bg-bg-elevated shadow-card; }
+  .skeleton-shimmer { @apply animate-shimmer bg-shimmer; background-size: 400% 100%; }
+  .skeleton-img  { @apply aspect-video w-full; }
+  .skeleton-line { @apply mx-[18px] my-3.5 h-3.5 rounded; }
+  .skeleton-line.short { @apply w-3/5; }
+  .spinner { @apply mr-1.5 inline-block h-[18px] w-[18px] animate-spin rounded-full border-2 border-white/30 border-t-current align-middle; }
+
+  /* ===================== PHÂN TRANG ===================== */
+  #pagination { @apply mt-[50px] flex items-center justify-center gap-3.5; }
+  #pagination button {
+    @apply h-[42px] min-w-[42px] cursor-pointer rounded-full border border-white/10 bg-white/5 px-3.5 font-bold text-ink-muted transition duration-200
+           enabled:hover:-translate-y-0.5 enabled:hover:border-gold enabled:hover:bg-gold/10 enabled:hover:text-white disabled:cursor-not-allowed disabled:opacity-35;
+  }
+  #pagination button.active { @apply border-transparent bg-gold-gradient text-[#1a1202] shadow-[0_4px_14px_rgba(245,158,11,.4)]; }
+  .page-numbers-wrapper { @apply flex w-[185px] gap-2.5 overflow-x-auto scroll-smooth px-1 pb-2.5 pt-1.5; }
+  .page-numbers-wrapper button { @apply h-[46px] min-w-[46px] shrink-0 text-base; }
+
+  /* ===================== BẢNG / LỊCH SỬ ===================== */
+  .user-table-wrap { @apply overflow-x-auto; }
+  .user-table, .csv-preview-table { @apply w-full border-collapse; }
+  .user-table { @apply text-[.88rem]; }
+  .user-table th, .user-table td, .csv-preview-table th, .csv-preview-table td { @apply border-b border-white/10 p-3 text-left align-top; }
+  .user-table th { @apply bg-white/[.02] text-[.78rem] font-bold uppercase tracking-wide text-gold-light; }
+  .user-table td.actions { @apply flex gap-2; }
+  .role-select { @apply rounded-md border border-white/15 bg-surface px-2 py-[5px] text-[.82rem] text-ink; }
+  .add-user-row { @apply mt-[18px] flex flex-wrap gap-2.5; }
+  .add-user-row input, .add-user-row select { @apply rounded-ui border border-white/15 bg-surface px-3.5 py-2.5 text-ink; }
+  .add-user-row input { @apply flex-[1_1_150px]; }
+  .balance-form-group { @apply flex items-center gap-2.5; }
+  .balance-input { @apply w-[140px] rounded-ui border border-white/10 bg-surface px-3.5 py-2.5 text-sm text-white outline-none focus:border-gold focus:ring-2 focus:ring-gold/25; }
+  .save-balance-btn { @apply cursor-pointer whitespace-nowrap rounded-ui border-0 bg-gold-gradient px-[18px] py-2.5 text-[13px] font-bold text-[#1a1202] transition hover:-translate-y-px hover:brightness-110; }
+  .csv-import-help { @apply text-[.86rem] leading-relaxed text-ink-muted; }
+  .csv-import-help code, .csv-import-preview code { @apply rounded bg-surface px-1.5 py-0.5 text-gold-light; }
+  .csv-import-preview { @apply mt-4 rounded-ui border border-gold/30 bg-surface p-3.5 text-[.86rem]; }
+  .csv-preview-table-wrap { @apply overflow-x-auto; }
+  .csv-preview-more { @apply mb-0 mt-3 text-ink-muted; }
+
+  .history-list { @apply flex max-h-[60vh] flex-col gap-4 overflow-y-auto; }
+  .history-item {
+    @apply grid grid-cols-[130px_minmax(0,1fr)_minmax(320px,36%)] items-start gap-4 rounded-card border border-white/10 bg-panel-surface p-4 shadow-sm2
+           max-md:grid-cols-[120px_minmax(0,1fr)];
+  }
+  .history-item img { @apply h-[86px] w-[130px] shrink-0 rounded-ui object-cover; }
+  .history-image-button { @apply w-[130px] cursor-zoom-in rounded-ui border-0 bg-transparent p-0; }
+  .history-image-button img { @apply transition duration-200; }
+  .history-image-button:hover img { @apply scale-[1.03] brightness-110; }
+  .history-item-info { @apply flex min-w-0 flex-col gap-1.5; }
+  .history-date { @apply text-[.78rem] text-ink-muted; }
+  .purchase-login-details {
+    @apply flex flex-col gap-2.5 rounded-ui border border-gold/35 bg-gold/5 px-3.5 py-3 text-[.88rem] max-md:col-span-full max-md:w-full;
+  }
+  .purchase-login-details strong { @apply text-gold-light; }
+  .purchase-login-row { @apply flex items-center justify-between gap-2.5 max-md:flex-col max-md:items-stretch max-md:gap-1.5 max-md:border-b max-md:border-dashed max-md:border-white/10 max-md:pb-2 max-md:last:border-b-0 max-md:last:pb-0; }
+  .purchase-login-details code { @apply break-all rounded border border-white/10 bg-black/30 px-2 py-1 font-mono text-white max-md:w-full max-md:whitespace-normal max-md:px-2.5 max-md:py-1.5; }
+  .copy-credential-btn { @apply cursor-pointer whitespace-nowrap rounded-md border border-gold/45 bg-gold/10 px-2.5 py-1.5 text-[.78rem] font-bold text-gold-light transition hover:bg-gold hover:text-[#1a1202] max-md:mt-0.5 max-md:self-start; }
+  /* Danh sách acc đã bán (trang "Danh sách acc bay"): mobile xếp lại theo vùng lưới */
+  .sold-history-item { @apply max-md:grid-cols-[128px_minmax(0,1fr)] max-md:gap-x-4 max-md:gap-y-3.5 max-md:p-[18px]; }
+  .sold-history-item .history-item-info { @apply max-md:contents; }
+  .sold-history-item .sold-history-content { @apply contents; }
+  .sold-history-item .card-info-text { @apply max-md:hidden; }
+  .sold-date-panel strong { @apply text-[1.15rem] font-extrabold tracking-wide text-ink; }
+
+  /* ===================== VÍ / NẠP TIỀN ===================== */
+  .wallet-balance-box { @apply mb-[22px] flex flex-col gap-1.5 rounded-card border border-gold/35 bg-panel-surface px-[26px] py-[22px] shadow-[inset_0_0_20px_rgba(245,158,11,.05)]; }
+  .wallet-balance-label { @apply text-[.82rem] uppercase tracking-wide text-ink-muted; }
+  .wallet-balance-amount { @apply bg-gold-gradient bg-clip-text text-[2.2rem] font-extrabold text-transparent; }
+  .wallet-note { @apply mb-0 mt-4 text-[.82rem] leading-normal text-ink-muted; }
+  .wallet-note a { @apply text-gold-light underline; }
+  .topup-chip { @apply cursor-pointer rounded-full border border-gold/25 bg-gold/10 px-4 py-2 text-[.84rem] font-semibold text-gold-light transition duration-200 hover:-translate-y-px hover:border-gold hover:bg-gold/20 hover:text-white; }
+  .topup-card, .history-page-card { @apply rounded-card border border-gold/30 bg-card-surface p-7 shadow-card; }
+  .topup-card h2 { @apply mb-[18px] mt-0 flex items-center gap-2.5 text-[1.35rem] font-extrabold text-gold-light; }
+  .bank-info-item { @apply flex justify-between border-b border-dashed border-white/10 py-2.5 text-[.92rem]; }
+  .bank-info-item > span:first-child { @apply text-ink-muted; }
+  .bank-info-item > span:last-child { @apply font-bold text-ink; }
+  .qr-placeholder { @apply mb-3 inline-block w-[min(100%,500px)] rounded-xl bg-white p-3.5 shadow-[0_4px_16px_rgba(0,0,0,.4)]; }
+  .qr-placeholder img { @apply block aspect-square h-auto w-full object-contain; }
+  .qr-notice { @apply flex aspect-square w-full flex-col items-center justify-center rounded-ui border-2 border-dashed border-[#e63946] bg-[rgba(230,57,70,.05)] p-6; }
+  .qr-notice-icon { @apply mb-4 animate-pulse text-[3.5rem]; }
+  .qr-notice-text { @apply text-center text-[1.05rem] font-bold leading-relaxed text-[#d90429]; }
+  .topup-history-list { @apply grid gap-3; }
+  .topup-history-item { @apply flex items-center justify-between gap-4 border-b border-dashed border-white/10 py-3.5 last:border-b-0 last:pb-0 max-sm:flex-col max-sm:items-start max-sm:gap-2; }
+  .topup-history-meta { @apply grid gap-1; }
+  .topup-history-date, .topup-history-code { @apply text-[.86rem] text-ink-muted; }
+  .topup-history-amount { @apply whitespace-nowrap text-[1.05rem] font-extrabold text-success drop-shadow-[0_0_10px_rgba(16,185,129,.3)]; }
+  .login-notice { @apply px-5 py-10 text-center text-ink-muted; }
+  .login-notice button { @apply mt-4; }
+
+  /* ===================== AUTH ===================== */
+  .auth-tabs { @apply mb-6 flex gap-1.5 rounded-full border border-white/10 bg-surface p-[5px]; }
+  .auth-tab { @apply flex-1 cursor-pointer rounded-full border-0 bg-transparent py-[9px] text-center text-[.88rem] font-bold text-ink-muted transition duration-200 hover:text-white; }
+  .auth-tab.active { @apply bg-gold-gradient text-[#1a1202] shadow-[0_4px_12px_rgba(245,158,11,.3)] hover:text-[#1a1202]; }
+
+  /* ===================== HEADER ===================== */
+  .nav-item {
+    @apply inline-flex items-center gap-1.5 rounded-full border border-transparent px-[18px] py-2 text-[.92rem] font-semibold text-ink-muted no-underline transition duration-200
+           hover:-translate-y-px hover:border-white/10 hover:bg-white/10 hover:text-white max-md:rounded-ui max-md:px-4 max-md:py-[11px];
+  }
+  .nav-item.active { @apply border-gold/45 bg-gradient-to-br from-gold/25 to-amber-600/10 text-white shadow-[0_0_16px_rgba(245,158,11,.22)]; }
+  .nav-links { @apply flex items-center gap-2 max-md:absolute max-md:inset-x-0 max-md:top-full max-md:z-[150] max-md:hidden max-md:flex-col max-md:items-stretch max-md:gap-1.5 max-md:border-b max-md:border-white/10 max-md:bg-bg/95 max-md:px-[18px] max-md:pb-[18px] max-md:pt-3.5 max-md:shadow-[0_16px_32px_rgba(0,0,0,.7)] max-md:backdrop-blur-lg; }
+  .nav-links.mobile-open { @apply max-md:flex; }
+  .mobile-menu-btn { @apply hidden h-[38px] w-[42px] shrink-0 cursor-pointer rounded-ui border border-white/20 bg-white/5 p-[7px] transition hover:border-gold hover:bg-white/10 max-md:z-[2] max-md:block; }
+  .mobile-menu-btn span { @apply my-[5px] block h-0.5 rounded-sm bg-white transition duration-200; }
+  .mobile-menu-btn.active span:nth-child(1) { @apply translate-y-[7px] rotate-45; }
+  .mobile-menu-btn.active span:nth-child(2) { @apply opacity-0; }
+  .mobile-menu-btn.active span:nth-child(3) { @apply -translate-y-[7px] -rotate-45; }
+  .user-profile-top {
+    @apply relative flex cursor-pointer items-center gap-3 rounded-full border border-gold/30 bg-white/5 py-[5px] pl-2 pr-3.5 shadow-sm2 transition duration-200
+           hover:border-gold hover:bg-gold/10 hover:shadow-[0_0_16px_rgba(245,158,11,.25)] max-md:z-[2] max-md:ml-auto max-md:shrink-0 max-md:gap-2 max-md:py-1 max-md:pl-1.5 max-md:pr-2.5;
+  }
+  .user-avatar { @apply h-9 w-9 rounded-full border-2 border-gold object-cover shadow-[0_0_8px_rgba(245,158,11,.45)] max-md:h-8 max-md:w-8; }
+  .user-name { @apply font-bold tracking-wide max-md:max-w-[90px] max-md:truncate max-md:text-[.82rem]; }
+  .user-balance { @apply text-[.78rem] text-ink-muted max-md:text-[.74rem]; }
+  .user-balance strong { @apply font-bold text-gold-light [text-shadow:0_0_8px_rgba(251,191,36,.45)]; }
+  .admin-menu-dropdown { @apply absolute right-0 top-[calc(100%+10px)] z-[120] flex min-w-[230px] animate-drop-in cursor-default flex-col gap-[3px] rounded-card border border-gold/35 bg-bg-elevated p-2 shadow-pop backdrop-blur-xl; }
+  .admin-menu-item { @apply flex cursor-pointer items-center gap-2 rounded-ui border-0 bg-transparent px-3.5 py-2.5 text-left text-[.88rem] font-semibold text-ink transition duration-200 hover:translate-x-[3px] hover:bg-gold/15 hover:text-gold-light; }
+  .profile-logout-item { @apply mt-1 border-t border-white/10 pt-3 text-rose-400 hover:bg-rose-500/15 hover:text-rose-300; }
+  .search-box { @apply relative flex max-w-[980px] flex-[1_1_850px] items-center max-md:w-full max-md:flex-auto; }
+  .search-icon { @apply pointer-events-none absolute left-[18px] top-1/2 z-[3] flex -translate-y-1/2 items-center justify-center text-[1.15rem] leading-none text-gold transition duration-200; }
+  .search-box:focus-within .search-icon { @apply scale-110; }
+  .search-box input {
+    @apply w-full rounded-full border border-white/10 bg-surface/70 py-[13px] pl-[50px] pr-5 font-body text-[.95rem] text-ink outline-none backdrop-blur-[10px] transition duration-200
+           placeholder:text-ink-subtle focus:border-gold focus:bg-surface/95 focus:shadow-[0_0_0_3px_rgba(245,158,11,.25),0_0_24px_rgba(245,158,11,.2)];
+  }
+  .search-hints { @apply absolute left-0 top-[calc(100%+12px)] z-[999] w-full animate-drop-in rounded-card border border-gold/35 bg-bg-elevated/95 px-5 py-4 shadow-pop backdrop-blur-xl; }
+  .search-hint-group { @apply mb-3 last:mb-0; }
+  .search-hint-label { @apply mb-1 inline-block text-[.9rem] font-bold text-gold-light; }
+  .search-hint-desc { @apply m-0 text-[.86rem] text-ink-muted; }
+  .search-hint-desc em { @apply rounded border border-white/10 bg-white/10 px-[7px] py-0.5 not-italic text-white; }
+  .sort-box select {
+    @apply cursor-pointer appearance-none rounded-full border border-gold/25 bg-surface bg-no-repeat py-2.5 pl-[18px] pr-10 font-body text-[.88rem] text-ink outline-none transition
+           focus:border-gold focus:ring-2 focus:ring-gold/25 max-md:py-[5px] max-md:pl-2.5 max-md:pr-[26px] max-md:text-[.78rem];
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='none' stroke='%23fbbf24' stroke-width='2' stroke-linecap='round' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+    background-position: right 16px center;
+  }
+  .total-accounts-badge { @apply fixed bottom-6 left-6 z-[999] rounded-full border border-gold/40 bg-bg-elevated/95 px-4 py-2 text-[.88rem] font-semibold text-white shadow-[0_8px_24px_rgba(0,0,0,.6),0_0_16px_rgba(245,158,11,.15)] max-md:bottom-4 max-md:left-4 max-md:text-[.8rem]; }
+  .total-accounts-badge span { @apply font-extrabold text-gold-light; }
+}
+
+/* ---------------------------------------------------------------------
+   Tiêu đề trang dùng chung
+   --------------------------------------------------------------------- */
+@layer components {
+  .page-title { @apply mb-6 flex items-center gap-3 text-[1.8rem] font-extrabold tracking-tight text-gold-light; }
+}

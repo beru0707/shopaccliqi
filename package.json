@@ -1,0 +1,12 @@
+{
+  "name": "shop-acc-liqi-frontend",
+  "private": true,
+  "description": "Frontend Shop Acc Liqi (HTML + JS thuần, giao diện bằng Tailwind CSS)",
+  "scripts": {
+    "build:css": "tailwindcss -c tailwind.config.js -i frontend/src/input.css -o frontend/tailwind.css --minify",
+    "watch:css": "tailwindcss -c tailwind.config.js -i frontend/src/input.css -o frontend/tailwind.css --watch"
+  },
+  "devDependencies": {
+    "tailwindcss": "3.4.17"
+  }
+}

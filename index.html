@@ -10,108 +10,25 @@
     <link rel="icon" type="image/png" href="https://res.cloudinary.com/zv0jlmxj/image/upload/r_max/v1787241826/96477251-8c82-4f3f-a032-8719e420fb94.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Spectral:ital,wght@0,600;0,700;1,600;1,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="frontend/style.css">
+    <link rel="stylesheet" href="frontend/tailwind.css">
 </head>
 
 <body>
-    <!-- Khung hiển thị thông báo (toast) -->
-    <div id="toast-container" aria-live="polite"></div>
+    <!-- Header + khung toast: render bởi frontend/components.js -->
+    <div id="site-header" data-active="home" data-search="true" data-admin-tools="true"></div>
+    <script src="frontend/components.js"></script>
 
-    <header class="site-header">
-        <!-- Tầng 1: Navigation Top Bar -->
-        <div class="top-bar">
-            <button type="button" id="mobile-menu-btn" class="mobile-menu-btn" aria-label="Mở menu điều hướng" aria-expanded="false" aria-controls="main-nav">
-                <span></span><span></span><span></span>
-            </button>
-
-            <a href="index.html" class="top-bar-logo" aria-label="Trang chủ">
-                <img class="logo" src="https://res.cloudinary.com/zv0jlmxj/image/upload/v1788875838/ChatGPT_Image_20_55_41_8_thg_9_2026.png" alt="Logo">
-            </a>
-
-            <div class="sort-box sort-box-mobile">
-                <select id="sort-select-mobile">
-                    <option value="">Mới nhất</option>
-                    <option value="price_asc">Giá tăng dần</option>
-                    <option value="price_desc">Giá giảm dần</option>
-                </select>
-            </div>
-
-            <nav id="main-nav" class="nav-links">
-                <a href="index.html" class="nav-item active">Trang chủ</a>
-                <a href="frontend/danhsachaccban.html" class="nav-item">Danh sách acc bay</a>
-                <a href="frontend/naptien.html" class="nav-item">Nạp tiền</a>
-                <a href="frontend/lichsumuanick.html" class="nav-item">Lịch sử mua nick</a>
-                <a href="frontend/baiviet.html" class="nav-item">Bài viết hướng dẫn</a>
-                <a href="frontend/lienhe.html" class="nav-item">Thông tin liên hệ</a>
-            </nav>
-
-            <div id="auth-actions">
-                <button id="login-btn" class="btn btn-secondary">Đăng Nhập</button>
-            </div>
-
-            <!-- Profile hiển thị thông tin user / admin góc phải tầng 1 -->
-            <div id="user-profile-top" class="user-profile-top hidden">
-                <img class="user-avatar" src="https://res.cloudinary.com/zv0jlmxj/image/upload/v1787241826/96477251-8c82-4f3f-a032-8719e420fb94.png" alt="Avatar">
-                <div class="user-details">
-                    <span id="user-display" class="user-name"></span>
-                    <span class="user-balance"><strong id="wallet-balance-display">0đ</strong></span>
-                </div>
-
-                <!-- Menu tính năng Admin thả xuống khi bấm vào Profile -->
-                <div id="admin-menu-dropdown" class="admin-menu-dropdown hidden">
-                    <button type="button" id="add-acc-btn" class="admin-menu-item admin-only-menu-item">➕ Thêm acc mới</button>
-                    <button type="button" id="import-acc-btn" class="admin-menu-item admin-only-menu-item">📄 Nhập acc từ CSV</button>
-                    <button type="button" id="manage-users-btn" class="admin-menu-item admin-only-menu-item">👤 Quản lý người dùng</button>
-                    <button type="button" id="change-password-btn" class="admin-menu-item profile-menu-item">🔐 Đổi mật khẩu</button>
-                    <button type="button" id="profile-logout-btn" class="admin-menu-item profile-menu-item profile-logout-item">↪ Đăng xuất</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Tầng 2: Search Bar & Action -->
-        <div class="main-bar">
-            <div class="brand-logo">
-                <img class="logo" src="https://res.cloudinary.com/zv0jlmxj/image/upload/v1788875838/ChatGPT_Image_20_55_41_8_thg_9_2026.png" alt="Logo">
-            </div>
-
-            <div class="search-box">
-                <span class="search-icon">🔍</span>
-                <input id="search" type="text" placeholder="Nhập tên tướng hoặc skin, vật phẩm hoặc giá tiền..." autocomplete="off">
-
-                <!-- Gợi ý cách tìm kiếm -->
-                <div id="search-hints" class="search-hints hidden">
-                    <div class="search-hint-group">
-                        <span class="search-hint-label">🎮 Tìm theo skin</span>
-                        <p class="search-hint-desc">Nhập tên skin, ví dụ: <em>Murad siêu việt</em></p>
-                    </div>
-                    <div class="search-hint-group">
-                        <span class="search-hint-label">💰 Tìm theo giá tiền</span>
-                        <p class="search-hint-desc">Nhập giá tiền, ví dụ: <em>1x(10k-19k) 1xx(100-199k)</em></p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="sort-box sort-box-pc">
-            <select id="sort-select">
-                <option value="">Mới nhất</option>
-                <option value="price_asc">Giá tăng dần</option>
-                <option value="price_desc">Giá giảm dần</option>
-            </select>
-        </div>
-        </div>
-    </header>
-
-    <main class="container">
-        <!-- Danh sách acc -->
-        <div id="grid" class="grid"></div>
+    <main class="mx-auto max-w-[1340px] px-8 pb-20 pt-9 max-lg:px-5 max-lg:pb-14 max-lg:pt-6">
+        <!-- Danh sách acc: 1 cột (mobile) -> 2 -> 3 -> 4 cột -->
+        <div id="grid" class="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 lg:gap-[26px] xl:grid-cols-4"></div>
 
         <!-- Phân trang -->
         <div id="pagination"></div>
     </main>
 
-    <!-- Modal Xem Ảnh + Thông tin Acc -->
+    <!-- Modal xem ảnh + thông tin acc -->
     <div id="image-modal" class="modal" role="dialog" aria-hidden="true">
         <div id="image-modal-inner" class="image-modal-inner">
             <button type="button" id="modal-close" class="modal-close modal-image-close" aria-label="Đóng phần xem ảnh phóng to">&times;</button>
@@ -134,10 +51,10 @@
         </div>
     </div>
 
-    <!-- Modal CRUD (Thêm/Sửa Acc) -->
+    <!-- Modal thêm / sửa acc (admin) -->
     <div id="crud-modal" class="modal" role="dialog" aria-hidden="true">
         <div class="modal-card">
-            <span id="crud-modal-close" class="modal-close">&times;</span>
+            <button type="button" id="crud-modal-close" class="modal-close" aria-label="Đóng">&times;</button>
             <h2 id="modal-form-title">Thêm Tài Khoản Mới</h2>
             <form id="acc-form">
                 <div class="form-group">
@@ -174,7 +91,7 @@
                     <label for="acc-game-password">Mật khẩu game *</label>
                     <input type="text" id="acc-game-password" required autocomplete="off" placeholder="Mật khẩu đăng nhập game">
                 </div>
-                <div id="crud-error" class="form-error"></div>
+                <div id="crud-error" class="form-error" role="alert"></div>
                 <div class="form-actions">
                     <button type="button" id="cancel-form-btn" class="btn btn-secondary">Hủy</button>
                     <button type="submit" id="crud-submit-btn" class="btn btn-primary">Lưu lại</button>
@@ -183,10 +100,10 @@
         </div>
     </div>
 
-    <!-- Modal Quản lý người dùng (Admin) -->
+    <!-- Modal quản lý người dùng (admin) -->
     <div id="users-modal" class="modal" role="dialog" aria-hidden="true">
         <div class="modal-card wide">
-            <span id="users-modal-close" class="modal-close">&times;</span>
+            <button type="button" id="users-modal-close" class="modal-close" aria-label="Đóng">&times;</button>
             <h2>Quản Lý Người Dùng</h2>
 
             <div class="user-table-wrap">
@@ -204,9 +121,9 @@
                 </table>
             </div>
 
-            <div id="users-error" class="form-error"></div>
+            <div id="users-error" class="form-error" role="alert"></div>
 
-            <h2 style="font-size: 1rem; margin-top: 24px;">Thêm người dùng mới</h2>
+            <h3 class="mb-0 mt-6 text-base font-extrabold text-gold-light">Thêm người dùng mới</h3>
             <form id="add-user-form" class="add-user-row">
                 <input type="text" id="new-user-username" placeholder="Tên đăng nhập" required>
                 <input type="password" id="new-user-password" placeholder="Mật khẩu (tối thiểu 6 ký tự)" required minlength="6">
@@ -219,17 +136,17 @@
         </div>
     </div>
 
-    <!-- Modal Nhập Acc Từ CSV -->
+    <!-- Modal nhập acc từ CSV (admin) -->
     <div id="csv-import-modal" class="modal" role="dialog" aria-hidden="true">
-        <div class="modal-card wide csv-import-card">
-            <span id="csv-import-modal-close" class="modal-close">&times;</span>
+        <div class="modal-card wide max-w-[780px]">
+            <button type="button" id="csv-import-modal-close" class="modal-close" aria-label="Đóng">&times;</button>
             <h2>📄 Nhập Nhiều Acc Từ CSV</h2>
             <p class="csv-import-help">Chọn file CSV có các cột theo thứ tự: <code>tag lưu ý, giá, URL ảnh, thông tin, skins, tài khoản game, mật khẩu game</code>. Các skin cách nhau bằng dấu <code>|</code>.</p>
             <div class="form-group">
                 <label for="csv-import-file">File CSV</label>
                 <input type="file" id="csv-import-file" accept=".csv,text/csv">
             </div>
-            <div id="csv-import-error" class="form-error"></div>
+            <div id="csv-import-error" class="form-error" role="alert"></div>
             <div id="csv-import-preview" class="csv-import-preview hidden"></div>
             <div class="form-actions">
                 <button type="button" id="csv-import-cancel-btn" class="btn btn-secondary">Hủy</button>
@@ -238,10 +155,10 @@
         </div>
     </div>
 
-    <!-- Modal Ví Của Tôi (Nạp tiền) -->
+    <!-- Modal ví của tôi -->
     <div id="wallet-modal" class="modal" role="dialog" aria-hidden="true">
         <div class="modal-card">
-            <span id="wallet-modal-close" class="modal-close">&times;</span>
+            <button type="button" id="wallet-modal-close" class="modal-close" aria-label="Đóng">&times;</button>
             <h2>💰 Ví Của Tôi</h2>
 
             <div class="wallet-balance-box">
@@ -251,22 +168,21 @@
 
             <p class="wallet-note">Nạp tiền bằng chuyển khoản ngân hàng tại trang <a href="frontend/naptien.html">Nạp tiền</a>. Số dư sẽ được cập nhật tự động sau khi giao dịch được xác nhận.</p>
 
-            <button type="button" id="open-history-btn" class="btn btn-secondary" style="width: 100%; margin-top: 14px;">📜 Xem lịch sử mua acc</button>
+            <button type="button" id="open-history-btn" class="btn btn-secondary mt-3.5 w-full">📜 Xem lịch sử mua acc</button>
         </div>
     </div>
 
-    <!-- Modal Lịch Sử Mua Acc -->
+    <!-- Modal lịch sử mua acc -->
     <div id="history-modal" class="modal" role="dialog" aria-hidden="true">
         <div class="modal-card wide">
-            <span id="history-modal-close" class="modal-close">&times;</span>
+            <button type="button" id="history-modal-close" class="modal-close" aria-label="Đóng">&times;</button>
             <h2>📜 Lịch Sử Mua Acc</h2>
             <div id="history-list" class="history-list"></div>
         </div>
     </div>
 
-    <!-- Badge hiển thị tổng số tài khoản ở góc trái dưới -->
-    <div id="total-accounts-badge" class="total-accounts-badge">Tổng số acc: <span id="total-accounts-count">0</span>
-    </div>
+    <!-- Tổng số acc (góc trái dưới) -->
+    <div id="total-accounts-badge" class="total-accounts-badge">Tổng số acc: <span id="total-accounts-count">0</span></div>
 
     <script src="frontend/config.js"></script>
     <script src="frontend/scripts.js"></script>

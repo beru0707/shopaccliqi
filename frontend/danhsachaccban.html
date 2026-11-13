@@ -4,76 +4,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Danh sách tài khoản đã bán - Shop Acc Liqi">
-    <title>Danh Sách Acc Đã Bán - Shop Acc Liqi</title>
-
+    <title>Danh Sách Acc Bay - Shop Acc Liqi</title>
     <link rel="icon" type="image/png" href="https://res.cloudinary.com/zv0jlmxj/image/upload/r_max/v1787241826/96477251-8c82-4f3f-a032-8719e420fb94.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Spectral:ital,wght@0,600;0,700;1,600;1,700&display=swap" rel="stylesheet">
-
-    <link rel="stylesheet" href="style.css">
-    <style>
-        .page-title { 
-            font-family: var(--font-display); 
-            color: var(--gold); 
-            font-size: 1.8rem; 
-            margin-bottom: 24px; 
-        }
-        .history-page-card { 
-            background: var(--bg-elevated); 
-            border: 1px solid rgba(216,181,104,.25); 
-            border-radius: var(--radius); 
-            padding: 28px; 
-            box-shadow: var(--shadow); 
-        }
-        .login-notice { 
-            text-align: center; 
-            padding: 40px 20px; 
-            color: var(--ink-muted); 
-        }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="tailwind.css">
 </head>
+
 <body>
-    <div id="toast-container" aria-live="polite"></div>
+    <!-- Header + khung toast: render bởi components.js -->
+    <div id="site-header" data-active="sold"></div>
+    <script src="components.js"></script>
 
-    <header class="site-header">
-        <div class="top-bar">
-            <button type="button" id="mobile-menu-btn" class="mobile-menu-btn" aria-label="Mở menu điều hướng" aria-expanded="false" aria-controls="main-nav">
-                <span></span><span></span><span></span>
-            </button>
-
-            <a href="../index.html" class="top-bar-logo" aria-label="Trang chủ">Shop Acc Liqi</a>
-            <nav id="main-nav" class="nav-links">
-                <a href="../index.html" class="nav-item">Trang chủ</a>
-                <a href="danhsachaccban.html" class="nav-item active">Danh sách acc bán</a>
-                <a href="naptien.html" class="nav-item">Nạp tiền</a>
-                <a href="lichsumuanick.html" class="nav-item">Lịch sử mua nick</a>
-                <a href="baiviet.html" class="nav-item">Bài viết hướng dẫn</a>
-                <a href="lienhe.html" class="nav-item">Liên hệ</a>
-            </nav>
-
-            <div id="auth-actions">
-                <button id="login-btn" class="btn btn-secondary">Đăng Nhập</button>
-            </div>
-
-            <div id="user-profile-top" class="user-profile-top hidden">
-                <img class="user-avatar" src="https://res.cloudinary.com/zv0jlmxj/image/upload/v1787241826/96477251-8c82-4f3f-a032-8719e420fb94.png" alt="Avatar">
-                <div class="user-details">
-                    <span id="user-display" class="user-name"></span>
-                    <span class="user-balance"><strong id="wallet-balance-display">0đ</strong></span>
-                </div>
-
-                <div id="admin-menu-dropdown" class="admin-menu-dropdown hidden">
-                    <button type="button" id="add-acc-btn" class="admin-menu-item admin-only-menu-item">➕ Thêm acc mới</button>
-                    <button type="button" id="manage-users-btn" class="admin-menu-item admin-only-menu-item">👤 Quản lý người dùng</button>
-                    <button type="button" id="change-password-btn" class="admin-menu-item profile-menu-item">🔐 Đổi mật khẩu</button>
-                    <button type="button" id="profile-logout-btn" class="admin-menu-item profile-menu-item profile-logout-item">↪ Đăng xuất</button>
-                </div>
-            </div>
-        </div>
-    </header>
-    <main class="container">
+    <main class="mx-auto max-w-[1340px] px-8 pb-20 pt-9 max-lg:px-5 max-lg:pb-14 max-lg:pt-6">
         <h1 class="page-title">📋 Danh Sách Acc Bay</h1>
         <div class="history-page-card">
             <div id="sold-list" class="history-list"><div class="empty-state"><span class="spinner"></span>Đang tải danh sách acc đã bán...</div></div>

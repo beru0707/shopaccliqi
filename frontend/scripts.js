@@ -51,15 +51,15 @@ changePasswordModal.className = "modal";
 changePasswordModal.setAttribute("role", "dialog");
 changePasswordModal.setAttribute("aria-hidden", "true");
 changePasswordModal.innerHTML = `
-    <div class="modal-card change-password-card">
+    <div class="modal-card max-w-[440px]">
         <button type="button" id="change-password-close" class="modal-close" aria-label="Đóng">&times;</button>
         <h2>Đổi mật khẩu</h2>
         <form id="change-password-form">
             <div class="form-group"><label for="current-password">Mật khẩu hiện tại *</label><input id="current-password" type="password" required autocomplete="current-password" placeholder="Nhập mật khẩu cũ"></div>
             <div class="form-group"><label for="new-password">Mật khẩu mới *</label><input id="new-password" type="password" required minlength="6" autocomplete="new-password" placeholder="Tối thiểu 6 ký tự"></div>
             <div class="form-group"><label for="new-password-confirm">Nhập lại mật khẩu mới *</label><input id="new-password-confirm" type="password" required minlength="6" autocomplete="new-password" placeholder="Tối thiểu 6 ký tự"></div>
-            <div id="change-password-error" class="form-error"></div>
-            <div class="form-actions"><button type="submit" id="change-password-submit" class="btn btn-primary" style="width: 100%;">Cập nhật mật khẩu</button></div>
+            <div id="change-password-error" class="form-error" role="alert"></div>
+            <div class="form-actions"><button type="submit" id="change-password-submit" class="btn btn-primary w-full">Cập nhật mật khẩu</button></div>
         </form>
     </div>`;
 document.body.appendChild(changePasswordModal);
@@ -226,7 +226,7 @@ function updateAuthUI() {
         if (userProfileTop) userProfileTop.classList.remove("hidden");
 
         const isAdmin = currentUser.role === "admin";
-        userDisplay.innerHTML = `${currentUser.username} ${isAdmin ? "▾" : ""}`;
+        userDisplay.textContent = `${currentUser.username}${isAdmin ? " ▾" : ""}`;
 
         if (walletBalanceDisplay) {
             walletBalanceDisplay.textContent = formatPrice(currentUser.balance || 0);
@@ -468,7 +468,7 @@ function renderErrorState(message) {
     grid.innerHTML = "";
     const el = document.createElement("div");
     el.className = "empty-state";
-    el.innerHTML = `<span class="empty-icon">⚠️</span>Không tải được dữ liệu: ${message}
+    el.innerHTML = `<span class="empty-icon">⚠️</span>Không tải được dữ liệu: ${escapeHTML(message)}
         <div class="empty-action"><button class="btn btn-secondary" onclick="fetchAndRenderAccounts()">Thử lại</button></div>`;
     grid.appendChild(el);
     pagination.innerHTML = "";
@@ -481,7 +481,7 @@ function renderGrid(items, total) {
         const empty = document.createElement("div");
         empty.className = "empty-state";
         empty.innerHTML = currentQuery
-            ? `<span class="empty-icon">🔍</span>Không tìm thấy acc hoặc skin nào khớp với “<strong>${currentQuery}</strong>”`
+            ? `<span class="empty-icon">🔍</span>Không tìm thấy acc hoặc skin nào khớp với “<strong>${escapeHTML(currentQuery)}</strong>”`
             : `<span class="empty-icon">📚</span>Chưa có acc nào trong shop.`;
         grid.appendChild(empty);
         return;
@@ -1149,7 +1149,7 @@ async function openHistoryModal() {
         const data = await apiFetch("/purchases/me");
         renderHistoryList(data.items || []);
     } catch (err) {
-        historyList.innerHTML = `<div class="empty-state">⚠️ ${err.message}</div>`;
+        historyList.innerHTML = `<div class="empty-state">⚠️ ${escapeHTML(err.message)}</div>`;
     }
 }
 
@@ -1485,13 +1485,13 @@ window.openImageModal = function (id, options = {}) {
 if (modalClose) modalClose.addEventListener("click", closeModal);
 
 window.addEventListener("click", (e) => {
-    if (e.target === modal) closeModal();
-    if (e.target === crudModal) closeCrudModal();
-    if (e.target === loginModal) closeLoginModal();
-    if (e.target === usersModal) usersModal.classList.remove("active");
-    if (e.target === csvImportModal) closeCsvImportModal();
-    if (e.target === walletModal) closeWalletModal();
-    if (e.target === historyModal) historyModal.classList.remove("active");
+    if (modal && e.target === modal) closeModal();
+    if (crudModal && e.target === crudModal) closeCrudModal();
+    if (loginModal && e.target === loginModal) closeLoginModal();
+    if (usersModal && e.target === usersModal) usersModal.classList.remove("active");
+    if (csvImportModal && e.target === csvImportModal) closeCsvImportModal();
+    if (walletModal && e.target === walletModal) closeWalletModal();
+    if (historyModal && e.target === historyModal) historyModal.classList.remove("active");
     if (e.target === changePasswordModal) closeChangePasswordModal();
 });
 
@@ -1500,10 +1500,10 @@ document.addEventListener("keydown", (e) => {
         closeModal();
         closeCrudModal();
         closeLoginModal();
-        usersModal.classList.remove("active");
+        usersModal?.classList.remove("active");
         closeCsvImportModal();
         closeWalletModal();
-        historyModal.classList.remove("active");
+        historyModal?.classList.remove("active");
         if (searchHints) searchHints.classList.add("hidden");
         if (adminMenuDropdown) adminMenuDropdown.classList.add("hidden");
         closeChangePasswordModal();
