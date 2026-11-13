@@ -4,206 +4,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Nạp tiền vào tài khoản - Shop Acc Liqi">
     <title>Nạp Tiền - Shop Acc Liqi</title>
-
     <link rel="icon" type="image/png" href="https://res.cloudinary.com/zv0jlmxj/image/upload/r_max/v1787241826/96477251-8c82-4f3f-a032-8719e420fb94.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Spectral:ital,wght@0,600;0,700;1,600;1,700&display=swap" rel="stylesheet">
-
-    <link rel="stylesheet" href="style.css">
-    <style>
-        .page-title {
-            font-family: var(--font-display);
-            color: var(--gold);
-            font-size: 1.8rem;
-            margin-bottom: 24px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .topup-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 24px;
-        }
-        @media (max-width: 768px) {
-            .topup-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-        .topup-card {
-            background: var(--bg-elevated);
-            border: 1px solid rgba(216, 181, 104, 0.25);
-            border-radius: var(--radius);
-            padding: 24px;
-            box-shadow: var(--shadow);
-        }
-        .topup-card h2 {
-            font-family: var(--font-display);
-            color: var(--gold);
-            font-size: 1.3rem;
-            margin-top: 0;
-            margin-bottom: 18px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .qr-placeholder {
-            background: #ffffff;
-            padding: 12px;
-            border-radius: 12px;
-            display: inline-block;
-            margin-bottom: 12px;
-            width: min(100%, 500px);
-            box-sizing: border-box;
-        }
-        .qr-placeholder img {
-            width: 100%;
-            height: auto;
-            aspect-ratio: 1;
-            object-fit: contain;
-            display: block;
-        }
-        .qr-notice {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            aspect-ratio: 1;
-            padding: 24px;
-            box-sizing: border-box;
-            background-color: rgba(230, 57, 70, 0.05);
-            border: 2px dashed #e63946;
-            border-radius: 8px;
-        }
-        .qr-notice-icon {
-            font-size: 3.5rem;
-            margin-bottom: 16px;
-            animation: pulse 2s infinite;
-        }
-        .qr-notice-text {
-            color: #d90429;
-            font-size: 1.05rem;
-            font-weight: 700;
-            line-height: 1.6;
-            text-align: center;
-        }
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-        .bank-info-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px dashed rgba(139, 144, 163, 0.2);
-            font-size: 0.9rem;
-        }
-        .bank-info-item span:first-child {
-            color: var(--ink-muted);
-        }
-        .bank-info-item span:last-child {
-            font-weight: 600;
-            color: var(--ink);
-        }
-        .topup-history-card {
-            margin-top: 24px;
-        }
-        .topup-history-list {
-            display: grid;
-            gap: 12px;
-        }
-        .topup-history-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 16px;
-            padding: 14px 0;
-            border-bottom: 1px dashed rgba(139, 144, 163, 0.25);
-        }
-        .topup-history-item:last-child {
-            border-bottom: 0;
-            padding-bottom: 0;
-        }
-        .topup-history-meta {
-            display: grid;
-            gap: 4px;
-        }
-        .topup-history-date,
-        .topup-history-code {
-            color: var(--ink-muted);
-            font-size: 0.86rem;
-        }
-        .topup-history-amount {
-            color: #4caf72;
-            font-weight: 700;
-            white-space: nowrap;
-        }
-        @media (max-width: 480px) {
-            .topup-history-item {
-                align-items: flex-start;
-                flex-direction: column;
-                gap: 8px;
-            }
-        }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="tailwind.css">
 </head>
 
 <body>
-    <div id="toast-container" aria-live="polite"></div>
+    <!-- Header + khung toast: render bởi components.js -->
+    <div id="site-header" data-active="topup"></div>
+    <script src="components.js"></script>
 
-    <header class="site-header">
-        <div class="top-bar">
-            <button type="button" id="mobile-menu-btn" class="mobile-menu-btn" aria-label="Mở menu điều hướng" aria-expanded="false" aria-controls="main-nav">
-                <span></span><span></span><span></span>
-            </button>
+    <main class="mx-auto max-w-[1340px] px-8 pb-20 pt-9 max-lg:px-5 max-lg:pb-14 max-lg:pt-6">
+        <h1 class="page-title">💳 Nạp Tiền</h1>
 
-            <a href="../index.html" class="top-bar-logo" aria-label="Trang chủ">
-                <img class="logo" src="https://res.cloudinary.com/zv0jlmxj/image/upload/v1788875838/ChatGPT_Image_20_55_41_8_thg_9_2026.png" alt="Logo">
-            </a>
-            
-            <nav id="main-nav" class="nav-links">
-                <a href="../index.html" class="nav-item">Trang chủ</a>
-                <a href="danhsachaccban.html" class="nav-item">Danh sách acc bay</a>
-                <a href="naptien.html" class="nav-item active">Nạp tiền</a>
-                <a href="lichsumuanick.html" class="nav-item">Lịch sử mua nick</a>
-                <a href="baiviet.html" class="nav-item">Bài viết hướng dẫn</a>
-                <a href="lienhe.html" class="nav-item">Liên hệ</a>
-            </nav>
-
-            <div id="auth-actions">
-                <button id="login-btn" class="btn btn-secondary">Đăng Nhập</button>
-            </div>
-
-            <div id="user-profile-top" class="user-profile-top hidden">
-                <img class="user-avatar" src="https://res.cloudinary.com/zv0jlmxj/image/upload/v1787241826/96477251-8c82-4f3f-a032-8719e420fb94.png" alt="Avatar">
-                <div class="user-details">
-                    <span id="user-display" class="user-name"></span>
-                    <span class="user-balance"><strong id="wallet-balance-display">0đ</strong></span>
-                </div>
-
-                <div id="admin-menu-dropdown" class="admin-menu-dropdown hidden">
-                    <button type="button" id="add-acc-btn" class="admin-menu-item admin-only-menu-item">➕ Thêm acc mới</button>
-                    <button type="button" id="manage-users-btn" class="admin-menu-item admin-only-menu-item">👤 Quản lý người dùng</button>
-                    <button type="button" id="change-password-btn" class="admin-menu-item profile-menu-item">🔐 Đổi mật khẩu</button>
-                    <button type="button" id="profile-logout-btn" class="admin-menu-item profile-menu-item profile-logout-item">↪ Đăng xuất</button>
-                </div>
-            </div>
-        </div>
-    </header>
-
-    <main class="container">
-        <h1 class="page-title">💳 Nạp Tiền </h1>
-
-        <div class="topup-grid">
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
             <!-- Cột nhập số tiền chuyển khoản -->
             <div class="topup-card">
                 <h2>💳 Thông Tin Chuyển Khoản</h2>
-                
+
                 <div class="wallet-balance-box">
                     <span class="wallet-balance-label">Số dư hiện tại</span>
                     <span id="page-wallet-balance" class="wallet-balance-amount">0 đ</span>
@@ -213,7 +34,7 @@
                     <label for="page-topup-amount">Số tiền chuyển khoản (VNĐ)</label>
                     <input type="number" id="page-topup-amount" min="10000" step="10000" placeholder="Ví dụ: 100000">
                 </div>
-                <div class="topup-quick-amounts">
+                <div class="mb-2 flex flex-wrap gap-2.5">
                     <button type="button" class="topup-chip page-chip" data-amount="10000">10k</button>
                     <button type="button" class="topup-chip page-chip" data-amount="20000">20k</button>
                     <button type="button" class="topup-chip page-chip" data-amount="50000">50k</button>
@@ -223,35 +44,23 @@
                 </div>
                 <p class="wallet-note">Nhập số tiền trước khi quét QR để tạo đúng số tiền và nội dung chuyển khoản.</p>
 
-                <div class="bank-info-list" style="margin-top: 20px;">
-                    <div class="bank-info-item">
-                        <span>Ngân hàng:</span>
-                        <span>MBBANK (Quân Đội)</span>
-                    </div>
-                    <div class="bank-info-item">
-                        <span>Số tài khoản:</span>
-                        <span style="color: var(--gold);">130907072007</span>
-                    </div>
-                    <div class="bank-info-item">
-                        <span>Chủ tài khoản:</span>
-                        <span>NGUYEN THANH VIET</span>
-                    </div>
-                    <div class="bank-info-item">
-                        <span>Nội dung CK:</span>
-                        <span id="transfer-content" style="color: var(--maroon); font-weight: 700;">Chọn số tiền để tạo mã nạp</span>
-                    </div>
+                <div class="mt-5">
+                    <div class="bank-info-item"><span>Ngân hàng:</span><span>MBBANK (Quân Đội)</span></div>
+                    <div class="bank-info-item"><span>Số tài khoản:</span><span class="!text-gold">130907072007</span></div>
+                    <div class="bank-info-item"><span>Chủ tài khoản:</span><span>NGUYEN THANH VIET</span></div>
+                    <div class="bank-info-item"><span>Nội dung CK:</span><span id="transfer-content" class="!font-bold !text-maroon">Chọn số tiền để tạo mã nạp</span></div>
                 </div>
 
-                <p class="wallet-note" style="margin-top: 16px;">
+                <p class="wallet-note">
                     📌 <strong>Lưu ý:</strong> Vui lòng quét mã QR hoặc nhập <strong>đúng Nội dung CK</strong> để hệ thống SePay tự động cộng tiền trong vòng 1-3 phút.
                 </p>
             </div>
 
-            <!-- Cột Chuyển Khoản Ngân Hàng Tự Động VietQR -->
+            <!-- Cột chuyển khoản tự động VietQR -->
             <div class="topup-card">
                 <h2>🏦 Chuyển Khoản Tự Động (VietQR)</h2>
 
-                <div style="text-align: center;">
+                <div class="text-center">
                     <div class="qr-placeholder">
                         <div id="qr-notice" class="qr-notice">
                             <div class="qr-notice-icon">⚠️</div>
@@ -259,15 +68,15 @@
                                 Vui lòng nhập số tiền từ 10.000đ trở lên để hiển thị mã QR nạp tiền.
                             </div>
                         </div>
+                        <!-- display do JS điều khiển (toggleQRDisplay) -->
                         <img id="vietqr-img" src="" alt="QR Thanh Toán VietQR" style="display: none;">
                     </div>
-                    <button type="button" id="download-qr-btn" class="btn btn-secondary qr-download-btn" style="display: none;">⬇️ Tải mã QR</button>
+                    <button type="button" id="download-qr-btn" class="btn btn-secondary mt-3" style="display: none;">⬇️ Tải mã QR</button>
                 </div>
-
             </div>
         </div>
 
-        <section class="topup-card topup-history-card" aria-labelledby="topup-history-title">
+        <section class="topup-card mt-7" aria-labelledby="topup-history-title">
             <h2 id="topup-history-title">📜 Lịch Sử Nạp Tiền</h2>
             <div id="topup-history-list" class="topup-history-list" aria-live="polite"></div>
         </section>
