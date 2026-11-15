@@ -503,11 +503,11 @@ body {
 
 .search-sort-row .sort-box select {
     height: 48px;
-    background: rgba(18, 24, 38, 0.75);
+    background-color: rgba(18, 24, 38, 0.75);
     color: #e2e8f0;
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 12px;
-    padding: 0 18px;
+    padding: 0 40px 0 18px;
     font-size: 13.5px;
     font-weight: 500;
     font-family: var(--font-body);
@@ -518,6 +518,16 @@ body {
 
 .search-sort-row .sort-box select:focus {
     border-color: var(--gold);
+}
+
+.sort-box select option {
+    background-color: #121826;
+    color: #e2e8f0;
+}
+
+.sort-box select option:checked {
+    background-color: #f59e0b;
+    color: #0a0e17;
 }
 
 /* Hàng Filter Chips */
