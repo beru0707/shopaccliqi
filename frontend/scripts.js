@@ -921,6 +921,7 @@ function enhanceSortSelect(select) {
         }
     });
     sortDropdowns.push({ trigger, options });
+    syncSortDropdowns(select.value);
 }
 
 function handleSortChange(e) {
