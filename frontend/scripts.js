@@ -29,6 +29,24 @@ const sortSelectMobile = document.getElementById("sort-select-mobile");
 const toastContainer = document.getElementById("toast-container");
 const mobileMenuBtn = document.getElementById("mobile-menu-btn");
 const mainNav = document.getElementById("main-nav");
+const siteHeader = document.querySelector(".site-header");
+const mainSearchBar = document.querySelector(".site-header .main-bar");
+
+if (siteHeader && mainSearchBar) {
+    let previousScrollY = window.scrollY;
+    window.addEventListener("scroll", () => {
+        const currentScrollY = window.scrollY;
+        const scrollDelta = currentScrollY - previousScrollY;
+
+        if (currentScrollY <= 80 || scrollDelta < -4) {
+            siteHeader.classList.remove("search-row-hidden");
+        } else if (currentScrollY > 120 && scrollDelta > 4) {
+            siteHeader.classList.add("search-row-hidden");
+        }
+
+        previousScrollY = currentScrollY;
+    }, { passive: true });
+}
 
 // Auth
 const loginBtn = document.getElementById("login-btn");
