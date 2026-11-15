@@ -38,7 +38,7 @@ if (siteHeader && mainSearchBar) {
         const currentScrollY = window.scrollY;
         const scrollDelta = currentScrollY - previousScrollY;
 
-        if (currentScrollY <= 80 || scrollDelta < -4) {
+        if (currentScrollY <= 80) {
             siteHeader.classList.remove("search-row-hidden");
         } else if (currentScrollY > 120 && scrollDelta > 4) {
             siteHeader.classList.add("search-row-hidden");
