@@ -1,4 +1,4 @@
-const ITEMS_PER_PAGE = 8;
+const ITEMS_PER_PAGE = 12;
 const SEARCH_DEBOUNCE_MS = 250;
 
 const urlParams = new URLSearchParams(window.location.search);
