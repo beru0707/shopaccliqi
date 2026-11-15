@@ -158,6 +158,30 @@ body {
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
+@media (min-width: 1800px) {
+    .top-bar {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+        justify-content: initial;
+    }
+
+    .top-bar > .brand-link {
+        grid-column: 1;
+        justify-self: start;
+    }
+
+    .top-bar > .nav-links {
+        grid-column: 2;
+        justify-self: center;
+    }
+
+    .top-bar > #auth-actions,
+    .top-bar > .user-profile-top {
+        grid-column: 3;
+        justify-self: end;
+    }
+}
+
 .nav-links {
     display: flex;
     align-items: center;
