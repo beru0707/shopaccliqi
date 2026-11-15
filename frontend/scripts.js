@@ -48,7 +48,7 @@ if (siteHeader && mainSearchBar) {
 
         if (currentScrollY <= 0) {
             siteHeader.classList.remove("search-row-hidden");
-        } else if (currentScrollY > 120 && scrollDelta > 4) {
+        } else if (currentScrollY > 0 && scrollDelta > 0) {
             siteHeader.classList.add("search-row-hidden");
         }
 
