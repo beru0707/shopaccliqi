@@ -33,8 +33,16 @@ const siteHeader = document.querySelector(".site-header");
 const mainSearchBar = document.querySelector(".site-header .main-bar");
 
 if (siteHeader && mainSearchBar) {
+    const mobileSearchViewport = window.matchMedia("(max-width: 768px)");
     let previousScrollY = window.scrollY;
-    window.addEventListener("scroll", () => {
+
+    const updateSearchVisibility = () => {
+        if (!mobileSearchViewport.matches) {
+            siteHeader.classList.remove("search-row-hidden");
+            previousScrollY = window.scrollY;
+            return;
+        }
+
         const currentScrollY = window.scrollY;
         const scrollDelta = currentScrollY - previousScrollY;
 
@@ -45,7 +53,10 @@ if (siteHeader && mainSearchBar) {
         }
 
         previousScrollY = currentScrollY;
-    }, { passive: true });
+    };
+
+    window.addEventListener("scroll", updateSearchVisibility, { passive: true });
+    window.addEventListener("resize", updateSearchVisibility, { passive: true });
 }
 
 // Auth
