@@ -632,6 +632,24 @@ body {
     align-items: center;
 }
 
+/* Giữ bề rộng khu vực tài khoản ổn định để menu không xê dịch khi đăng nhập. */
+@media (min-width: 769px) and (max-width: 1799px) {
+    #auth-actions,
+    .user-profile-top {
+        box-sizing: border-box;
+        flex: 0 0 240px;
+        width: 240px;
+        justify-content: flex-end;
+    }
+
+    .user-name {
+        max-width: 170px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+}
+
 #auth-area {
     display: flex;
     align-items: center;
@@ -2553,6 +2571,7 @@ body {
     .user-profile-top {
         margin-left: auto;
         flex: 0 0 auto;
+        width: auto;
         z-index: 2;
         padding: 4px 10px 4px 6px;
         gap: 8px;

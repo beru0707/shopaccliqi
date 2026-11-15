@@ -225,10 +225,12 @@ function handleSessionExpired() {
 
 // Cập nhật giao diện khi đăng nhập/đăng xuất
 function updateAuthUI() {
+    const authActions = document.getElementById("auth-actions");
     const userProfileTop = document.getElementById("user-profile-top");
     
     if (currentUser) {
         loginBtn.classList.add("hidden");
+        if (authActions) authActions.classList.add("hidden");
         if (userProfileTop) userProfileTop.classList.remove("hidden");
 
         const isAdmin = currentUser.role === "admin";
@@ -249,6 +251,7 @@ function updateAuthUI() {
         }
     } else {
         loginBtn.classList.remove("hidden");
+        if (authActions) authActions.classList.remove("hidden");
         if (userProfileTop) userProfileTop.classList.add("hidden");
         if (adminMenuDropdown) adminMenuDropdown.classList.add("hidden");
     }
