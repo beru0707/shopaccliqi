@@ -107,6 +107,14 @@
         let currentUser = null;
         try { currentUser = JSON.parse(localStorage.getItem("currentUser") || "null"); } catch (_) {}
 
+        const escapeHTML = (value) => {
+            const el = document.createElement("div");
+            el.textContent = value || "";
+            return el.innerHTML;
+        };
+        const escapeAttr = escapeHTML;
+        const formatPrice = (value) => `${Number(value || 0).toLocaleString("vi-VN")} đ`;
+
         if (mobileMenuBtn && mainNav) {
             mobileMenuBtn.addEventListener("click", () => {
                 const isOpen = mainNav.classList.toggle("mobile-open");
@@ -146,14 +154,6 @@
                 authActions.classList.remove("hidden");
             });
         }
-        const escapeHTML = (value) => {
-            const el = document.createElement("div");
-            el.textContent = value || "";
-            return el.innerHTML;
-        };
-        const escapeAttr = escapeHTML;
-        const formatPrice = (value) => `${Number(value || 0).toLocaleString("vi-VN")} đ`;
-
         function render(items) {
             if (!items.length) {
                 soldList.innerHTML = '<div class="empty-state"><span class="empty-icon">🧾</span>Chưa có tài khoản nào được bán.</div>';
