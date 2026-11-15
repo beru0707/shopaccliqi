@@ -1,5 +1,5 @@
 const ITEMS_PER_PAGE = 8;
-const SEARCH_DEBOUNCE_MS = 350;
+const SEARCH_DEBOUNCE_MS = 250;
 
 const urlParams = new URLSearchParams(window.location.search);
 let currentPage = parseInt(urlParams.get("page"), 10) || 1;
@@ -8,6 +8,8 @@ let currentSort = "";
 let totalPages = 1;
 let editingId = null;
 let searchDebounceTimer = null;
+let accountsRequestController = null;
+let accountsRequestId = 0;
 let currentItems = []; // danh sách acc đang hiển thị, dùng để modal "Xem" tra cứu thông tin
 let isPlacingBid = false;
 
@@ -99,6 +101,7 @@ const openHistoryBtn = document.getElementById("open-history-btn");
 const historyModal = document.getElementById("history-modal");
 const historyModalClose = document.getElementById("history-modal-close");
 const historyList = document.getElementById("history-list");
+const historyPagination = document.getElementById("history-pagination");
 
 // CRUD acc
 const addAccBtn = document.getElementById("add-acc-btn");
@@ -183,6 +186,7 @@ async function apiFetch(path, options = {}) {
     try {
         res = await fetch(`${API_BASE_URL}${path}`, { ...options, headers });
     } catch (err) {
+        if (err.name === "AbortError") throw err;
         throw new Error("Không thể kết nối tới máy chủ. Vui lòng kiểm tra API có đang chạy không.");
     }
 
@@ -438,6 +442,10 @@ function renderSkeleton(count = 8) {
 // ================= TẢI & HIỂN THỊ DANH SÁCH ACC =================
 
 async function fetchAndRenderAccounts() {
+    accountsRequestController?.abort();
+    const requestController = new AbortController();
+    accountsRequestController = requestController;
+    const requestId = ++accountsRequestId;
     renderSkeleton();
 
     const newUrl = new URL(window.location.href);
@@ -451,7 +459,8 @@ async function fetchAndRenderAccounts() {
             limit: String(ITEMS_PER_PAGE),
             sort: currentSort,
         });
-        const data = await apiFetch(`/accounts?${params.toString()}`);
+        const data = await apiFetch(`/accounts?${params.toString()}`, { signal: requestController.signal });
+        if (requestId !== accountsRequestId) return;
         totalPages = data.totalPages || 1;
         
         //Tính tổng số acc
@@ -465,7 +474,10 @@ async function fetchAndRenderAccounts() {
         
         window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (err) {
+        if (err.name === "AbortError" || requestId !== accountsRequestId) return;
         renderErrorState(err.message);
+    } finally {
+        if (requestId === accountsRequestId) accountsRequestController = null;
     }
 }
 
@@ -1222,18 +1234,44 @@ if (walletModalClose) walletModalClose.addEventListener("click", closeWalletModa
 
 // ================= LỊCH SỬ MUA ACC =================
 
-async function openHistoryModal() {
+async function openHistoryModal(page = 1) {
     if (!currentUser) return;
+    const pageSize = 8;
     closeWalletModal();
     historyModal.classList.add("active");
     historyList.innerHTML = `<div class="empty-state"><span class="spinner"></span>Đang tải...</div>`;
 
     try {
-        const data = await apiFetch("/purchases/me");
+        const data = await apiFetch(`/purchases/me?page=${page}&limit=${pageSize}`);
         renderHistoryList(data.items || []);
+        renderHistoryPagination(historyPagination, page, data.hasMore, openHistoryModal);
     } catch (err) {
         historyList.innerHTML = `<div class="empty-state">⚠️ ${err.message}</div>`;
     }
+}
+
+function renderHistoryPagination(container, page, hasMore, onPage) {
+    if (!container) return;
+    container.innerHTML = "";
+    container.hidden = page === 1 && !hasMore;
+    if (container.hidden) return;
+
+    const previous = document.createElement("button");
+    previous.type = "button";
+    previous.textContent = "← Trước";
+    previous.disabled = page <= 1;
+    previous.addEventListener("click", () => onPage(page - 1));
+
+    const label = document.createElement("span");
+    label.textContent = `Trang ${page}`;
+
+    const next = document.createElement("button");
+    next.type = "button";
+    next.textContent = "Sau →";
+    next.disabled = !hasMore;
+    next.addEventListener("click", () => onPage(page + 1));
+
+    container.append(previous, label, next);
 }
 
 function renderHistoryList(items) {
@@ -1247,7 +1285,7 @@ function renderHistoryList(items) {
         return `
             <div class="history-item">
                 <button type="button" class="history-image-button" data-preview-image="${escapeAttr(p.image)}" aria-label="Phóng to ảnh acc">
-                    <img src="${escapeAttr(p.image)}" alt="${escapeAttr(formatPrice(p.price))}">
+                    <img loading="lazy" decoding="async" src="${escapeAttr(cloudinaryThumbnailUrl(p.image, 480))}" alt="${escapeAttr(formatPrice(p.price))}">
                 </button>
                 <div class="history-item-info">
                     <div class="price">${formatPrice(p.price)}</div>

@@ -96,6 +96,7 @@
         <div class="history-page-card">
             <div id="page-history-content">
                 <div id="history-list" class="history-list"></div>
+                <div id="purchase-history-pagination" class="purchase-history-pagination" hidden></div>
             </div>
         </div>
     </main>
@@ -105,8 +106,10 @@
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             const historyListEl = document.getElementById("history-list");
+            const historyPaginationEl = document.getElementById("purchase-history-pagination");
+            const pageSize = 12;
             
-            async function loadPageHistory() {
+            async function loadPageHistory(page = 1) {
                 if (!currentUser) {
                     historyListEl.innerHTML = `
                         <div class="login-notice">
@@ -121,8 +124,9 @@
                 historyListEl.innerHTML = `<div class="empty-state"><span class="spinner"></span>Đang tải lịch sử mua...</div>`;
 
                 try {
-                    const data = await apiFetch("/purchases/me");
+                    const data = await apiFetch(`/purchases/me?page=${page}&limit=${pageSize}`);
                     renderHistoryList(data.items || []);
+                    renderHistoryPagination(historyPaginationEl, page, data.hasMore, loadPageHistory);
                 } catch (err) {
                     historyListEl.innerHTML = `<div class="empty-state">⚠️ ${err.message}</div>`;
                 }

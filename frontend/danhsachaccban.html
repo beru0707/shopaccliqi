@@ -86,11 +86,15 @@
         <h1 class="page-title">📋 Danh Sách Acc Bay</h1>
         <div class="history-page-card">
             <div id="sold-list" class="history-list"><div class="empty-state"><span class="spinner"></span>Đang tải danh sách acc đã bán...</div></div>
+            <div id="sold-pagination" class="purchase-history-pagination" hidden></div>
         </div>
     </main>
     <script src="config.js"></script>
     <script>
         const soldList = document.getElementById("sold-list");
+        const soldPagination = document.getElementById("sold-pagination");
+        let soldPage = 1;
+        const SOLD_PAGE_SIZE = 12;
         const mobileMenuBtn = document.getElementById("mobile-menu-btn");
         const mainNav = document.getElementById("main-nav");
         const loginBtn = document.getElementById("login-btn");
@@ -161,7 +165,7 @@
                 const soldDate = soldAt ? soldAt.toLocaleDateString("vi-VN") : "";
                 return `<article class="history-item sold-history-item">
                     <button type="button" class="history-image-button" data-preview-image="${escapeAttr(item.image)}" aria-label="Phóng to ảnh acc">
-                        <img src="${escapeAttr(item.image)}" alt="Acc đã bán giá ${escapeAttr(formatPrice(item.price))}">
+                        <img loading="lazy" decoding="async" src="${escapeAttr(thumbnailUrl(item.image))}" alt="Acc đã bán giá ${escapeAttr(formatPrice(item.price))}">
                     </button>
                     <div class="history-item-info">
                         <div class="price">${formatPrice(item.price)}</div>
@@ -184,6 +188,31 @@
             }).join("");
         }
 
+        function thumbnailUrl(imageUrl) {
+            const marker = "/image/upload/";
+            if (typeof imageUrl !== "string" || !imageUrl.includes("res.cloudinary.com") || !imageUrl.includes(marker)) return imageUrl || "";
+            return imageUrl.replace(marker, `${marker}f_auto,q_auto,w_480,c_limit,dpr_auto/`);
+        }
+
+        function renderPagination(page, hasMore) {
+            soldPagination.innerHTML = "";
+            soldPagination.hidden = page === 1 && !hasMore;
+            if (soldPagination.hidden) return;
+            const previous = document.createElement("button");
+            previous.type = "button";
+            previous.textContent = "← Trước";
+            previous.disabled = page <= 1;
+            previous.addEventListener("click", () => loadSoldAccounts(page - 1));
+            const label = document.createElement("span");
+            label.textContent = `Trang ${page}`;
+            const next = document.createElement("button");
+            next.type = "button";
+            next.textContent = "Sau →";
+            next.disabled = !hasMore;
+            next.addEventListener("click", () => loadSoldAccounts(page + 1));
+            soldPagination.append(previous, label, next);
+        }
+
         soldList.addEventListener("click", (event) => {
             const previewButton = event.target.closest(".history-image-button");
             if (!previewButton) return;
@@ -202,12 +231,16 @@
             lightbox.classList.add("active");
         });
 
-        async function loadSoldAccounts() {
+        async function loadSoldAccounts(page = soldPage) {
+            soldPage = page;
+            soldList.innerHTML = '<div class="empty-state"><span class="spinner"></span>Đang tải danh sách acc đã bán...</div>';
             try {
-                const response = await fetch(`${API_BASE_URL}/purchases/sold`);
+                const params = new URLSearchParams({ page: String(page), limit: String(SOLD_PAGE_SIZE) });
+                const response = await fetch(`${API_BASE_URL}/purchases/sold?${params}`);
                 const data = await response.json();
                 if (!response.ok) throw new Error(data.error || "Không tải được danh sách.");
                 render(data.items || []);
+                renderPagination(page, data.hasMore);
             } catch (error) {
                 soldList.innerHTML = `<div class="empty-state">⚠️ ${escapeHTML(error.message)}</div>`;
             }

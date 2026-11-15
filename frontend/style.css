@@ -2195,6 +2195,36 @@ body {
     gap: 14px;
     margin-top: 50px;
 }
+
+.purchase-history-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 18px;
+    color: var(--ink-muted);
+    font-size: 0.9rem;
+}
+
+.purchase-history-pagination[hidden] {
+    display: none;
+}
+
+.purchase-history-pagination button {
+    min-height: 38px;
+    padding: 0 14px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: var(--radius-pill);
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--ink);
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.purchase-history-pagination button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
 #pagination button {
     min-width: 42px;
     height: 42px;
