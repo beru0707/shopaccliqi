@@ -564,7 +564,7 @@ function renderCardsList(items) {
         if (!mainTitle && tagList.length > 0) {
             mainTitle = tagList.shift();
         }
-        if (!mainTitle) mainTitle = `Tài khoản #${item.id.slice(-4)}`;
+        if (!mainTitle) mainTitle = "Tài khoản game";
 
         const tagsHTML = tagList.length > 0 ? `<div class="tags">
             ${tagList.slice(0, 2).map((tag, idx) => {
@@ -583,19 +583,15 @@ function renderCardsList(items) {
             ? `<span class="badge-status badge-sold">✓ ĐÃ BÁN</span>`
             : (auctionActive ? `<span class="badge-status auction-card-badge">🔨 ĐẤU GIÁ</span>` : `<span class="badge-status badge-avail">● CÒN HÀNG</span>`);
 
-        const noteText = item.adminNote ? escapeHTML(item.adminNote) : (item.sold ? "TTT • ĐÃ GIAO" : "TTT • TRẮNG TT");
+        const noteText = item.adminNote ? escapeHTML(item.adminNote) : "TTT";
         const noteBadgeHTML = `<span class="badge-status badge-note">${noteText}</span>`;
 
         // Thông tin rank & tướng/skin dưới ảnh
         const rankMatch = (item.info || "").match(/(Cao Thủ|Chiến Tướng|Tinh Anh|Kim Cương|Bạch Kim)[^•,\n]*/i);
-        const rankText = rankMatch ? `🏆 ${rankMatch[0].trim()}` : `🏆 #${item.id.slice(-4)}`;
-        const skinCountText = `⚡ ${item.skins ? item.skins.length : 0} Skin`;
-        const metaOverlayHTML = `
-            <div class="meta-overlay">
-                <span>${escapeHTML(rankText)}</span>
-                <span>${escapeHTML(skinCountText)}</span>
-            </div>
-        `;
+        const rankText = rankMatch ? `🏆 ${rankMatch[0].trim()}` : "";
+        const metaOverlayHTML = rankText
+            ? `<div class="meta-overlay"><span>${escapeHTML(rankText)}</span></div>`
+            : "";
 
         // Action buttons
         const actionBtnsHTML = isAdmin
