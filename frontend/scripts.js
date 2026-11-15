@@ -838,12 +838,98 @@ if (search && searchHints) {
 }
 
 //sort acc price
+const sortDropdowns = [];
+
+function syncSortDropdowns(value) {
+    sortDropdowns.forEach(({ trigger, options }) => {
+        const selected = options.find((option) => option.dataset.value === value);
+        if (selected) trigger.querySelector(".sort-trigger-label").textContent = selected.textContent;
+        options.forEach((option) => {
+            option.setAttribute("aria-selected", String(option.dataset.value === value));
+        });
+    });
+}
+
+function enhanceSortSelect(select) {
+    if (!select || select.dataset.customized === "true") return;
+    select.dataset.customized = "true";
+
+    const wrapper = select.parentElement;
+    const trigger = document.createElement("button");
+    trigger.type = "button";
+    trigger.className = "sort-trigger";
+    trigger.setAttribute("aria-label", "Sắp xếp tài khoản");
+    trigger.setAttribute("aria-haspopup", "listbox");
+    trigger.setAttribute("aria-expanded", "false");
+    trigger.setAttribute("aria-controls", `${select.id}-menu`);
+    trigger.innerHTML = '<span class="sort-trigger-label"></span><span class="sort-trigger-arrow" aria-hidden="true"></span>';
+
+    const menu = document.createElement("div");
+    menu.id = `${select.id}-menu`;
+    menu.className = "sort-menu hidden";
+    menu.setAttribute("role", "listbox");
+    menu.tabIndex = -1;
+
+    const options = Array.from(select.options).map((nativeOption) => {
+        const option = document.createElement("button");
+        option.type = "button";
+        option.className = "sort-option";
+        option.textContent = nativeOption.textContent;
+        option.dataset.value = nativeOption.value;
+        option.setAttribute("role", "option");
+        option.setAttribute("aria-selected", String(nativeOption.value === select.value));
+        option.addEventListener("click", () => {
+            select.value = nativeOption.value;
+            select.dispatchEvent(new Event("change", { bubbles: true }));
+            menu.classList.add("hidden");
+            trigger.setAttribute("aria-expanded", "false");
+            trigger.focus();
+        });
+        menu.appendChild(option);
+        return option;
+    });
+
+    select.classList.add("sort-native-select");
+    wrapper.classList.add("sort-box-custom");
+    wrapper.append(trigger, menu);
+    trigger.addEventListener("click", () => {
+        const isOpening = menu.classList.contains("hidden");
+        document.querySelectorAll(".sort-menu").forEach((otherMenu) => otherMenu.classList.add("hidden"));
+        document.querySelectorAll(".sort-trigger[aria-expanded='true']").forEach((otherTrigger) => otherTrigger.setAttribute("aria-expanded", "false"));
+        menu.classList.toggle("hidden", !isOpening);
+        trigger.setAttribute("aria-expanded", String(isOpening));
+    });
+    trigger.addEventListener("keydown", (event) => {
+        if (event.key === "ArrowDown" || event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            menu.classList.remove("hidden");
+            trigger.setAttribute("aria-expanded", "true");
+            (options.find((option) => option.getAttribute("aria-selected") === "true") || options[0])?.focus();
+        }
+    });
+    menu.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+            menu.classList.add("hidden");
+            trigger.setAttribute("aria-expanded", "false");
+            trigger.focus();
+        }
+    });
+    document.addEventListener("click", (event) => {
+        if (!wrapper.contains(event.target)) {
+            menu.classList.add("hidden");
+            trigger.setAttribute("aria-expanded", "false");
+        }
+    });
+    sortDropdowns.push({ trigger, options });
+}
+
 function handleSortChange(e) {
     const selectedValue = e.target.value;
     
     // Đồng bộ giá trị giữa 2 thẻ select PC & Mobile
     if (sortSelect) sortSelect.value = selectedValue;
     if (sortSelectMobile) sortSelectMobile.value = selectedValue;
+    syncSortDropdowns(selectedValue);
 
     currentSort = selectedValue;
     currentPage = 1;
@@ -856,6 +942,8 @@ if (sortSelect) {
 if (sortSelectMobile) {
     sortSelectMobile.addEventListener("change", handleSortChange);
 }
+enhanceSortSelect(sortSelect);
+enhanceSortSelect(sortSelectMobile);
 
 // ================= CRUD ACC (chỉ admin) =================
 
