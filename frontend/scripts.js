@@ -6,6 +6,8 @@ let currentPage = parseInt(urlParams.get("page"), 10) || 1;
 let currentQuery = "";
 let currentSort = "";
 let totalPages = 1;
+let accountSearchHasMore = false;
+let uncountedAccountSearch = false;
 let editingId = null;
 let searchDebounceTimer = null;
 let accountsRequestController = null;
@@ -458,18 +460,22 @@ async function fetchAndRenderAccounts() {
             page: String(currentPage),
             limit: String(ITEMS_PER_PAGE),
             sort: currentSort,
+            fastSearch: currentQuery ? "1" : "0",
         });
         const data = await apiFetch(`/accounts?${params.toString()}`, { signal: requestController.signal });
         if (requestId !== accountsRequestId) return;
+        uncountedAccountSearch = data.total === null;
+        accountSearchHasMore = Boolean(data.hasMore);
         totalPages = data.totalPages || 1;
         
         //Tính tổng số acc
         const totalCountEl = document.getElementById("total-accounts-count");
         if (totalCountEl) {
-            totalCountEl.textContent = data.total || 0;
+            const minimumCount = (currentPage - 1) * ITEMS_PER_PAGE + (data.items || []).length + (data.hasMore ? 1 : 0);
+            totalCountEl.textContent = data.total ?? (data.hasMore ? `≥${minimumCount}` : minimumCount);
         }
 
-        renderGrid(data.items || [], data.total || 0);
+        renderGrid(data.items || [], data.total, data.hasMore);
         renderPagination();
         
         window.scrollTo({ top: 0, behavior: "smooth" });
@@ -535,12 +541,15 @@ function applyChipFilter(filter) {
     renderCardsList(filtered);
 }
 
-function renderGrid(items, total) {
+function renderGrid(items, total, hasMore = false) {
     rawGridItems = items;
     setupFilterChips();
 
     const totalCountEl = document.getElementById("total-accounts-count");
-    if (totalCountEl) totalCountEl.textContent = total;
+    if (totalCountEl) {
+        const minimumCount = (currentPage - 1) * ITEMS_PER_PAGE + items.length + (hasMore ? 1 : 0);
+        totalCountEl.textContent = total ?? (hasMore ? `≥${minimumCount}` : minimumCount);
+    }
 
     applyChipFilter(currentChipFilter);
 }
@@ -668,6 +677,31 @@ function formatPrice(price) {
 
 function renderPagination() {
     pagination.innerHTML = "";
+    if (uncountedAccountSearch) {
+        if (currentPage === 1 && !accountSearchHasMore) return;
+        const prevBtn = document.createElement("button");
+        prevBtn.textContent = "‹ Prev";
+        prevBtn.disabled = currentPage <= 1;
+        prevBtn.onclick = () => {
+            if (currentPage > 1) {
+                currentPage--;
+                fetchAndRenderAccounts();
+            }
+        };
+        const label = document.createElement("span");
+        label.textContent = `Trang ${currentPage}`;
+        const nextBtn = document.createElement("button");
+        nextBtn.textContent = "Next ›";
+        nextBtn.disabled = !accountSearchHasMore;
+        nextBtn.onclick = () => {
+            if (accountSearchHasMore) {
+                currentPage++;
+                fetchAndRenderAccounts();
+            }
+        };
+        pagination.append(prevBtn, label, nextBtn);
+        return;
+    }
     if (totalPages <= 1) return;
 
     // 1. Nút Prev
