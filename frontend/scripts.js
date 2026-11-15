@@ -581,9 +581,9 @@ function renderCardsList(items) {
 
         const statusBadgeHTML = item.sold 
             ? `<span class="badge-status badge-sold">✓ ĐÃ BÁN</span>`
-            : (auctionActive ? `<span class="badge-status auction-card-badge">🔨 ĐẤU GIÁ</span>` : `<span class="badge-status badge-avail">● CÒN HÀNG</span>`);
+            : (auctionActive ? `<span class="badge-status auction-card-badge">🔨 ĐẤU GIÁ</span>` : "");
 
-        const noteText = item.adminNote ? escapeHTML(item.adminNote) : "TTT";
+        const noteText = "TTTKLK";
         const noteBadgeHTML = `<span class="badge-status badge-note">${noteText}</span>`;
 
         // Thông tin rank & tướng/skin dưới ảnh
