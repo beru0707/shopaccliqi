@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1440, initial-scale=1.0">
+<title>Redesign - Shop Acc Liqi</title>
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  :root {
+    --bg-main: #0a0e17;
+    --bg-card: rgba(18, 24, 38, 0.85);
+    --border-card: rgba(255, 255, 255, 0.08);
+    --gold: #f59e0b;
+    --gold-light: #fbbf24;
+    --emerald: #10b981;
+    --rose: #f43f5e;
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+  }
+  body {
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+    min-height: 100vh;
+    background-image: 
+      radial-gradient(circle at 15% 10%, rgba(245, 158, 11, 0.08) 0%, transparent 40%),
+      radial-gradient(circle at 85% 20%, rgba(99, 102, 241, 0.08) 0%, transparent 45%),
+      linear-gradient(180deg, #0a0e17 0%, #0d121f 100%);
+    background-attachment: fixed;
+    padding-bottom: 60px;
+  }
+
+  /* Header Top Bar */
+  .header {
+    background: rgba(10, 14, 23, 0.85);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+  .header-inner {
+    max-width: 1380px;
+    margin: 0 auto;
+    padding: 14px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+  }
+  .brand-icon {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    box-shadow: 0 0 16px rgba(245, 158, 11, 0.35);
+  }
+  .brand-text h1 {
+    font-size: 19px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    background: linear-gradient(90deg, #ffffff 40%, #fbbf24 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    line-height: 1.2;
+  }
+  .brand-text p {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+
+  .nav {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .nav-link {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 13.5px;
+    font-weight: 500;
+    padding: 8px 14px;
+    border-radius: 8px;
+    transition: all 0.2s;
+  }
+  .nav-link:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.04);
+  }
+  .nav-link.active {
+    color: #fbbf24;
+    background: rgba(245, 158, 11, 0.12);
+    font-weight: 600;
+    border: 1px solid rgba(245, 158, 11, 0.25);
+  }
+
+  .user-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    padding: 5px 14px 5px 6px;
+    border-radius: 999px;
+  }
+  .avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #f59e0b, #ef4444);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 13px;
+    color: #fff;
+    border: 2px solid rgba(255, 255, 255, 0.15);
+  }
+  .user-meta {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+  }
+  .user-name {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .admin-tag {
+    font-size: 9px;
+    background: #3b82f6;
+    color: #fff;
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-weight: 700;
+  }
+  .user-balance {
+    font-size: 11.5px;
+    color: var(--gold-light);
+    font-weight: 700;
+  }
+
+  /* Sub Header / Search & Filter Area */
+  .filter-section {
+    max-width: 1380px;
+    margin: 28px auto 20px;
+    padding: 0 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .search-row {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+  }
+  .search-wrapper {
+    flex: 1;
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  .search-icon {
+    position: absolute;
+    left: 16px;
+    color: var(--text-muted);
+    font-size: 16px;
+  }
+  .search-input {
+    width: 100%;
+    height: 48px;
+    background: rgba(18, 24, 38, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 0 16px 0 46px;
+    font-size: 14px;
+    color: #fff;
+    outline: none;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  }
+  .search-input::placeholder {
+    color: #64748b;
+  }
+  .sort-select {
+    height: 48px;
+    background: rgba(18, 24, 38, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 0 16px;
+    color: #e2e8f0;
+    font-size: 13.5px;
+    font-weight: 500;
+    outline: none;
+    cursor: pointer;
+  }
+
+  .chips-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .chips {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .chip {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    color: var(--text-secondary);
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-size: 12.5px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .chip.active {
+    background: rgba(245, 158, 11, 0.12);
+    border-color: rgba(245, 158, 11, 0.3);
+    color: var(--gold-light);
+    font-weight: 600;
+  }
+  .counter-badge {
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+  .counter-badge strong {
+    color: var(--gold-light);
+  }
+
+  /* Grid & Cards */
+  .grid-container {
+    max-width: 1380px;
+    margin: 0 auto;
+    padding: 0 28px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 22px;
+  }
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-card);
+    border-radius: 16px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+    position: relative;
+  }
+  .card-media {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: #111827;
+  }
+  .media-art {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  .art-gradient {
+    position: absolute;
+    inset: 0;
+    opacity: 0.85;
+  }
+  .art-label {
+    position: relative;
+    z-index: 1;
+    font-size: 26px;
+    filter: drop-shadow(0 2px 8px rgba(0,0,0,0.6));
+  }
+  .media-gradient {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(10, 14, 23, 0.85) 100%);
+    z-index: 2;
+  }
+
+  /* Badges */
+  .badge-status {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 3;
+    padding: 3px 9px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .badge-sold {
+    background: rgba(225, 29, 72, 0.9);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(225, 29, 72, 0.3);
+  }
+  .badge-avail {
+    background: rgba(16, 185, 129, 0.9);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+  }
+  .badge-note {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 3;
+    background: rgba(15, 23, 42, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #38bdf8;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 10.5px;
+    font-weight: 700;
+  }
+
+  .meta-overlay {
+    position: absolute;
+    bottom: 8px;
+    left: 12px;
+    right: 12px;
+    z-index: 3;
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: #cbd5e1;
+    font-weight: 600;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.9);
+  }
+
+  /* Card Body */
+  .card-body {
+    padding: 16px 16px 14px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 12px;
+  }
+  .title-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .card-title {
+    font-size: 15.5px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.3;
+  }
+  .tags {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .tag {
+    background: rgba(245, 158, 11, 0.08);
+    border: 1px solid rgba(245, 158, 11, 0.2);
+    color: #fbbf24;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 4px;
+  }
+
+  .card-bottom {
+    margin-top: auto;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .price-box {
+    display: flex;
+    flex-direction: column;
+  }
+  .price-label {
+    font-size: 10.5px;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+  .price-value {
+    font-size: 19px;
+    font-weight: 800;
+    color: #fbbf24;
+    letter-spacing: -0.5px;
+  }
+
+  /* Admin Action Toolbar */
+  .action-buttons {
+    display: flex;
+    gap: 6px;
+  }
+  .btn-sm {
+    height: 32px;
+    padding: 0 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.2s;
+  }
+  .btn-edit {
+    background: rgba(255, 255, 255, 0.08);
+    color: #e2e8f0;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  .btn-delete {
+    background: rgba(244, 63, 94, 0.12);
+    color: #fb7185;
+    border: 1px solid rgba(244, 63, 94, 0.25);
+  }
+  .btn-buy {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: #0f172a;
+    font-weight: 700;
+    box-shadow: 0 2px 10px rgba(245, 158, 11, 0.3);
+  }
+
+  /* Watermark badge */
+  .badge-redesign {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: rgba(16, 185, 129, 0.15);
+    border: 1px solid rgba(16, 185, 129, 0.4);
+    color: #34d399;
+    padding: 8px 16px;
+    border-radius: 999px;
+    font-size: 12.5px;
+    font-weight: 700;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+  }
+</style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-inner">
+      <a href="#" class="brand">
+        <div class="brand-icon">⚔️</div>
+        <div class="brand-text">
+          <h1>SHOP ACC LIQI</h1>
+          <p>HỆ THỐNG GIAO DỊCH UY TÍN SỐ 1</p>
+        </div>
+      </a>
+
+      <nav class="nav">
+        <a href="#" class="nav-link active">Trang chủ</a>
+        <a href="#" class="nav-link">Danh sách acc bay</a>
+        <a href="#" class="nav-link">Nạp tiền tự động</a>
+        <a href="#" class="nav-link">Lịch sử mua</a>
+        <a href="#" class="nav-link">Hướng dẫn</a>
+        <a href="#" class="nav-link">Liên hệ</a>
+      </nav>
+
+      <div class="user-bar">
+        <div class="avatar">T</div>
+        <div class="user-meta">
+          <div class="user-name">thviet07 <span class="admin-tag">ADMIN</span></div>
+          <div class="user-balance">🪙 121.900 đ</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Filter & Search Section -->
+  <section class="filter-section">
+    <div class="search-row">
+      <div class="search-wrapper">
+        <span class="search-icon">🔍</span>
+        <input type="text" class="search-input" placeholder="Nhập tên tướng, trang phục, bậc rank hoặc mức giá (VD: 10k, Murad)...">
+      </div>
+      <select class="sort-select">
+        <option>Mới nhất</option>
+        <option>Giá tăng dần</option>
+        <option>Giá giảm dần</option>
+      </select>
+    </div>
+
+    <div class="chips-row">
+      <div class="chips">
+        <div class="chip active">Tất cả tài khoản</div>
+        <div class="chip">🟢 Đang bán (48)</div>
+        <div class="chip">⚪ Đã bán (15)</div>
+        <div class="chip">🏆 Rank Cao Thủ / Chiến Tướng</div>
+        <div class="chip">🛡️ Trắng Thông Tin (TTT)</div>
+        <div class="chip">⚡ Giá học sinh &lt; 20k</div>
+      </div>
+      <div class="counter-badge">
+        Hiển thị: <strong>8</strong> / 63 tài khoản
+      </div>
+    </div>
+  </section>
+
+  <!-- Product Grid -->
+  <main class="grid-container">
+    <div class="grid">
+
+      <!-- Card 1 -->
+      <div class="card">
+        <div class="card-media">
+          <div class="media-art">
+            <div class="art-gradient" style="background: radial-gradient(circle, #7c3aed 0%, #1e1b4b 100%);"></div>
+            <div class="art-label">🐉</div>
+          </div>
+          <div class="media-gradient"></div>
+          <div class="badge-status badge-avail">● CÒN HÀNG</div>
+          <div class="badge-note">TTT • TRẮNG TT</div>
+          <div class="meta-overlay">
+            <span>🏆 Tinh Anh II</span>
+            <span>⚡ 85 Tướng • 142 Skin</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="title-group">
+            <h3 class="card-title">Violet Thần Long Tỷ Tỷ</h3>
+            <div class="tags">
+              <span class="tag">SS Tuyệt Sắc</span>
+              <span class="tag">Full Hiệu Ứng</span>
+            </div>
+          </div>
+          <div class="card-bottom">
+            <div class="price-box">
+              <span class="price-label">Giá niêm yết</span>
+              <span class="price-value">10.000 đ</span>
+            </div>
+            <div class="action-buttons">
+              <button class="btn-sm btn-edit">✏️ Sửa</button>
+              <button class="btn-sm btn-delete">🗑️ Xóa</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="card">
+        <div class="card-media">
+          <div class="media-art">
+            <div class="art-gradient" style="background: radial-gradient(circle, #0284c7 0%, #082f49 100%);"></div>
+            <div class="art-label">🌊</div>
+          </div>
+          <div class="media-gradient"></div>
+          <div class="badge-status badge-avail">● CÒN HÀNG</div>
+          <div class="badge-note">TTT • TRẮNG TT</div>
+          <div class="meta-overlay">
+            <span>🏆 Cao Thủ 12★</span>
+            <span>⚡ 92 Tướng • 160 Skin</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="title-group">
+            <h3 class="card-title">Điêu Thuyền Wave</h3>
+            <div class="tags">
+              <span class="tag">Wave Idol</span>
+              <span class="tag">Biến Về Độc Quyền</span>
+            </div>
+          </div>
+          <div class="card-bottom">
+            <div class="price-box">
+              <span class="price-label">Giá niêm yết</span>
+              <span class="price-value">5.000 đ</span>
+            </div>
+            <div class="action-buttons">
+              <button class="btn-sm btn-edit">✏️ Sửa</button>
+              <button class="btn-sm btn-delete">🗑️ Xóa</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="card">
+        <div class="card-media">
+          <div class="media-art">
+            <div class="art-gradient" style="background: radial-gradient(circle, #e11d48 0%, #4c0519 100%);"></div>
+            <div class="art-label">🔥</div>
+          </div>
+          <div class="media-gradient"></div>
+          <div class="badge-status badge-sold">✓ ĐÃ BÁN</div>
+          <div class="badge-note">TTT • ĐÃ GIAO</div>
+          <div class="meta-overlay">
+            <span>🏆 Kim Cương I</span>
+            <span>⚡ 70 Tướng • 98 Skin</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="title-group">
+            <h3 class="card-title" style="color: #cbd5e1;">Natalya Nghiệp Hỏa Yêu Hậu</h3>
+            <div class="tags">
+              <span class="tag" style="border-color: rgba(255,255,255,0.1); color: #94a3b8; background: transparent;">Skin SS Hữu Hạn</span>
+            </div>
+          </div>
+          <div class="card-bottom">
+            <div class="price-box">
+              <span class="price-label">Đã thanh toán</span>
+              <span class="price-value" style="color: #94a3b8;">5.000 đ</span>
+            </div>
+            <div class="action-buttons">
+              <button class="btn-sm btn-edit">✏️ Sửa</button>
+              <button class="btn-sm btn-delete">🗑️ Xóa</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 4 -->
+      <div class="card">
+        <div class="card-media">
+          <div class="media-art">
+            <div class="art-gradient" style="background: radial-gradient(circle, #d97706 0%, #451a03 100%);"></div>
+            <div class="art-label">🗡️</div>
+          </div>
+          <div class="media-gradient"></div>
+          <div class="badge-status badge-avail">● CÒN HÀNG</div>
+          <div class="badge-note">TTT • TRẮNG TT</div>
+          <div class="meta-overlay">
+            <span>🏆 Chiến Tướng 35★</span>
+            <span>⚡ Full Tướng • 240 Skin</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="title-group">
+            <h3 class="card-title">Florentino Kỷ Nguyên Hổ Phách</h3>
+            <div class="tags">
+              <span class="tag">Skin Bậc S+</span>
+              <span class="tag">Top 1 Flo</span>
+            </div>
+          </div>
+          <div class="card-bottom">
+            <div class="price-box">
+              <span class="price-label">Giá niêm yết</span>
+              <span class="price-value">12.000 đ</span>
+            </div>
+            <div class="action-buttons">
+              <button class="btn-sm btn-edit">✏️ Sửa</button>
+              <button class="btn-sm btn-delete">🗑️ Xóa</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <div class="badge-redesign">
+    ✨ UI/UX Redesign Preview • Chuẩn WCAG AAA
+  </div>
+
+</body>
+</html>

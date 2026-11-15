@@ -51,15 +51,15 @@ changePasswordModal.className = "modal";
 changePasswordModal.setAttribute("role", "dialog");
 changePasswordModal.setAttribute("aria-hidden", "true");
 changePasswordModal.innerHTML = `
-    <div class="modal-card max-w-[440px]">
+    <div class="modal-card change-password-card">
         <button type="button" id="change-password-close" class="modal-close" aria-label="Đóng">&times;</button>
         <h2>Đổi mật khẩu</h2>
         <form id="change-password-form">
             <div class="form-group"><label for="current-password">Mật khẩu hiện tại *</label><input id="current-password" type="password" required autocomplete="current-password" placeholder="Nhập mật khẩu cũ"></div>
             <div class="form-group"><label for="new-password">Mật khẩu mới *</label><input id="new-password" type="password" required minlength="6" autocomplete="new-password" placeholder="Tối thiểu 6 ký tự"></div>
             <div class="form-group"><label for="new-password-confirm">Nhập lại mật khẩu mới *</label><input id="new-password-confirm" type="password" required minlength="6" autocomplete="new-password" placeholder="Tối thiểu 6 ký tự"></div>
-            <div id="change-password-error" class="form-error" role="alert"></div>
-            <div class="form-actions"><button type="submit" id="change-password-submit" class="btn btn-primary w-full">Cập nhật mật khẩu</button></div>
+            <div id="change-password-error" class="form-error"></div>
+            <div class="form-actions"><button type="submit" id="change-password-submit" class="btn btn-primary" style="width: 100%;">Cập nhật mật khẩu</button></div>
         </form>
     </div>`;
 document.body.appendChild(changePasswordModal);
@@ -226,10 +226,15 @@ function updateAuthUI() {
         if (userProfileTop) userProfileTop.classList.remove("hidden");
 
         const isAdmin = currentUser.role === "admin";
-        userDisplay.textContent = `${currentUser.username}${isAdmin ? " ▾" : ""}`;
+        userDisplay.innerHTML = `${escapeHTML(currentUser.username)} ${isAdmin ? '<span class="admin-badge-tag">ADMIN</span>' : ''}`;
+
+        const avatarInitial = document.querySelector("#user-profile-top .user-avatar-initial");
+        if (avatarInitial && currentUser.username) {
+            avatarInitial.textContent = currentUser.username.charAt(0).toUpperCase();
+        }
 
         if (walletBalanceDisplay) {
-            walletBalanceDisplay.textContent = formatPrice(currentUser.balance || 0);
+            walletBalanceDisplay.textContent = `🪙 ${formatPrice(currentUser.balance || 0)}`;
         }
         if (adminMenuDropdown) {
             adminMenuDropdown.querySelectorAll(".admin-only-menu-item").forEach((item) => {
@@ -468,29 +473,84 @@ function renderErrorState(message) {
     grid.innerHTML = "";
     const el = document.createElement("div");
     el.className = "empty-state";
-    el.innerHTML = `<span class="empty-icon">⚠️</span>Không tải được dữ liệu: ${escapeHTML(message)}
+    el.innerHTML = `<span class="empty-icon">⚠️</span>Không tải được dữ liệu: ${message}
         <div class="empty-action"><button class="btn btn-secondary" onclick="fetchAndRenderAccounts()">Thử lại</button></div>`;
     grid.appendChild(el);
     pagination.innerHTML = "";
 }
 
+let currentChipFilter = "all";
+let rawGridItems = [];
+
+function setupFilterChips() {
+    const chipContainer = document.getElementById("filter-chips-container");
+    if (chipContainer && !chipContainer.dataset.wired) {
+        chipContainer.dataset.wired = "true";
+        chipContainer.querySelectorAll(".chip").forEach((btn) => {
+            btn.addEventListener("click", () => {
+                const filter = btn.getAttribute("data-filter");
+                applyChipFilter(filter);
+            });
+        });
+    }
+}
+
+function applyChipFilter(filter) {
+    currentChipFilter = filter;
+    document.querySelectorAll(".chip").forEach((c) => {
+        c.classList.toggle("active", c.getAttribute("data-filter") === filter);
+    });
+
+    let filtered = rawGridItems;
+    if (filter === "available") {
+        filtered = rawGridItems.filter(item => !item.sold);
+    } else if (filter === "sold") {
+        filtered = rawGridItems.filter(item => item.sold);
+    } else if (filter === "high-rank") {
+        filtered = rawGridItems.filter(item => {
+            const txt = ((item.info || "") + " " + (item.adminNote || "")).toLowerCase();
+            return txt.includes("cao thủ") || txt.includes("chiến tướng") || txt.includes("tinh anh");
+        });
+    } else if (filter === "ttt") {
+        filtered = rawGridItems.filter(item => {
+            const txt = ((item.adminNote || "") + " " + (item.info || "")).toUpperCase();
+            return txt.includes("TTT") || txt.includes("TRẮNG");
+        });
+    } else if (filter === "cheap") {
+        filtered = rawGridItems.filter(item => Number(item.price) <= 20000);
+    }
+
+    renderCardsList(filtered);
+}
+
 function renderGrid(items, total) {
+    rawGridItems = items;
+    setupFilterChips();
+
+    const totalCountEl = document.getElementById("total-accounts-count");
+    if (totalCountEl) totalCountEl.textContent = total;
+
+    applyChipFilter(currentChipFilter);
+}
+
+function renderCardsList(items) {
     grid.innerHTML = "";
+
+    const visibleCountEl = document.getElementById("visible-accounts-count");
+    if (visibleCountEl) visibleCountEl.textContent = items.length;
 
     if (items.length === 0) {
         const empty = document.createElement("div");
         empty.className = "empty-state";
         empty.innerHTML = currentQuery
-            ? `<span class="empty-icon">🔍</span>Không tìm thấy acc hoặc skin nào khớp với “<strong>${escapeHTML(currentQuery)}</strong>”`
-            : `<span class="empty-icon">📚</span>Chưa có acc nào trong shop.`;
+            ? `<span class="empty-icon">🔍</span>Không tìm thấy acc hoặc skin nào khớp với “<strong>${currentQuery}</strong>”`
+            : `<span class="empty-icon">📚</span>Không có tài khoản nào phù hợp bộ lọc này.`;
         grid.appendChild(empty);
         return;
     }
 
     const isAdmin = currentUser && currentUser.role === "admin";
     const keyword = currentQuery.toLowerCase();
-
-    // Lưu lại danh sách hiện tại để modal "Xem" tra cứu thông tin đầy đủ
     currentItems = items;
 
     items.forEach((item) => {
@@ -498,49 +558,76 @@ function renderGrid(items, total) {
         card.className = item.sold ? "card sold" : "card";
         card.onclick = () => openImageModal(item.id);
 
-        let skinTagsHTML = "";
-        const skinCount = item.skins ? item.skins.length : 0;
-        if (skinCount > 0) {
-            const displaySkins = item.skins.slice(0, 3);
-            const hasMore = skinCount > 3;
-            skinTagsHTML = `<div class="skin-list">
-                ${displaySkins.map((skin) => {
-                    const isMatched = keyword && skin.toLowerCase().includes(keyword);
-                    return `<span class="skin-tag ${isMatched ? "highlight" : ""}">${escapeHTML(skin)}</span>`;
-                }).join("")}
-                ${hasMore ? `<span class="skin-more">...</span>` : ""}
-            </div>`;
+        // Xử lý tiêu đề chính và tags skin
+        let mainTitle = item.info || "";
+        let tagList = item.skins ? [...item.skins] : [];
+        if (!mainTitle && tagList.length > 0) {
+            mainTitle = tagList.shift();
         }
+        if (!mainTitle) mainTitle = `Tài khoản #${item.id.slice(-4)}`;
 
-        const infoTextHTML = item.info ? `<p class="card-info-text">${escapeHTML(item.info)}</p>` : "";
-        const adminNoteHTML = item.adminNote ? `<span class="admin-note-tag"> ${escapeHTML(item.adminNote)}</span>` : "";
-        const soldBadgeHTML = item.sold ? `<span class="sold-card-badge">Đã bán</span>` : "";
+        const tagsHTML = tagList.length > 0 ? `<div class="tags">
+            ${tagList.slice(0, 2).map((tag, idx) => {
+                const isMatched = keyword && tag.toLowerCase().includes(keyword);
+                const tagClass = idx === 0 ? "tag tag-primary" : "tag tag-secondary";
+                return `<span class="${tagClass} ${isMatched ? "highlight" : ""}">${escapeHTML(tag)}</span>`;
+            }).join("")}
+            ${tagList.length > 2 ? `<span class="skin-more">+${tagList.length - 2}</span>` : ""}
+        </div>` : "";
+
+        // Trạng thái badge
         const auctionActive = !item.sold && item.auctionStartsAt && item.auctionEndsAt
             && new Date(item.auctionStartsAt) <= new Date() && new Date(item.auctionEndsAt) > new Date();
-        const auctionBadgeHTML = auctionActive ? `<span class="auction-card-badge">🔨 Đang đấu giá</span>` : "";
-        const buyBtnHTML = item.sold ? "" : `<button class="btn-card buy-btn" onclick="event.stopPropagation(); openImageModal('${item.id}')">🛒 Mua</button>`;
-        const auctionBtnHTML = item.sold ? "" : `<button class="btn-card auction-btn" onclick="event.stopPropagation(); openAuction('${item.id}')">🔨 Đấu giá</button>`;
-        const adminActionsHTML = isAdmin
-            ? `<button class="btn-card edit-btn" onclick="openEditModal('${item.id}')">Sửa</button>
-               <button class="btn-card delete-btn" onclick="deleteStory('${item.id}')">Xóa</button>`
-            : "";
+
+        const statusBadgeHTML = item.sold 
+            ? `<span class="badge-status badge-sold">✓ ĐÃ BÁN</span>`
+            : (auctionActive ? `<span class="badge-status auction-card-badge">🔨 ĐẤU GIÁ</span>` : `<span class="badge-status badge-avail">● CÒN HÀNG</span>`);
+
+        const noteText = item.adminNote ? escapeHTML(item.adminNote) : (item.sold ? "TTT • ĐÃ GIAO" : "TTT • TRẮNG TT");
+        const noteBadgeHTML = `<span class="badge-status badge-note">${noteText}</span>`;
+
+        // Thông tin rank & tướng/skin dưới ảnh
+        const rankMatch = (item.info || "").match(/(Cao Thủ|Chiến Tướng|Tinh Anh|Kim Cương|Bạch Kim)[^•,\n]*/i);
+        const rankText = rankMatch ? `🏆 ${rankMatch[0].trim()}` : `🏆 #${item.id.slice(-4)}`;
+        const skinCountText = `⚡ ${item.skins ? item.skins.length : 0} Skin`;
+        const metaOverlayHTML = `
+            <div class="meta-overlay">
+                <span>${escapeHTML(rankText)}</span>
+                <span>${escapeHTML(skinCountText)}</span>
+            </div>
+        `;
+
+        // Action buttons
+        const actionBtnsHTML = isAdmin
+            ? `<div class="action-buttons" onclick="event.stopPropagation()">
+                <button type="button" class="btn-sm btn-edit" onclick="openEditModal('${item.id}')">✏️ Sửa</button>
+                <button type="button" class="btn-sm btn-delete" onclick="deleteStory('${item.id}')">🗑️ Xóa</button>
+               </div>`
+            : (!item.sold 
+                ? `<div class="action-buttons" onclick="event.stopPropagation()">
+                    <button type="button" class="btn-sm btn-buy" onclick="openImageModal('${item.id}')">🛒 Mua ngay</button>
+                   </div>`
+                : `<div class="action-buttons"><span class="badge-sold-pill">Đã bán</span></div>`);
 
         card.innerHTML = `
-            <div class="card-image-wrap">
-                ${soldBadgeHTML}
-                ${auctionBadgeHTML}
+            <div class="card-media">
+                ${statusBadgeHTML}
+                ${noteBadgeHTML}
                 <img loading="lazy" decoding="async" src="${escapeAttr(cloudinaryThumbnailUrl(item.image))}" alt="${escapeAttr(formatPrice(item.price))}">
-                ${adminNoteHTML}
-                <div class="page-edge"></div>
+                <div class="media-gradient"></div>
+                ${metaOverlayHTML}
             </div>
-            <div class="info" onclick="openImageModal('${item.id}')">
-                <div class="price">${formatPrice(item.price)}</div>
-                ${infoTextHTML}
-                ${skinTagsHTML}
-                <div class="card-actions" onclick="event.stopPropagation()">
-                    ${buyBtnHTML}
-                    ${auctionBtnHTML}
-                    ${adminActionsHTML}
+            <div class="card-body">
+                <div class="title-group">
+                    <h3 class="card-title ${item.sold ? 'sold-title' : ''}">${escapeHTML(mainTitle)}</h3>
+                    ${tagsHTML}
+                </div>
+                <div class="card-bottom">
+                    <div class="price-box">
+                        <span class="price-label">${item.sold ? 'Đã thanh toán' : 'Giá niêm yết'}</span>
+                        <span class="price-value ${item.sold ? 'price-sold' : ''}">${formatPrice(item.price)}</span>
+                    </div>
+                    ${actionBtnsHTML}
                 </div>
             </div>
         `;
@@ -1149,7 +1236,7 @@ async function openHistoryModal() {
         const data = await apiFetch("/purchases/me");
         renderHistoryList(data.items || []);
     } catch (err) {
-        historyList.innerHTML = `<div class="empty-state">⚠️ ${escapeHTML(err.message)}</div>`;
+        historyList.innerHTML = `<div class="empty-state">⚠️ ${err.message}</div>`;
     }
 }
 
@@ -1485,13 +1572,13 @@ window.openImageModal = function (id, options = {}) {
 if (modalClose) modalClose.addEventListener("click", closeModal);
 
 window.addEventListener("click", (e) => {
-    if (modal && e.target === modal) closeModal();
-    if (crudModal && e.target === crudModal) closeCrudModal();
-    if (loginModal && e.target === loginModal) closeLoginModal();
-    if (usersModal && e.target === usersModal) usersModal.classList.remove("active");
-    if (csvImportModal && e.target === csvImportModal) closeCsvImportModal();
-    if (walletModal && e.target === walletModal) closeWalletModal();
-    if (historyModal && e.target === historyModal) historyModal.classList.remove("active");
+    if (e.target === modal) closeModal();
+    if (e.target === crudModal) closeCrudModal();
+    if (e.target === loginModal) closeLoginModal();
+    if (e.target === usersModal) usersModal.classList.remove("active");
+    if (e.target === csvImportModal) closeCsvImportModal();
+    if (e.target === walletModal) closeWalletModal();
+    if (e.target === historyModal) historyModal.classList.remove("active");
     if (e.target === changePasswordModal) closeChangePasswordModal();
 });
 
@@ -1500,10 +1587,10 @@ document.addEventListener("keydown", (e) => {
         closeModal();
         closeCrudModal();
         closeLoginModal();
-        usersModal?.classList.remove("active");
+        usersModal.classList.remove("active");
         closeCsvImportModal();
         closeWalletModal();
-        historyModal?.classList.remove("active");
+        historyModal.classList.remove("active");
         if (searchHints) searchHints.classList.add("hidden");
         if (adminMenuDropdown) adminMenuDropdown.classList.add("hidden");
         closeChangePasswordModal();
