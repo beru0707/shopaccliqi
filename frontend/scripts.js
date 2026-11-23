@@ -1423,22 +1423,46 @@ function renderHistoryPagination(container, page, hasMore, onPage) {
     container.hidden = page === 1 && !hasMore;
     if (container.hidden) return;
 
-    const previous = document.createElement("button");
-    previous.type = "button";
-    previous.textContent = "← Trước";
-    previous.disabled = page <= 1;
-    previous.addEventListener("click", () => onPage(page - 1));
+    // Nút Prev
+    const prevBtn = document.createElement("button");
+    prevBtn.type = "button";
+    prevBtn.textContent = "‹ Prev";
+    prevBtn.disabled = page <= 1;
+    prevBtn.addEventListener("click", () => onPage(page - 1));
 
-    const label = document.createElement("span");
-    label.textContent = `Trang ${page}`;
+    // Khung số trang cuộn ngang
+    const wrapper = document.createElement("div");
+    wrapper.className = "page-numbers-wrapper";
 
-    const next = document.createElement("button");
-    next.type = "button";
-    next.textContent = "Sau →";
-    next.disabled = !hasMore;
-    next.addEventListener("click", () => onPage(page + 1));
+    // Hiển thị tối đa 10 trang xung quanh trang hiện tại
+    const totalVisible = hasMore ? page + 3 : page;
+    const startPage = Math.max(1, page - 5);
+    for (let i = startPage; i <= totalVisible; i++) {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.textContent = String(i);
+        if (i === page) {
+            btn.classList.add("active");
+            setTimeout(() => {
+                const wrapperRect = wrapper.getBoundingClientRect();
+                const btnRect = btn.getBoundingClientRect();
+                const btnLeftInWrapper = wrapper.scrollLeft + (btnRect.left - wrapperRect.left);
+                const targetLeft = btnLeftInWrapper - (wrapper.clientWidth / 2) + (btn.clientWidth / 2);
+                wrapper.scrollTo({ left: Math.max(0, targetLeft), behavior: "smooth" });
+            }, 50);
+        }
+        btn.addEventListener("click", () => onPage(i));
+        wrapper.appendChild(btn);
+    }
 
-    container.append(previous, label, next);
+    // Nút Next
+    const nextBtn = document.createElement("button");
+    nextBtn.type = "button";
+    nextBtn.textContent = "Next ›";
+    nextBtn.disabled = !hasMore;
+    nextBtn.addEventListener("click", () => onPage(page + 1));
+
+    container.append(prevBtn, wrapper, nextBtn);
 }
 
 function renderHistoryList(items) {

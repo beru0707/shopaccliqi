@@ -316,45 +316,25 @@
     }
 
 /* ===== 16. PHÂN TRANG (PAGINATION) ===== */
-#pagination {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 14px;
-    margin-top: 50px;
-}
-
+#pagination,
 .purchase-history-pagination {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 12px;
-    margin-top: 18px;
-    color: var(--ink-muted);
-    font-size: 0.9rem;
+    gap: 14px;
+    margin-top: 32px;
 }
 
-    .purchase-history-pagination[hidden] {
-        display: none;
-    }
+#pagination {
+    margin-top: 50px;
+}
 
-    .purchase-history-pagination button {
-        min-height: 38px;
-        padding: 0 14px;
-        border: 1px solid rgba(255, 255, 255, 0.12);
-        border-radius: var(--radius-pill);
-        background: rgba(255, 255, 255, 0.04);
-        color: var(--ink);
-        font-weight: 700;
-        cursor: pointer;
-    }
+.purchase-history-pagination[hidden] {
+    display: none;
+}
 
-        .purchase-history-pagination button:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-        }
-
-#pagination button {
+#pagination button,
+.purchase-history-pagination button {
     min-width: 42px;
     height: 42px;
     padding: 0 14px;
@@ -368,21 +348,24 @@
     transition: all 0.2s ease;
 }
 
-    #pagination button:hover:not(:disabled) {
+    #pagination button:hover:not(:disabled),
+    .purchase-history-pagination button:hover:not(:disabled) {
         color: #ffffff;
         border-color: var(--gold);
-        background: rgba(245, 158, 11, 0.12);
+        background: rgba(248, 192, 48, 0.12);
         transform: translateY(-2px);
     }
 
-    #pagination button.active {
+    #pagination button.active,
+    .purchase-history-pagination button.active {
         background: var(--gold-gradient);
         border-color: transparent;
         color: #1a1202;
-        box-shadow: 0 4px 14px rgba(245, 158, 11, 0.4);
+        box-shadow: 0 4px 14px rgba(248, 192, 48, 0.4);
     }
 
-    #pagination button:disabled {
+    #pagination button:disabled,
+    .purchase-history-pagination button:disabled {
         opacity: 0.35;
         cursor: not-allowed;
     }

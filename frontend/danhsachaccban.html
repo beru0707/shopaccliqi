@@ -194,19 +194,45 @@
             soldPagination.innerHTML = "";
             soldPagination.hidden = page === 1 && !hasMore;
             if (soldPagination.hidden) return;
-            const previous = document.createElement("button");
-            previous.type = "button";
-            previous.textContent = "← Trước";
-            previous.disabled = page <= 1;
-            previous.addEventListener("click", () => loadSoldAccounts(page - 1));
-            const label = document.createElement("span");
-            label.textContent = `Trang ${page}`;
-            const next = document.createElement("button");
-            next.type = "button";
-            next.textContent = "Sau →";
-            next.disabled = !hasMore;
-            next.addEventListener("click", () => loadSoldAccounts(page + 1));
-            soldPagination.append(previous, label, next);
+
+            // Nút Prev
+            const prevBtn = document.createElement("button");
+            prevBtn.type = "button";
+            prevBtn.textContent = "‹ Prev";
+            prevBtn.disabled = page <= 1;
+            prevBtn.addEventListener("click", () => loadSoldAccounts(page - 1));
+
+            // Khung số trang cuộn ngang
+            const wrapper = document.createElement("div");
+            wrapper.className = "page-numbers-wrapper";
+
+            const totalVisible = hasMore ? page + 3 : page;
+            const startPage = Math.max(1, page - 5);
+            for (let i = startPage; i <= totalVisible; i++) {
+                const btn = document.createElement("button");
+                btn.type = "button";
+                btn.textContent = String(i);
+                if (i === page) {
+                    btn.classList.add("active");
+                    setTimeout(() => {
+                        const wrapperRect = wrapper.getBoundingClientRect();
+                        const btnRect = btn.getBoundingClientRect();
+                        const btnLeft = wrapper.scrollLeft + (btnRect.left - wrapperRect.left);
+                        wrapper.scrollTo({ left: Math.max(0, btnLeft - wrapper.clientWidth / 2 + btn.clientWidth / 2), behavior: "smooth" });
+                    }, 50);
+                }
+                btn.addEventListener("click", () => loadSoldAccounts(i));
+                wrapper.appendChild(btn);
+            }
+
+            // Nút Next
+            const nextBtn = document.createElement("button");
+            nextBtn.type = "button";
+            nextBtn.textContent = "Next ›";
+            nextBtn.disabled = !hasMore;
+            nextBtn.addEventListener("click", () => loadSoldAccounts(page + 1));
+
+            soldPagination.append(prevBtn, wrapper, nextBtn);
         }
 
         soldList.addEventListener("click", (event) => {
