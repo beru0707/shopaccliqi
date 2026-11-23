@@ -1,0 +1,656 @@
+/* ===== 6. MAIN CONTAINER & GRID (DANH SÁCH ACC) ===== */
+.container {
+    max-width: 1340px;
+    margin: 0 auto;
+    padding: 36px 32px 80px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 26px;
+}
+
+/* ===== 7. THẺ TÀI KHOẢN (GAMING CARD) ===== */
+.card {
+    background: linear-gradient(180deg, rgba(22, 29, 44, 0.95) 0%, rgba(13, 17, 26, 0.98) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--radius);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: var(--shadow);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease, border-color 0.3s ease;
+    position: relative;
+    cursor: pointer;
+}
+
+    .card:hover {
+        transform: translateY(-7px);
+        border-color: rgba(245, 158, 11, 0.5);
+        box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.8), 0 0 24px rgba(245, 158, 11, 0.16);
+    }
+
+/* Vùng chứa ảnh acc */
+.card-image-wrap {
+    position: relative;
+    cursor: pointer;
+    overflow: hidden;
+    background: #0d121c;
+}
+
+/* Chỉ đánh số thứ tự cho từng ô acc: 1, 2, 3... */
+.account-sequence {
+    position: absolute;
+    z-index: 2;
+    top: 10px;
+    left: 10px;
+    min-width: 32px;
+    padding: 5px 9px;
+    border-radius: var(--radius-pill);
+    background: rgba(8, 12, 20, 0.86);
+    border: 1px solid rgba(245, 158, 11, 0.72);
+    color: var(--gold-light);
+    font-weight: 800;
+    line-height: 1;
+    text-align: center;
+}
+
+.card img {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    display: block;
+    background: var(--surface);
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.card:hover img {
+    transform: scale(1.05);
+}
+
+/* Dải phân cách năng lượng gaming (thay thế vạch kẻ vở cũ) */
+.page-edge {
+    height: 3px;
+    background: linear-gradient(90deg, transparent 0%, rgba(245, 158, 11, 0.7) 50%, transparent 100%);
+    box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+}
+
+/* Thông tin chi tiết bên trong thẻ */
+.info {
+    padding: 16px 18px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 1;
+}
+
+/* Hiển thị giá tiền sang trọng */
+.price {
+    font-family: var(--font-body);
+    font-weight: 800;
+    font-size: 1.3rem;
+    letter-spacing: -0.3px;
+    background: var(--gold-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 2px 6px rgba(245, 158, 11, 0.3));
+}
+
+.card-info-text {
+    font-size: 0.86rem;
+    font-weight: 600;
+    color: #f8fafc;
+    line-height: 1.5;
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.card.sold .card-info-text {
+    color: #cbd5e1;
+}
+
+/* Huy hiệu lưu ý của Admin (TTT, Trắng TT,...) - Tương phản cao, phong cách Cyan */
+.admin-note-tag {
+    position: absolute;
+    z-index: 3;
+    top: 10px;
+    right: 10px;
+    max-width: calc(100% - 20px);
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border: 1px solid rgba(56, 189, 248, 0.45);
+    border-radius: var(--radius-pill);
+    color: #38bdf8;
+    background: rgba(15, 23, 42, 0.9);
+    backdrop-filter: blur(10px);
+    font-weight: 700;
+    font-size: 0.74rem;
+    line-height: 1.3;
+    letter-spacing: 0.2px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+/* Huy hiệu Đấu giá */
+.auction-card-badge {
+    position: absolute;
+    z-index: 3;
+    top: 10px;
+    left: 10px;
+    background: var(--purple-gradient);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: var(--radius-pill);
+    padding: 5px 12px;
+    font-size: 0.74rem;
+    font-weight: 800;
+    letter-spacing: 0.3px;
+    box-shadow: 0 4px 14px rgba(109, 40, 217, 0.5);
+    animation: badgePulse 2s infinite ease-in-out;
+}
+
+@keyframes badgePulse {
+    0%, 100% {
+        box-shadow: 0 4px 14px rgba(109, 40, 217, 0.5);
+    }
+
+    50% {
+        box-shadow: 0 4px 22px rgba(139, 92, 246, 0.8);
+    }
+}
+
+/* Huy hiệu Còn hàng - Nổi bật, uy tín */
+.avail-card-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: rgba(16, 185, 129, 0.95);
+    color: #ffffff;
+    font-size: 0.74rem;
+    font-weight: 800;
+    padding: 4px 11px;
+    border-radius: var(--radius-pill);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    z-index: 4;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+    letter-spacing: 0.3px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Huy hiệu Đã bán - Đỏ rõ nét, không làm chết màu cả card */
+.sold-card-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: rgba(225, 29, 72, 0.95);
+    color: #ffffff;
+    font-size: 0.74rem;
+    font-weight: 800;
+    padding: 4px 11px;
+    border-radius: var(--radius-pill);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    z-index: 4;
+    box-shadow: 0 4px 14px rgba(225, 29, 72, 0.45);
+    letter-spacing: 0.3px;
+}
+
+/* Xử lý trạng thái Đã bán tinh tế: loại bỏ grayscale 0.85 gây mù mắt */
+.card.sold {
+    opacity: 0.82;
+    border-color: rgba(255, 255, 255, 0.05);
+}
+
+    .card.sold:hover {
+        opacity: 1;
+        border-color: rgba(244, 63, 94, 0.4);
+    }
+
+    .card.sold .card-image-wrap img {
+        filter: brightness(0.85);
+    }
+
+    .card.sold .price {
+        background: none;
+        -webkit-text-fill-color: initial;
+        color: #94a3b8;
+        filter: none;
+    }
+
+/* ===== 8. DANH SÁCH SKIN (SKIN TAGS) ===== */
+.skin-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 4px;
+}
+
+.skin-tag {
+    background: rgba(245, 158, 11, 0.12);
+    color: #fef08a;
+    border: 1px solid rgba(245, 158, 11, 0.32);
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 6px;
+    transition: all 0.18s ease;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+    .skin-tag:hover {
+        background: rgba(245, 158, 11, 0.22);
+        border-color: rgba(245, 158, 11, 0.5);
+        color: #ffffff;
+    }
+
+.card.sold .skin-tag {
+    background: rgba(255, 255, 255, 0.06);
+    color: #cbd5e1;
+    border-color: rgba(255, 255, 255, 0.12);
+    text-shadow: none;
+}
+
+.skin-tag.highlight {
+    background: var(--gold-gradient);
+    color: #1a1202;
+    font-weight: 800;
+    border-color: transparent;
+    box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+}
+
+.skin-more {
+    color: var(--ink-muted);
+    font-size: 0.76rem;
+    padding: 4px 6px;
+    font-weight: bold;
+}
+
+/* Nút bấm trên thẻ acc */
+.card-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: auto;
+    padding-top: 14px;
+}
+
+.btn-card {
+    flex: 1;
+    padding: 9px 0;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 0.84rem;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+    .btn-card:active {
+        transform: scale(0.96);
+    }
+
+.buy-btn {
+    background: var(--orange-gradient);
+    color: #ffffff;
+    box-shadow: var(--orange-glow);
+}
+
+    .buy-btn:hover {
+        filter: brightness(1.1);
+        box-shadow: 0 6px 20px rgba(234, 88, 12, 0.6);
+    }
+
+.auction-btn {
+    background: var(--purple-gradient);
+    color: #ffffff;
+    box-shadow: var(--purple-glow);
+}
+
+    .auction-btn:hover {
+        filter: brightness(1.15);
+        box-shadow: 0 6px 22px rgba(109, 40, 217, 0.6);
+    }
+
+.edit-btn {
+    background: rgba(59, 130, 246, 0.16);
+    color: #93c5fd;
+    border: 1px solid rgba(59, 130, 246, 0.35);
+    font-weight: 700;
+}
+
+    .edit-btn:hover {
+        background: rgba(59, 130, 246, 0.32);
+        color: #ffffff;
+        border-color: #60a5fa;
+        box-shadow: 0 0 12px rgba(59, 130, 246, 0.3);
+    }
+
+.delete-btn {
+    background: rgba(244, 63, 94, 0.16);
+    color: #fda4af;
+    border: 1px solid rgba(244, 63, 94, 0.35);
+    font-weight: 700;
+}
+
+    .delete-btn:hover {
+        background: rgba(244, 63, 94, 0.32);
+        color: #ffffff;
+        border-color: #f43f5e;
+        box-shadow: 0 0 12px rgba(244, 63, 94, 0.3);
+    }
+
+/* ===== CARD REDESIGN STYLES (THEO MẪU MOCKUP) ===== */
+.card-media {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: #111827;
+}
+
+    .card-media img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        transition: transform 0.35s ease;
+    }
+
+.card:hover .card-media img {
+    transform: scale(1.05);
+}
+
+.media-gradient {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.05) 0%, rgba(10, 14, 23, 0.88) 100%);
+    z-index: 2;
+    pointer-events: none;
+}
+
+.badge-status {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 3;
+    padding: 3px 9px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.badge-sold {
+    background: rgba(225, 29, 72, 0.9);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(225, 29, 72, 0.3);
+}
+
+.badge-avail {
+    background: rgba(16, 185, 129, 0.9);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+}
+
+.badge-note {
+    position: absolute;
+    top: 10px;
+    left: auto;
+    right: 10px;
+    z-index: 3;
+    background: #dc2626;
+    border: 1px solid #ef4444;
+    color: #ffffff;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 10.5px;
+    font-weight: 700;
+}
+
+.meta-overlay {
+    position: absolute;
+    bottom: 8px;
+    left: 12px;
+    right: 12px;
+    z-index: 3;
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: #cbd5e1;
+    font-weight: 600;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+    pointer-events: none;
+}
+
+.card-body {
+    padding: 16px 16px 14px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 12px;
+}
+
+.title-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.card-title {
+    font-size: 15.5px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.3;
+    margin: 0;
+    transition: color 0.2s ease;
+}
+
+.card:hover .card-title {
+    color: #fef08a;
+}
+
+.card-title.sold-title {
+    color: #94a3b8;
+    text-decoration: line-through;
+}
+
+.tags {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.tag {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
+.tag-primary {
+    background: rgba(245, 158, 11, 0.08);
+    border: 1px solid rgba(245, 158, 11, 0.2);
+    color: #fbbf24;
+}
+
+.tag-secondary {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #cbd5e1;
+}
+
+.card-bottom {
+    margin-top: auto;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.price-box {
+    display: flex;
+    flex-direction: column;
+}
+
+.price-label {
+    font-size: 10.5px;
+    color: var(--ink-muted);
+    font-weight: 500;
+}
+
+.price-value {
+    font-size: 19px;
+    font-weight: 800;
+    color: #fbbf24;
+    letter-spacing: -0.5px;
+    text-shadow: 0 0 10px rgba(245, 158, 11, 0.35);
+}
+
+    .price-value.price-sold {
+        color: #94a3b8;
+        text-shadow: none;
+    }
+
+.action-buttons {
+    display: flex;
+    gap: 6px;
+}
+
+.btn-sm {
+    height: 32px;
+    padding: 0 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.2s;
+    font-family: var(--font-body);
+}
+
+    .btn-sm.btn-edit {
+        background: rgba(255, 255, 255, 0.08);
+        color: #e2e8f0;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+        .btn-sm.btn-edit:hover {
+            background: rgba(59, 130, 246, 0.25);
+            border-color: rgba(59, 130, 246, 0.5);
+            color: #fff;
+        }
+
+    .btn-sm.btn-delete {
+        background: rgba(244, 63, 94, 0.12);
+        color: #fb7185;
+        border: 1px solid rgba(244, 63, 94, 0.25);
+    }
+
+        .btn-sm.btn-delete:hover {
+            background: rgba(244, 63, 94, 0.28);
+            border-color: #f43f5e;
+            color: #fff;
+        }
+
+    .btn-sm.btn-buy {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+        color: #0f172a;
+        font-weight: 700;
+        box-shadow: 0 2px 10px rgba(245, 158, 11, 0.3);
+    }
+
+        .btn-sm.btn-buy:hover {
+            filter: brightness(1.1);
+            box-shadow: 0 4px 14px rgba(245, 158, 11, 0.5);
+        }
+
+.badge-sold-pill {
+    font-size: 11px;
+    color: #94a3b8;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    font-weight: 600;
+}
+
+/* ===== 9. TRẠNG THÁI TRỐNG & TẢI TRANG ===== */
+.empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 80px 20px;
+    color: var(--ink-muted);
+    font-size: 1.1rem;
+}
+
+    .empty-state strong {
+        color: var(--gold);
+    }
+
+    .empty-state .empty-icon {
+        font-size: 2.8rem;
+        display: block;
+        margin-bottom: 14px;
+        filter: drop-shadow(0 0 16px rgba(245, 158, 11, 0.3));
+    }
+
+    .empty-state .empty-action {
+        margin-top: 20px;
+    }
+
+/* Skeleton Loading */
+.skeleton-card {
+    background: var(--bg-elevated);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border-subtle);
+}
+
+.skeleton-shimmer {
+    background: linear-gradient(90deg, var(--surface) 25%, #232d42 37%, var(--surface) 63%);
+    background-size: 400% 100%;
+    animation: shimmer 1.4s ease infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0 50%;
+    }
+}
+
+.skeleton-img {
+    aspect-ratio: 16 / 9;
+    width: 100%;
+}
+
+.skeleton-line {
+    height: 14px;
+    border-radius: 4px;
+    margin: 14px 18px;
+}
+
+    .skeleton-line.short {
+        width: 60%;
+    }
+

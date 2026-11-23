@@ -1,0 +1,608 @@
+/* ===== 5. KHU VỰC VÍ TIỀN (WALLET) ===== */
+.wallet-balance-box {
+    background: linear-gradient(135deg, rgba(26, 35, 54, 0.9) 0%, rgba(18, 24, 36, 0.95) 100%);
+    border: 1px solid rgba(245, 158, 11, 0.35);
+    border-radius: var(--radius);
+    padding: 22px 26px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 22px;
+    box-shadow: inset 0 0 20px rgba(245, 158, 11, 0.05);
+}
+
+.wallet-balance-label {
+    font-size: 0.82rem;
+    color: var(--ink-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.wallet-balance-amount {
+    font-family: var(--font-body);
+    font-weight: 800;
+    font-size: 2.2rem;
+    background: var(--gold-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 24px rgba(245, 158, 11, 0.4);
+}
+
+.balance-form-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.balance-input {
+    background-color: var(--surface);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: var(--radius-sm);
+    color: #ffffff;
+    padding: 10px 14px;
+    font-size: 14px;
+    font-family: var(--font-body);
+    width: 140px;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+    .balance-input:focus {
+        border-color: var(--gold);
+        box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.25);
+    }
+
+.save-balance-btn {
+    background: var(--gold-gradient);
+    color: #1a1202;
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 10px 18px;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+    .save-balance-btn:hover {
+        filter: brightness(1.1);
+        transform: translateY(-1px);
+    }
+
+.topup-quick-amounts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 8px 0 18px;
+}
+
+.topup-chip {
+    background: rgba(245, 158, 11, 0.08);
+    color: var(--gold-light);
+    border: 1px solid rgba(245, 158, 11, 0.25);
+    border-radius: var(--radius-pill);
+    padding: 8px 16px;
+    font-size: 0.84rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+    .topup-chip:hover {
+        background: rgba(245, 158, 11, 0.2);
+        border-color: var(--gold);
+        color: #ffffff;
+        transform: translateY(-1px);
+    }
+
+.wallet-note {
+    font-size: 0.82rem;
+    color: var(--ink-muted);
+    margin: 16px 0 0;
+    line-height: 1.5;
+}
+
+    .wallet-note a {
+        color: var(--gold-light);
+        text-decoration: underline;
+    }
+
+/* ===== 10. TOAST NOTIFICATIONS ===== */
+#toast-container {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    z-index: 2000;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 360px;
+}
+
+.toast {
+    background: rgba(18, 24, 36, 0.96);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-left: 5px solid var(--gold);
+    border-radius: 12px;
+    padding: 14px 18px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.7);
+    font-size: 0.9rem;
+    font-weight: 500;
+    backdrop-filter: blur(12px);
+    animation: toast-in 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+    .toast.success {
+        border-left-color: var(--success);
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.7), 0 0 16px rgba(16, 185, 129, 0.2);
+    }
+
+    .toast.error {
+        border-left-color: var(--maroon);
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.7), 0 0 16px rgba(225, 29, 72, 0.2);
+    }
+
+    .toast.leaving {
+        animation: toast-out 0.22s ease forwards;
+    }
+
+@keyframes toast-in {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes toast-out {
+    to {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+}
+
+/* ===== 15. LỊCH SỬ MUA ACC ===== */
+.history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.history-item {
+    display: grid;
+    grid-template-columns: 130px minmax(0, 1fr) minmax(320px, 36%);
+    align-items: start;
+    gap: 16px;
+    background: linear-gradient(180deg, rgba(26, 35, 54, 0.9) 0%, rgba(18, 24, 36, 0.95) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--radius);
+    padding: 16px;
+    box-shadow: var(--shadow-sm);
+}
+
+    .history-item img {
+        width: 130px;
+        height: 86px;
+        object-fit: cover;
+        border-radius: var(--radius-sm);
+        flex-shrink: 0;
+    }
+
+.history-image-button {
+    width: 130px;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    cursor: zoom-in;
+}
+
+    .history-image-button img {
+        transition: transform 0.2s ease, filter 0.2s ease;
+    }
+
+    .history-image-button:hover img {
+        transform: scale(1.03);
+        filter: brightness(1.12);
+    }
+
+.history-image-lightbox {
+    position: fixed;
+    z-index: 3000;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 28px;
+    background: rgba(0, 0, 0, 0.88);
+}
+
+    .history-image-lightbox.active {
+        display: flex;
+    }
+
+    .history-image-lightbox img {
+        max-width: min(1100px, 94vw);
+        max-height: 88vh;
+        object-fit: contain;
+        border-radius: var(--radius-sm);
+    }
+
+.history-image-close {
+    position: fixed;
+    top: 18px;
+    right: 24px;
+    border: 0;
+    background: transparent;
+    color: #fff;
+    font-size: 2.5rem;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.history-item-info {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+}
+
+.sold-history-content {
+    display: contents;
+}
+
+.history-date {
+    font-size: 0.78rem;
+    color: var(--ink-muted);
+}
+
+.purchase-login-details {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 12px 14px;
+    border: 1px solid rgba(245, 158, 11, 0.35);
+    border-radius: var(--radius-sm);
+    background: rgba(245, 158, 11, 0.06);
+    font-size: 0.88rem;
+}
+
+    .purchase-login-details strong {
+        color: var(--gold-light);
+    }
+
+.purchase-login-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.purchase-login-details code {
+    padding: 4px 8px;
+    border-radius: 4px;
+    color: #ffffff;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    word-break: break-all;
+    font-family: monospace;
+}
+
+.copy-credential-btn {
+    border: 1px solid rgba(245, 158, 11, 0.45);
+    border-radius: 6px;
+    padding: 6px 10px;
+    color: var(--gold-light);
+    background: rgba(245, 158, 11, 0.1);
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+}
+
+    .copy-credential-btn:hover {
+        background: var(--gold);
+        color: #1a1202;
+    }
+
+/* ===== 16. PHÂN TRANG (PAGINATION) ===== */
+#pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    margin-top: 50px;
+}
+
+.purchase-history-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 18px;
+    color: var(--ink-muted);
+    font-size: 0.9rem;
+}
+
+    .purchase-history-pagination[hidden] {
+        display: none;
+    }
+
+    .purchase-history-pagination button {
+        min-height: 38px;
+        padding: 0 14px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: var(--radius-pill);
+        background: rgba(255, 255, 255, 0.04);
+        color: var(--ink);
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+        .purchase-history-pagination button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+#pagination button {
+    min-width: 42px;
+    height: 42px;
+    padding: 0 14px;
+    border-radius: var(--radius-pill);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--ink-muted);
+    font-family: var(--font-body);
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+    #pagination button:hover:not(:disabled) {
+        color: #ffffff;
+        border-color: var(--gold);
+        background: rgba(245, 158, 11, 0.12);
+        transform: translateY(-2px);
+    }
+
+    #pagination button.active {
+        background: var(--gold-gradient);
+        border-color: transparent;
+        color: #1a1202;
+        box-shadow: 0 4px 14px rgba(245, 158, 11, 0.4);
+    }
+
+    #pagination button:disabled {
+        opacity: 0.35;
+        cursor: not-allowed;
+    }
+
+.page-numbers-wrapper {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    width: 185px;
+    padding: 6px 4px 10px 4px;
+}
+
+    /* Tùy chỉnh thanh kéo (Scrollbar) to hơn và dễ bám hơn */
+    .page-numbers-wrapper::-webkit-scrollbar {
+        height: 10px;
+    }
+
+    .page-numbers-wrapper::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+    }
+
+    .page-numbers-wrapper::-webkit-scrollbar-thumb {
+        background: var(--gold);
+        border-radius: 10px;
+        border: 2px solid rgba(18, 24, 36, 0.95);
+    }
+
+        .page-numbers-wrapper::-webkit-scrollbar-thumb:hover {
+            background: var(--gold-light);
+        }
+
+    /* Tăng kích thước nút số trang bên trong */
+    .page-numbers-wrapper button {
+        flex-shrink: 0;
+        min-width: 46px;
+        height: 46px;
+        font-size: 1rem;
+    }
+
+/* ===== 17. BADGE TỔNG SỐ ACC (TÍCH HỢP TRÊN THANH TOOLBAR TRÊN LƯỚI) ===== */
+.grid-header-bar {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin-bottom: 20px;
+    padding: 0 4px;
+}
+
+.total-accounts-badge {
+    position: static;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(18, 24, 36, 0.88);
+    color: #f1f5f9;
+    border: 1px solid rgba(245, 158, 11, 0.35);
+    padding: 8px 18px;
+    border-radius: var(--radius-pill);
+    font-size: 0.88rem;
+    font-weight: 600;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4), 0 0 14px rgba(245, 158, 11, 0.12);
+    backdrop-filter: blur(12px);
+}
+
+    .total-accounts-badge .badge-icon {
+        font-size: 0.95rem;
+    }
+
+    .total-accounts-badge .badge-label {
+        color: var(--ink-muted);
+    }
+
+    .total-accounts-badge span,
+    .total-accounts-badge #total-accounts-count {
+        color: var(--gold-light);
+        font-weight: 800;
+    }
+
+/* Loading Spinner */
+.spinner {
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: currentColor;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 6px;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ===== 18. TƯƠNG THÍCH TRANG PHỤ (NẠP TIỀN & LỊCH SỬ MUA NICK) ===== */
+.page-title {
+    font-family: var(--font-body);
+    font-weight: 800;
+    color: var(--gold-light);
+    font-size: 1.8rem;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    letter-spacing: -0.3px;
+}
+
+.history-page-card, .topup-card {
+    background: linear-gradient(180deg, rgba(22, 29, 44, 0.95) 0%, rgba(13, 17, 26, 0.98) 100%);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    border-radius: var(--radius);
+    padding: 28px;
+    box-shadow: var(--shadow);
+}
+
+.topup-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+
+.topup-card h2 {
+    font-family: var(--font-body);
+    font-weight: 800;
+    color: var(--gold-light);
+    font-size: 1.35rem;
+    margin-top: 0;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.qr-placeholder {
+    background: #ffffff;
+    padding: 14px;
+    border-radius: 12px;
+    display: inline-block;
+    margin-bottom: 12px;
+    width: min(100%, 500px);
+    box-sizing: border-box;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+.qr-download-btn {
+    margin-top: 12px;
+}
+
+.login-notice {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--ink-muted);
+}
+
+    .login-notice button {
+        margin-top: 16px;
+    }
+
+.bank-info-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+    font-size: 0.92rem;
+}
+
+    .bank-info-item span:first-child {
+        color: var(--ink-muted);
+    }
+
+    .bank-info-item span:last-child {
+        font-weight: 700;
+        color: var(--ink);
+    }
+
+.topup-history-card {
+    margin-top: 28px;
+}
+
+.topup-history-list {
+    display: grid;
+    gap: 12px;
+}
+
+.topup-history-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 14px 0;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+}
+
+    .topup-history-item:last-child {
+        border-bottom: 0;
+        padding-bottom: 0;
+    }
+
+.topup-history-meta {
+    display: grid;
+    gap: 4px;
+}
+
+.topup-history-date,
+.topup-history-code {
+    color: var(--ink-muted);
+    font-size: 0.86rem;
+}
+
+.topup-history-amount {
+    color: var(--success);
+    font-weight: 800;
+    font-size: 1.05rem;
+    white-space: nowrap;
+    text-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+}
+

@@ -1,0 +1,57 @@
+/* =========================================================
+   SHOP ACC LIQI - GAMING ESPORTS THEME (PHONG CÁCH LIÊN QUÂN)
+   Chỉ chỉnh CSS giao diện. Giữ nguyên 100% ID, Class, JS Selectors
+   ========================================================= */
+
+/* ===== 1. DESIGN TOKENS & BIẾN MÀU SẮC ===== */
+:root {
+    /* Nền & Chiều sâu Dark Gaming */
+    --bg: #0a0e17;
+    --bg-elevated: #121824;
+    --bg-glass: rgba(18, 24, 36, 0.82);
+    --surface: #1a2336;
+    --surface-hover: #222e46;
+    --surface-active: #2b3a58;
+    /* Hệ màu Hoàng Kim & Esports Liên Quân */
+    --gold: #f59e0b;
+    --gold-light: #fbbf24;
+    --gold-dark: #b45309;
+    --gold-gradient: linear-gradient(135deg, #fef08a 0%, #f59e0b 50%, #d97706 100%);
+    --gold-soft: rgba(245, 158, 11, 0.14);
+    --gold-glow: 0 0 20px rgba(245, 158, 11, 0.35);
+    /* Màu Đấu Giá - Ma Thuật Huyền Bí */
+    --purple: #8b5cf6;
+    --purple-dark: #6d28d9;
+    --purple-gradient: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 50%, #6d28d9 100%);
+    --purple-glow: 0 0 18px rgba(139, 92, 246, 0.45);
+    /* Màu Nút Mua - Lửa Chiến Binh */
+    --orange: #f97316;
+    --orange-gradient: linear-gradient(135deg, #fb923c 0%, #f97316 50%, #ea580c 100%);
+    --orange-glow: 0 4px 18px rgba(234, 88, 12, 0.45);
+    /* Màu Trạng Thái */
+    --maroon: #e11d48;
+    --maroon-soft: rgba(225, 29, 72, 0.16);
+    --success: #10b981;
+    --success-soft: rgba(16, 185, 129, 0.16);
+    /* Màu Chữ & Dòng kẻ */
+    --ink: #f1f5f9;
+    --ink-muted: #94a3b8;
+    --ink-subtle: #64748b;
+    --paper: #f8fafc;
+    --paper-line: rgba(245, 158, 11, 0.35);
+    /* Bo góc & Viền */
+    --radius-sm: 8px;
+    --radius: 16px;
+    --radius-lg: 22px;
+    --radius-pill: 9999px;
+    --border-subtle: rgba(255, 255, 255, 0.08);
+    --border-gold: rgba(245, 158, 11, 0.35);
+    /* Đổ bóng */
+    --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.35);
+    --shadow: 0 12px 32px -6px rgba(0, 0, 0, 0.65), 0 4px 12px -2px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 24px 54px -10px rgba(0, 0, 0, 0.85), 0 0 35px rgba(245, 158, 11, 0.12);
+    /* Typography */
+    --font-display: "Spectral", Georgia, serif;
+    --font-body: "Be Vietnam Pro", system-ui, -apple-system, sans-serif;
+}
+

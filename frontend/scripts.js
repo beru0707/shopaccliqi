@@ -32,6 +32,18 @@ const mainNav = document.getElementById("main-nav");
 const siteHeader = document.querySelector(".site-header");
 const mainSearchBar = document.querySelector(".site-header .main-bar");
 
+if (siteHeader) {
+    const updateHeaderHeight = () => {
+        const height = siteHeader.offsetHeight;
+        if (height > 0) {
+            document.documentElement.style.setProperty("--header-height", `${height}px`);
+        }
+    };
+    updateHeaderHeight();
+    window.addEventListener("resize", updateHeaderHeight, { passive: true });
+    window.addEventListener("scroll", updateHeaderHeight, { passive: true });
+}
+
 if (siteHeader && mainSearchBar) {
     const mobileSearchViewport = window.matchMedia("(max-width: 768px)");
     let previousScrollY = window.scrollY;

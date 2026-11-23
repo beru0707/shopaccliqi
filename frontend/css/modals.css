@@ -1,0 +1,548 @@
+/* ===== 11. HỘP THOẠI MODALS ===== */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(5, 8, 14, 0.88);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    justify-content: center;
+    align-items: center;
+    padding: 16px;
+}
+
+    .modal.active {
+        display: flex;
+        animation: modalBackdropFade 0.2s ease;
+    }
+
+@keyframes modalBackdropFade {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.modal-card {
+    background: linear-gradient(180deg, rgba(22, 29, 44, 0.98) 0%, rgba(13, 17, 26, 0.99) 100%);
+    border: 1px solid rgba(245, 158, 11, 0.35);
+    border-radius: var(--radius);
+    padding: 32px;
+    width: 90%;
+    max-width: 500px;
+    position: relative;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.85), 0 0 35px rgba(245, 158, 11, 0.1);
+    animation: modalZoomIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+    .modal-card.wide {
+        max-width: 760px;
+    }
+
+@keyframes modalZoomIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.modal-card h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-family: var(--font-body);
+    font-weight: 800;
+    font-size: 1.45rem;
+    color: var(--gold-light);
+    letter-spacing: -0.2px;
+}
+
+/* Nút Đóng Modal */
+.modal-close {
+    position: absolute;
+    top: 18px;
+    right: 20px;
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--ink-muted);
+    font-size: 24px;
+    line-height: 1;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+    .modal-close:hover {
+        background: #ef4444;
+        color: #ffffff;
+        border-color: #ef4444;
+        transform: rotate(90deg);
+    }
+
+.modal-image-close {
+    position: fixed;
+    z-index: 1010;
+    top: 20px;
+    right: 24px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(239, 68, 68, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    color: #ffffff;
+    font-size: 32px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.6);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+    .modal-image-close:hover {
+        background: #dc2626;
+        transform: scale(1.1);
+    }
+
+/* Modal Xem Ảnh Phóng To & Thông Tin Acc */
+.image-modal-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    max-width: 90vw;
+    max-height: 92vh;
+    overflow-y: auto;
+    position: relative;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(245, 158, 11, 0.6) rgba(13, 17, 26, 0.8);
+    border-radius: var(--radius);
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9), 0 0 40px rgba(245, 158, 11, 0.12);
+}
+
+.modal-image-wrap {
+    position: relative;
+    width: min(90vw, 900px); /* cố định độ rộng khung, không đổi dù ảnh nào đang hiện */
+    background: #0d121c;
+}
+
+.modal-content {
+    width: 100%; /* luôn lấp đầy khung cố định ở trên */
+    max-height: 60vh;
+    border-radius: var(--radius) var(--radius) 0 0;
+    object-fit: contain;
+    display: block;
+}
+
+.modal-note-tag {
+    position: absolute;
+    z-index: 2;
+    top: 12px;
+    right: 12px;
+    max-width: calc(100% - 24px);
+    padding: 6px 14px;
+    border: 1px solid rgba(239, 68, 68, 0.5);
+    border-radius: var(--radius-pill);
+    color: #ffffff;
+    background: rgba(185, 28, 28, 0.92);
+    font-size: 0.82rem;
+    font-weight: 700;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.modal-info-panel {
+    background: linear-gradient(180deg, rgba(22, 29, 44, 0.98) 0%, rgba(13, 17, 26, 0.99) 100%);
+    border: 1px solid rgba(245, 158, 11, 0.35);
+    border-top: none;
+    border-radius: 0 0 var(--radius) var(--radius);
+    padding: 22px 28px;
+    width: 100%;
+    max-width: 680px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.modal-scroll-hint {
+    margin: 0 0 6px;
+    border: 0;
+    padding: 11px 14px;
+    color: #1a1202;
+    background: var(--gold-gradient);
+    border-radius: var(--radius-sm);
+    text-align: center;
+    font-weight: 700;
+    font-size: 0.92rem;
+    animation: scroll-hint-pulse 1.8s ease-in-out infinite;
+    cursor: pointer;
+    font-family: inherit;
+    box-shadow: 0 4px 16px rgba(245, 158, 11, 0.35);
+}
+
+@keyframes scroll-hint-pulse {
+    0%, 100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(3px);
+        box-shadow: 0 6px 20px rgba(245, 158, 11, 0.5);
+    }
+}
+
+.modal-info-title {
+    font-family: var(--font-body);
+    font-weight: 800;
+    font-size: 1.5rem;
+    color: var(--gold-light);
+    letter-spacing: -0.3px;
+}
+
+.modal-info-text {
+    font-size: 0.94rem;
+    color: var(--ink);
+    line-height: 1.6;
+    margin: 0;
+}
+
+.modal-buy-area {
+    margin-top: 10px;
+}
+
+.modal-buy-btn {
+    width: 100%;
+    padding: 13px;
+    font-size: 1rem;
+    background: var(--orange-gradient);
+    color: #ffffff;
+    box-shadow: var(--orange-glow);
+}
+
+    .modal-buy-btn:hover {
+        filter: brightness(1.1);
+        box-shadow: 0 6px 24px rgba(234, 88, 12, 0.6);
+    }
+
+.sold-label {
+    text-align: center;
+    background: var(--success-soft);
+    color: var(--success);
+    font-weight: 700;
+    font-size: 0.95rem;
+    padding: 12px;
+    border-radius: var(--radius-sm);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+/* Thiết lập Đấu giá */
+.auction-settings {
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    border-radius: var(--radius-sm);
+    margin: 18px 0;
+    padding: 14px 18px;
+    background: rgba(245, 158, 11, 0.04);
+}
+
+    .auction-settings legend {
+        color: var(--gold-light);
+        font-weight: 700;
+        padding: 0 8px;
+    }
+
+.auction-history {
+    margin-top: 14px;
+    border-top: 1px solid rgba(245, 158, 11, 0.25);
+    padding-top: 12px;
+    font-size: 0.88rem;
+}
+
+.auction-meta {
+    color: var(--ink-muted);
+    margin: 6px 0 10px;
+}
+
+.auction-bid {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 12px;
+    padding: 8px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    align-items: center;
+}
+
+    .auction-bid time {
+        color: var(--ink-muted);
+        font-size: 0.78rem;
+    }
+
+.modal-bid-area {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+    .modal-bid-area label {
+        font-size: 0.85rem;
+        color: var(--ink-muted);
+    }
+
+.modal-bid-form {
+    display: flex;
+    gap: 10px;
+}
+
+    .modal-bid-form input {
+        flex: 1;
+        min-width: 0;
+        background: var(--surface);
+        color: var(--ink);
+        border: 1px solid rgba(245, 158, 11, 0.4);
+        border-radius: var(--radius-sm);
+        padding: 10px 14px;
+        font: inherit;
+    }
+
+    .modal-bid-form button {
+        white-space: nowrap;
+    }
+
+.modal-bid-status {
+    min-height: 1.2em;
+    margin: 0;
+    color: var(--gold-light);
+    font-size: 0.82rem;
+}
+
+/* ===== 12. FORM & INPUTS TRONG MODALS ===== */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 18px;
+}
+
+    .form-group label {
+        font-size: 0.86rem;
+        font-weight: 600;
+        color: var(--ink-muted);
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+        background: var(--surface);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: var(--radius-sm);
+        padding: 11px 14px;
+        color: var(--ink);
+        outline: none;
+        font-family: var(--font-body);
+        font-size: 0.92rem;
+        transition: all 0.2s ease;
+    }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            border-color: var(--gold);
+            box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.25);
+            background: #1e283c;
+        }
+
+.form-error {
+    color: #fca5a5;
+    font-size: 0.84rem;
+    font-weight: 600;
+    margin-top: -6px;
+    margin-bottom: 14px;
+    min-height: 1em;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+/* Tabs Đăng nhập / Đăng ký */
+.auth-tabs {
+    display: flex;
+    gap: 6px;
+    background: var(--surface);
+    border-radius: var(--radius-pill);
+    padding: 5px;
+    margin-bottom: 24px;
+    border: 1px solid var(--border-subtle);
+}
+
+.auth-tab {
+    flex: 1;
+    text-align: center;
+    padding: 9px 0;
+    border-radius: var(--radius-pill);
+    border: none;
+    background: transparent;
+    color: var(--ink-muted);
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 0.88rem;
+    cursor: pointer;
+    transition: all 0.22s ease;
+}
+
+    .auth-tab:hover:not(.active) {
+        color: #ffffff;
+    }
+
+    .auth-tab.active {
+        background: var(--gold-gradient);
+        color: #1a1202;
+        box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+    }
+
+.login-hint {
+    background: var(--surface);
+    border-radius: var(--radius-sm);
+    padding: 12px 16px;
+    font-size: 0.84rem;
+    color: var(--ink-muted);
+    margin-bottom: 18px;
+    border: 1px solid var(--border-subtle);
+}
+
+    .login-hint code {
+        background: rgba(245, 158, 11, 0.15);
+        color: var(--gold-light);
+        padding: 2px 7px;
+        border-radius: 4px;
+    }
+
+.change-password-card {
+    max-width: 440px;
+}
+
+/* ===== 13. CSV IMPORT ===== */
+.csv-import-card {
+    max-width: 780px;
+}
+
+.csv-import-help {
+    color: var(--ink-muted);
+    font-size: 0.86rem;
+    line-height: 1.6;
+}
+
+    .csv-import-help code, .csv-import-preview code {
+        padding: 2px 6px;
+        border-radius: 4px;
+        color: var(--gold-light);
+        background: var(--surface);
+    }
+
+.csv-import-preview {
+    margin-top: 16px;
+    padding: 14px;
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    font-size: 0.86rem;
+}
+
+.csv-preview-table-wrap {
+    overflow-x: auto;
+}
+
+.csv-preview-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+    .csv-preview-table th, .csv-preview-table td {
+        padding: 10px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        text-align: left;
+        vertical-align: top;
+    }
+
+.csv-preview-more {
+    margin: 12px 0 0;
+    color: var(--ink-muted);
+}
+
+/* ===== 14. QUẢN LÝ NGƯỜI DÙNG (USERS TABLE) ===== */
+.user-table-wrap {
+    overflow-x: auto;
+}
+
+.user-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+}
+
+    .user-table th, .user-table td {
+        padding: 12px 14px;
+        text-align: left;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .user-table th {
+        color: var(--gold-light);
+        font-weight: 700;
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        background: rgba(255, 255, 255, 0.02);
+    }
+
+    .user-table td.actions {
+        display: flex;
+        gap: 8px;
+    }
+
+    .user-table select.role-select {
+        background: var(--surface);
+        color: var(--ink);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 6px;
+        padding: 5px 8px;
+        font-size: 0.82rem;
+    }
+
+.add-user-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 18px;
+    flex-wrap: wrap;
+}
+
+    .add-user-row input, .add-user-row select {
+        background: var(--surface);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: var(--radius-sm);
+        padding: 10px 14px;
+        color: var(--ink);
+    }
+
+    .add-user-row input {
+        flex: 1 1 150px;
+    }
+

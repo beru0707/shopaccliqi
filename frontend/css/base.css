@@ -1,0 +1,111 @@
+/* ===== 2. RESET & BASE LAYOUT ===== */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+    scrollbar-gutter: stable;
+    overflow-x: hidden;
+    max-width: 100vw;
+}
+
+:root {
+    --header-height: 80px;
+}
+
+body.home-page {
+    --header-height: 145px;
+}
+
+@media (max-width: 768px) {
+    :root, body.home-page {
+        --header-height: 60px;
+    }
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.6;
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+    max-width: 100vw;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Lớp hình nền gaming toàn website - bắt đầu nằm ngay dưới thanh header */
+body::before {
+    content: "";
+    position: fixed;
+    top: var(--header-height, 80px);
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: -1;
+    background-color: var(--bg);
+    background-image: 
+        linear-gradient(to bottom, rgba(10, 14, 23, 0.25) 0%, rgba(10, 14, 23, 0.75) 300px, rgba(10, 14, 23, 0.95) 550px, #0a0e17 100%),
+        url('../images/banner.png'),
+        url('https://res.cloudinary.com/zv0jlmxj/image/upload/v1788875838/ChatGPT_Image_20_55_41_8_thg_9_2026.png');
+    background-size: 100% auto;
+    background-position: center top;
+    background-repeat: no-repeat;
+    pointer-events: none;
+    transform: translateZ(0);
+}
+
+/* Scrollbars cao cấp */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #090d14;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #1e293b;
+    border-radius: 999px;
+    border: 2px solid #090d14;
+}
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: var(--gold);
+    }
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.hidden {
+    display: none !important;
+}
+
+:focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
