@@ -254,7 +254,7 @@
 }
 
 .brand-banner {
-    width: clamp(200px, 22vw, 240px);
+    width: clamp(180px, 22vw, 200px);
     height: auto;
     aspect-ratio: 2170 / 725;
     object-fit: contain;

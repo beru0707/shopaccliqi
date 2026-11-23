@@ -55,7 +55,7 @@ body::before {
         url('../images/banner.png'),
         url('https://res.cloudinary.com/zv0jlmxj/image/upload/v1788875838/ChatGPT_Image_20_55_41_8_thg_9_2026.png');
     background-size: 100% auto;
-    background-position: center top;
+    background-position: center calc(145px - var(--header-height, 80px));
     background-repeat: no-repeat;
     pointer-events: none;
     transform: translateZ(0);
